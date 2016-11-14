@@ -79,26 +79,40 @@ keyCode Mod4 = "Mod4"
 
 data Exec = Exec String
 
-data Op next
-  = Action Exec next
-  | ExecAlways String next
-  | Font [String] Int next
-  | BindCode [Key] Exec next
-  deriving (Functor)
+instance Show Exec where
+  show (Exec x) = "exec " ++ x
+
+data I3 = Action Exec
+        | ExecAlways String
+        | Font [String] Int
+        | BindCode [Key] Exec
+        | Bar String
+
+instance Show I3 where
+  show (Action exec) = show exec
+  show (ExecAlways x) = "exec_always " ++ x
+  show (Font names size) = "font " ++ (intercalate ":" names)
+  show (BindCode codes exec) = "bindcode " ++ (intercalate "+" (map keyCode codes)) ++ " " ++ show exec
+  show (Bar command) = "bar {\n    status_command " ++ command ++ "\n    position top\n}"
+
+data Op next = Op I3 next deriving (Functor)
 
 type Config = Free Op
 
 exec :: String -> Config ()
-exec x = liftF $ Action (Exec x) ()
+exec x = liftF $ Op (Action (Exec x)) ()
 
 exec_always :: String -> Config ()
-exec_always x = liftF $ ExecAlways x ()
+exec_always x = liftF $ Op (ExecAlways x) ()
 
 font :: [String] -> Int -> Config ()
-font names size = liftF $ Font names size ()
+font names size = liftF $ Op (Font names size) ()
 
 bindcode :: [Key] -> Exec -> Config ()
-bindcode keys command = liftF $ BindCode keys command ()
+bindcode keys command = liftF $ Op (BindCode keys command) ()
+
+bar :: String -> Config ()
+bar command = liftF $ Op (Bar command) ()
 
 config :: Config ()
 config = do
@@ -112,17 +126,16 @@ config = do
 
   font ["pango", "monospace"] 8
 
+  bar "i3blocks"
+
   bindcode [Mod4, Return] (Exec "i3-sensible-terminal")
 
   return ()
 
 interpret :: Config a -> String
 interpret = interpret' ""
-  where interpret' accumulator (Free (Action (Exec x) next)) = interpret' (accumulator ++ "exec " ++ x ++ "\n") next
-        interpret' accumulator (Free (ExecAlways x next)) = interpret' (accumulator ++ "exec_always " ++ x ++ "\n") next
-        interpret' accumulator (Free (Font names size next)) = interpret' (accumulator ++ "font " ++ (intercalate ":" names) ++ "\n") next
-        interpret' accumulator (Free (BindCode codes (Exec command) next)) = interpret' (accumulator ++ "bindcode " ++ (intercalate "+" (map keyCode codes)) ++ " exec " ++ command ++ "\n") next
-        interpret' accumulator (Pure _) = accumulator
+  where interpret' accumulator (Pure _) = accumulator
+        interpret' accumulator (Free (Op i3 next)) = interpret' (accumulator ++ show i3 ++ "\n") next
 
 main :: IO ()
 main = putStrLn $ interpret config
