@@ -1,1 +1,2 @@
 - Verify programs exist.
+- Verify fonts exist.
