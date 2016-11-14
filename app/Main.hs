@@ -4,6 +4,20 @@ import Lib
 import Control.Monad.Free
 import Data.List (intercalate)
 
+data KeyName = LowerVolume
+             | RaiseVolume
+             | Mute
+             | BrightnessUp
+             | BrightnessDown
+
+
+instance Show KeyName where
+  show LowerVolume = "XF86AudioLowerVolume"
+  show RaiseVolume = "XF86AudioRaiseVolume"
+  show Mute = "XF86AudioMute"
+  show BrightnessUp = "XF86MonBrightnessUp"
+  show BrightnessDown = "XF86MonBrightnessDown"
+
 data Key = Q
          | W
          | E
@@ -40,42 +54,42 @@ data Key = Q
          | Slash
          | Mod4
 
-keyCode :: Key -> String
-keyCode Q = "24"
-keyCode W = "25"
-keyCode E = "26"
-keyCode R = "27"
-keyCode T = "28"
-keyCode Y = "29"
-keyCode U = "30"
-keyCode I = "31"
-keyCode O = "32"
-keyCode P = "33"
-keyCode LeftBracket = "34"
-keyCode RightBracket = "35"
-keyCode Return = "36"
-keyCode A = "38"
-keyCode S = "39"
-keyCode D = "40"
-keyCode F = "41"
-keyCode G = "42"
-keyCode H = "43"
-keyCode J = "44"
-keyCode K = "45"
-keyCode L = "46"
-keyCode Semicolon = "47"
-keyCode Quote = "48"
-keyCode Z = "52"
-keyCode X = "53"
-keyCode C = "54"
-keyCode V = "55"
-keyCode B = "56"
-keyCode N = "57"
-keyCode M = "58"
-keyCode Comma = "59"
-keyCode Period = "60"
-keyCode Slash = "61"
-keyCode Mod4 = "Mod4"
+instance Show Key where
+  show Q = "24"
+  show W = "25"
+  show E = "26"
+  show R = "27"
+  show T = "28"
+  show Y = "29"
+  show U = "30"
+  show I = "31"
+  show O = "32"
+  show P = "33"
+  show LeftBracket = "34"
+  show RightBracket = "35"
+  show Return = "36"
+  show A = "38"
+  show S = "39"
+  show D = "40"
+  show F = "41"
+  show G = "42"
+  show H = "43"
+  show J = "44"
+  show K = "45"
+  show L = "46"
+  show Semicolon = "47"
+  show Quote = "48"
+  show Z = "52"
+  show X = "53"
+  show C = "54"
+  show V = "55"
+  show B = "56"
+  show N = "57"
+  show M = "58"
+  show Comma = "59"
+  show Period = "60"
+  show Slash = "61"
+  show Mod4 = "Mod4"
 
 data Exec = Exec String
 
@@ -85,15 +99,19 @@ instance Show Exec where
 data I3 = Action Exec
         | ExecAlways String
         | Font [String] Int
+        | BindSym [KeyName] Exec
         | BindCode [Key] Exec
         | Bar String
+        | HideEdgeBorders
 
 instance Show I3 where
   show (Action exec) = show exec
   show (ExecAlways x) = "exec_always " ++ x
   show (Font names size) = "font " ++ (intercalate ":" names)
-  show (BindCode codes exec) = "bindcode " ++ (intercalate "+" (map keyCode codes)) ++ " " ++ show exec
+  show (BindSym keys exec) = "bindsym " ++ (intercalate "+" (map show keys)) ++ " " ++ show exec
+  show (BindCode codes exec) = "bindcode " ++ (intercalate "+" (map show codes)) ++ " " ++ show exec
   show (Bar command) = "bar {\n    status_command " ++ command ++ "\n    position top\n}"
+  show HideEdgeBorders = "hide_edge_borders both"
 
 data Op next = Op I3 next deriving (Functor)
 
@@ -108,11 +126,17 @@ exec_always x = liftF $ Op (ExecAlways x) ()
 font :: [String] -> Int -> Config ()
 font names size = liftF $ Op (Font names size) ()
 
+bindsym :: [KeyName] -> Exec -> Config ()
+bindsym keys command = liftF $ Op (BindSym keys command) ()
+
 bindcode :: [Key] -> Exec -> Config ()
 bindcode keys command = liftF $ Op (BindCode keys command) ()
 
 bar :: String -> Config ()
 bar command = liftF $ Op (Bar command) ()
+
+hide_edge_borders :: Config ()
+hide_edge_borders = liftF $ Op HideEdgeBorders ()
 
 config :: Config ()
 config = do
@@ -127,6 +151,14 @@ config = do
   font ["pango", "monospace"] 8
 
   bar "i3blocks"
+  hide_edge_borders
+
+  bindsym [RaiseVolume] (Exec "amixer -q sset Master 5%+ unmute")
+  bindsym [LowerVolume] (Exec "amixer -q sset Master 5%- unmute")
+  bindsym [Mute] (Exec "amixer -q sset Master,0 toggle")
+
+  bindsym [BrightnessUp] (Exec "xbacklight -inc 10")
+  bindsym [BrightnessDown] (Exec "xbacklight -dec 10")
 
   bindcode [Mod4, Return] (Exec "i3-sensible-terminal")
 
