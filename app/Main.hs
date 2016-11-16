@@ -1,6 +1,5 @@
 module Main where
 
-import Lib
 import Control.Monad.Free
 import Data.List (intercalate)
 
@@ -12,9 +11,6 @@ instance Show CommandCriteria where
   show (Instance name) = "instance=\"" ++ name ++ "\""
   show (Class name) = "class=\"" ++ name ++ "\""
   show (Title name) = "title=\"" ++ name ++ "\""
-
-instance Show [CommandCriteria] where
-  show criteria = "[" ++ intercalate " " (map show criteria) ++ "]"
 
 data KeyName = LowerVolume
              | RaiseVolume
@@ -103,19 +99,44 @@ instance Show Key where
   show Slash = "61"
   show Mod4 = "Mod4"
 
-data Exec = Exec String
+data MoveSubject = Window | Container
+data MoveLocation = Workspace WorkspaceNumber | Scratchpad
+data WorkspaceNumber = W1 | W2 | W3 | W4 | W5 | W6 | W7 | W8 | W9 | W0
+data Layout = Stacking | Tabbed | ToggleSplit
+data Action = ExecAction String | MoveAction MoveSubject MoveLocation | WorkspaceAction | FocusAction | LayoutAction Layout | ModeAction
 
-instance Show Exec where
-  show (Exec x) = "exec " ++ x
+instance Show MoveSubject where
+  show Window = ""
+  show Container = "container"
 
-data I3 = Action Exec
+instance Show MoveLocation where
+  show (Workspace workspaceNumber) = "to workspace " ++ show workspaceNumber
+  show Scratchpad = "scratchpad"
+
+instance Show WorkspaceNumber where
+  show W1 = "1"
+  show W2 = "2"
+  show W3 = "3"
+  show W4 = "4"
+  show W5 = "5"
+  show W6 = "6"
+  show W7 = "7"
+  show W8 = "8"
+  show W9 = "9"
+  show W0 = "0"
+
+instance Show Action where
+  show (ExecAction x) = "exec " ++ x
+  show (MoveAction subject location) = "move " ++ show subject ++ " " ++ show location
+
+data I3 = Action Action
         | ExecAlways String
         | Font [String] Int
-        | BindSym [KeyName] Exec
-        | BindCode [Key] Exec
+        | BindSym [KeyName] Action
+        | BindCode [Key] Action
         | Bar String
         | HideEdgeBorders
-        | ForWindow CommandCriteria Exec
+        | ForWindow [CommandCriteria] Action
 
 instance Show I3 where
   show (Action exec) = show exec
@@ -125,13 +146,14 @@ instance Show I3 where
   show (BindCode codes exec) = "bindcode " ++ (intercalate "+" (map show codes)) ++ " " ++ show exec
   show (Bar command) = "bar {\n    status_command " ++ command ++ "\n    position top\n}"
   show HideEdgeBorders = "hide_edge_borders both"
+  show (ForWindow criteria action) = "for_window [" ++ (intercalate " " (map show criteria)) ++ "] " ++ show action
 
 data Op next = Op I3 next deriving (Functor)
 
 type Config = Free Op
 
 exec :: String -> Config ()
-exec x = liftF $ Op (Action (Exec x)) ()
+exec x = liftF $ Op (Action (ExecAction x)) ()
 
 exec_always :: String -> Config ()
 exec_always x = liftF $ Op (ExecAlways x) ()
@@ -139,10 +161,10 @@ exec_always x = liftF $ Op (ExecAlways x) ()
 font :: [String] -> Int -> Config ()
 font names size = liftF $ Op (Font names size) ()
 
-bindsym :: [KeyName] -> Exec -> Config ()
+bindsym :: [KeyName] -> Action -> Config ()
 bindsym keys command = liftF $ Op (BindSym keys command) ()
 
-bindcode :: [Key] -> Exec -> Config ()
+bindcode :: [Key] -> Action -> Config ()
 bindcode keys command = liftF $ Op (BindCode keys command) ()
 
 bar :: String -> Config ()
@@ -150,6 +172,9 @@ bar command = liftF $ Op (Bar command) ()
 
 hide_edge_borders :: Config ()
 hide_edge_borders = liftF $ Op HideEdgeBorders ()
+
+for_window :: [CommandCriteria] -> Action -> Config ()
+for_window commandCriteria action = liftF $ Op (ForWindow commandCriteria action) ()
 
 chrome = [Instance "google-chrome-unstable"]
 rubymine = [Class "jetbrains-rubymine"]
@@ -172,14 +197,19 @@ config = do
   bar "i3blocks"
   hide_edge_borders
 
-  bindsym [RaiseVolume] (Exec "amixer -q sset Master 5%+ unmute")
-  bindsym [LowerVolume] (Exec "amixer -q sset Master 5%- unmute")
-  bindsym [Mute] (Exec "amixer -q sset Master,0 toggle")
+  bindsym [RaiseVolume] (ExecAction "amixer -q sset Master 5%+ unmute")
+  bindsym [LowerVolume] (ExecAction "amixer -q sset Master 5%- unmute")
+  bindsym [Mute] (ExecAction "amixer -q sset Master,0 toggle")
 
-  bindsym [BrightnessUp] (Exec "xbacklight -inc 10")
-  bindsym [BrightnessDown] (Exec "xbacklight -dec 10")
+  bindsym [BrightnessUp] (ExecAction "xbacklight -inc 10")
+  bindsym [BrightnessDown] (ExecAction "xbacklight -dec 10")
 
-  bindcode [Mod4, Return] (Exec "i3-sensible-terminal")
+  bindcode [Mod4, Return] (ExecAction "i3-sensible-terminal")
+
+  for_window chrome (MoveAction Container (Workspace W1))
+  for_window rubymine (MoveAction Container (Workspace W2))
+  for_window slack (MoveAction Container (Workspace W4))
+  for_window telegram (MoveAction Window Scratchpad)
 
   return ()
 
