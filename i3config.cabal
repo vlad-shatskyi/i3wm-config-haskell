@@ -28,6 +28,7 @@ executable i3config-exe
                      , free
   default-language:    Haskell2010
   extensions:          DeriveFunctor
+                     , FlexibleInstances
 
 test-suite i3config-test
   type:                exitcode-stdio-1.0

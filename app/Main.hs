@@ -4,6 +4,18 @@ import Lib
 import Control.Monad.Free
 import Data.List (intercalate)
 
+data CommandCriteria = Instance String
+                     | Class String
+                     | Title String
+
+instance Show CommandCriteria where
+  show (Instance name) = "instance=\"" ++ name ++ "\""
+  show (Class name) = "class=\"" ++ name ++ "\""
+  show (Title name) = "title=\"" ++ name ++ "\""
+
+instance Show [CommandCriteria] where
+  show criteria = "[" ++ intercalate " " (map show criteria) ++ "]"
+
 data KeyName = LowerVolume
              | RaiseVolume
              | Mute
@@ -103,6 +115,7 @@ data I3 = Action Exec
         | BindCode [Key] Exec
         | Bar String
         | HideEdgeBorders
+        | ForWindow CommandCriteria Exec
 
 instance Show I3 where
   show (Action exec) = show exec
@@ -137,6 +150,12 @@ bar command = liftF $ Op (Bar command) ()
 
 hide_edge_borders :: Config ()
 hide_edge_borders = liftF $ Op HideEdgeBorders ()
+
+chrome = [Instance "google-chrome-unstable"]
+rubymine = [Class "jetbrains-rubymine"]
+slack = [Instance "slack"]
+telegram = [Title "Telegram"]
+terminal = [Instance "urxvt"]
 
 config :: Config ()
 config = do
