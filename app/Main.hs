@@ -12,31 +12,31 @@ instance Show ActionCriteria where
   show (Class name) = "class=\"" ++ name ++ "\""
   show (Title name) = "title=\"" ++ name ++ "\""
 
-data KeyName = LowerVolume
-             | RaiseVolume
-             | Mute
-             | BrightnessUp
-             | BrightnessDown
-             | Escape
+data KeyName = LowerVolumeSym
+             | RaiseVolumeSym
+             | MuteSym
+             | BrightnessUpSym
+             | BrightnessDownSym
+             | EscapeSym
              | Mod4Sym
-             | Shift
-             | Space
-             | Equal
-             | Minus
+             | ShiftSym
+             | SpaceSym
+             | EqualSym
+             | MinusSym
              | LeftBracketSym
 
 instance Show KeyName where
-  show LowerVolume = "XF86AudioLowerVolume"
-  show RaiseVolume = "XF86AudioRaiseVolume"
-  show Mute = "XF86AudioMute"
-  show BrightnessUp = "XF86MonBrightnessUp"
-  show BrightnessDown = "XF86MonBrightnessDown"
-  show Escape = "Escape"
+  show LowerVolumeSym = "XF86AudioLowerVolume"
+  show RaiseVolumeSym = "XF86AudioRaiseVolume"
+  show MuteSym = "XF86AudioMute"
+  show BrightnessUpSym = "XF86MonBrightnessUp"
+  show BrightnessDownSym = "XF86MonBrightnessDown"
+  show EscapeSym = "Escape"
   show Mod4Sym = "Mod4"
-  show Shift = "Shift"
-  show Space = "space"
-  show Equal = "equal"
-  show Minus = "minus"
+  show ShiftSym = "Shift"
+  show SpaceSym = "space"
+  show EqualSym = "equal"
+  show MinusSym = "minus"
   show LeftBracketSym = "bracketLeft"
 
 data Key = Tilde
@@ -50,6 +50,7 @@ data Key = Tilde
          | Eight
          | Nine
          | Zero
+         | Minus
          | Q
          | W
          | E
@@ -85,9 +86,11 @@ data Key = Tilde
          | Period
          | Slash
          | Mod4
+         | Shift
 
 instance Show Key where
   show Tilde = "49"
+  show Shift = "Shift"
   show One = "10"
   show Two = "11"
   show Three = "12"
@@ -98,6 +101,7 @@ instance Show Key where
   show Eight = "17"
   show Nine = "18"
   show Zero = "19"
+  show Minus = "20"
   show Q = "24"
   show W = "25"
   show E = "26"
@@ -272,7 +276,7 @@ bar = liftF' . Bar
 hide_edge_borders = liftF' HideEdgeBorders
 for_window criteria action = liftF' (ForWindow (ActionsWithCriteria criteria [action]))
 mode name config = liftF' (Mode name modeStatements)
-  where modeStatements = toList ((bindsym [Escape] (action (ModeAction defaultMode))) >> config)
+  where modeStatements = toList ((bindsym [EscapeSym] (action (ModeAction defaultMode))) >> config)
 
 chrome = [Instance "google-chrome-unstable"]
 rubymine = [Class "jetbrains-rubymine"]
@@ -307,12 +311,12 @@ config = toList $ do
   bar "i3blocks"
   hide_edge_borders
 
-  bindsym [RaiseVolume] (action (ExecAction "amixer -q sset Master 5%+ unmute"))
-  bindsym [LowerVolume] (action (ExecAction "amixer -q sset Master 5%- unmute"))
-  bindsym [Mute] (action (ExecAction "amixer -q sset Master,0 toggle"))
+  bindsym [RaiseVolumeSym] (action (ExecAction "amixer -q sset Master 5%+ unmute"))
+  bindsym [LowerVolumeSym] (action (ExecAction "amixer -q sset Master 5%- unmute"))
+  bindsym [MuteSym] (action (ExecAction "amixer -q sset Master,0 toggle"))
 
-  bindsym [BrightnessUp] (action (ExecAction "xbacklight -inc 10"))
-  bindsym [BrightnessDown] (action (ExecAction "xbacklight -dec 10"))
+  bindsym [BrightnessUpSym] (action (ExecAction "xbacklight -inc 10"))
+  bindsym [BrightnessDownSym] (action (ExecAction "xbacklight -dec 10"))
 
   bindcode [Mod4, Return] (action (ExecAction "i3-sensible-terminal"))
   bindcode [Mod4, W] (action Kill)
@@ -325,19 +329,19 @@ config = toList $ do
   for_window slack (MoveAction Container (Workspace W4))
   for_window telegram (MoveAction Window Scratchpad)
 
-  bindsym [Mod4Sym, Space] (action (FocusAction ModeToggleFocusActionTarget))
-  bindsym [Mod4Sym, Shift, Space] (action (FloatingAction ToggleFloatingActionTarget))
+  bindsym [Mod4Sym, SpaceSym] (action (FocusAction ModeToggleFocusActionTarget))
+  bindsym [Mod4Sym, ShiftSym, SpaceSym] (action (FloatingAction ToggleFloatingActionTarget))
 
-  bindsym [Mod4Sym, Minus] (action ShowScratchpad)
-  bindsym [Mod4Sym, Shift, Minus] (action (MoveAction Window Scratchpad))
+  bindcode [Mod4, Minus] (action ShowScratchpad)
+  bindcode [Mod4, Shift, Minus] (action (MoveAction Window Scratchpad))
 
   bindcode [Mod4, J] (action' chrome focus)
   bindcode [Mod4, N] (action' terminal ShowScratchpad)
   bindcode [Mod4, K] (action' rubymine focus)
   bindcode [Mod4, Semicolon] (action' slack focus)
-  bindsym [Mod4Sym, Equal] (action' telegram ShowScratchpad)
+  bindsym [Mod4Sym, EqualSym] (action' telegram ShowScratchpad)
 
-  bindsym [Mod4Sym, LeftBracketSym] (action FocusLeft)
+  bindcode [Mod4, LeftBracket] (action FocusLeft)
   bindcode [Mod4, RightBracket] (action FocusRight)
   bindcode [Mod4, F] (action ToggleFullscreen)
 
