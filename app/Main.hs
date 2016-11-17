@@ -103,7 +103,7 @@ data MoveSubject = Window | Container
 data MoveLocation = Workspace WorkspaceNumber | Scratchpad
 data WorkspaceNumber = W1 | W2 | W3 | W4 | W5 | W6 | W7 | W8 | W9 | W0
 data Layout = Stacking | Tabbed | ToggleSplit
-data Action = ExecAction String | MoveAction MoveSubject MoveLocation | WorkspaceAction | FocusAction | LayoutAction Layout | ModeAction
+data Action = ExecAction String | MoveAction MoveSubject MoveLocation | WorkspaceAction WorkspaceNumber | FocusAction | LayoutAction Layout | ModeAction
 
 instance Show MoveSubject where
   show Window = ""
@@ -128,8 +128,9 @@ instance Show WorkspaceNumber where
 instance Show Action where
   show (ExecAction x) = "exec " ++ x
   show (MoveAction subject location) = "move " ++ show subject ++ " " ++ show location
+  show (WorkspaceAction workspaceNumber) = "workspace " ++ show workspaceNumber
 
-data I3 = Action Action
+data I3ConfigStatement = Action Action
         | ExecAlways String
         | Font [String] Int
         | BindSym [KeyName] Action
@@ -138,17 +139,17 @@ data I3 = Action Action
         | HideEdgeBorders
         | ForWindow [CommandCriteria] Action
 
-instance Show I3 where
+instance Show I3ConfigStatement where
   show (Action exec) = show exec
   show (ExecAlways x) = "exec_always " ++ x
-  show (Font names size) = "font " ++ (intercalate ":" names)
+  show (Font names size) = "font " ++ (intercalate ":" names) ++ " " ++ show size
   show (BindSym keys exec) = "bindsym " ++ (intercalate "+" (map show keys)) ++ " " ++ show exec
   show (BindCode codes exec) = "bindcode " ++ (intercalate "+" (map show codes)) ++ " " ++ show exec
   show (Bar command) = "bar {\n    status_command " ++ command ++ "\n    position top\n}"
   show HideEdgeBorders = "hide_edge_borders both"
   show (ForWindow criteria action) = "for_window [" ++ (intercalate " " (map show criteria)) ++ "] " ++ show action
 
-data Op next = Op I3 next deriving (Functor)
+data Op next = Op I3ConfigStatement next deriving (Functor)
 
 type Config = Free Op
 

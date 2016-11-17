@@ -29,6 +29,7 @@ executable i3config-exe
   default-language:    Haskell2010
   extensions:          DeriveFunctor
                      , FlexibleInstances
+  ghc-options:         -Wall -fno-warn-name-shadowing -fno-warn-missing-signatures
 
 test-suite i3config-test
   type:                exitcode-stdio-1.0
