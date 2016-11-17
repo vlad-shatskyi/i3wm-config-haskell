@@ -298,7 +298,7 @@ moveMode = ModeName "Move Mode"
 rubyMineMode = ModeName "RubyMine Mode"
 favoritesMode = ModeName "Favorites Mode"
 
-setXkb layout = "setxkbmap " ++ layout ++ " && xmodmap .xmodmap"
+setXkb layout = "setxkbmap " ++ layout ++ " && xmodmap .xmodmap && pkill -RTMIN+11 i3blocks"
 
 config :: [I3ConfigStatement]
 config = toList $ do
@@ -317,9 +317,9 @@ config = toList $ do
   bar "i3blocks"
   hide_edge_borders
 
-  bindsym [RaiseVolumeSym] (ExecAction "amixer -q sset Master 5%+ unmute")
-  bindsym [LowerVolumeSym] (ExecAction "amixer -q sset Master 5%- unmute")
-  bindsym [MuteSym] (ExecAction "amixer -q sset Master,0 toggle")
+  bindsym [RaiseVolumeSym] (ExecAction "amixer -q sset Master 5%+ unmute && pkill -RTMIN+10 i3blocks")
+  bindsym [LowerVolumeSym] (ExecAction "amixer -q sset Master 5%- unmute && pkill -RTMIN+10 i3blocks")
+  bindsym [MuteSym] (ExecAction "\"amixer -q sset Master,0 toggle && pkill -RTMIN+10 i3blocks\"")
 
   bindsym [BrightnessUpSym] (ExecAction "xbacklight -inc 10")
   bindsym [BrightnessDownSym] (ExecAction "xbacklight -dec 10")
