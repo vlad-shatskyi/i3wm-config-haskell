@@ -18,6 +18,11 @@ data KeyName = LowerVolume
              | BrightnessUp
              | BrightnessDown
              | Escape
+             | Mod4Sym
+             | Shift
+             | Space
+             | Equal
+             | Minus
 
 
 instance Show KeyName where
@@ -27,6 +32,11 @@ instance Show KeyName where
   show BrightnessUp = "XF86MonBrightnessUp"
   show BrightnessDown = "XF86MonBrightnessDown"
   show Escape = "Escape"
+  show Mod4Sym = "Mod4"
+  show Shift = "Shift"
+  show Space = "space"
+  show Equal = "equal"
+  show Minus = "minus"
 
 data Key = Q
          | W
@@ -105,11 +115,15 @@ data MoveSubject = Window | Container
 data MoveLocation = Workspace WorkspaceNumber | Scratchpad
 data WorkspaceNumber = W1 | W2 | W3 | W4 | W5 | W6 | W7 | W8 | W9 | W0
 data Layout = Stacking | Tabbed | ToggleSplit
+data FocusActionTarget = ModeToggleFocusActionTarget
+data FloatingActionTarget = ToggleFloatingActionTarget
 
 data Action = ExecAction String
             | MoveAction MoveSubject MoveLocation
             | WorkspaceAction WorkspaceNumber
-            | FocusAction
+            | FocusAction FocusActionTarget
+            | FloatingAction FloatingActionTarget
+            | ShowScratchpad
             | LayoutAction Layout
             | ModeAction ModeName
             | SemicolonActionGroup [Action]
@@ -120,7 +134,15 @@ instance Show Action where
   show (WorkspaceAction workspaceNumber) = "workspace " ++ show workspaceNumber
   show (ModeAction modeName) = "mode " ++ show modeName
   show (SemicolonActionGroup actions) = intercalate "; " (map show actions)
+  show (FocusAction target) = "focus " ++ show target
+  show (FloatingAction target) = "floating " ++ show target
+  show ShowScratchpad = "scratchpad show"
 
+instance Show FocusActionTarget where
+  show ModeToggleFocusActionTarget = "mode_toggle"
+
+instance Show FloatingActionTarget where
+  show ToggleFloatingActionTarget = "toggle"
 
 instance Show MoveSubject where
   show Window = ""
@@ -228,6 +250,12 @@ config = toList $ do
   for_window rubymine (MoveAction Container (Workspace W2))
   for_window slack (MoveAction Container (Workspace W4))
   for_window telegram (MoveAction Window Scratchpad)
+
+  bindsym [Mod4Sym, Space] (FocusAction ModeToggleFocusActionTarget)
+  bindsym [Mod4Sym, Shift, Space] (FloatingAction ToggleFloatingActionTarget)
+
+  bindsym [Mod4Sym, Minus] ShowScratchpad
+  bindsym [Mod4Sym, Shift, Minus] (MoveAction Window Scratchpad)
 
   mode keyboardLayoutMode $ do
     bindcode [E] (SemicolonActionGroup [ExecAction (setXkb "us"), ModeAction defaultMode])
