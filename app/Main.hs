@@ -17,6 +17,7 @@ data KeyName = LowerVolume
              | Mute
              | BrightnessUp
              | BrightnessDown
+             | Escape
 
 
 instance Show KeyName where
@@ -25,6 +26,7 @@ instance Show KeyName where
   show Mute = "XF86AudioMute"
   show BrightnessUp = "XF86MonBrightnessUp"
   show BrightnessDown = "XF86MonBrightnessDown"
+  show Escape = "Escape"
 
 data Key = Q
          | W
@@ -103,7 +105,22 @@ data MoveSubject = Window | Container
 data MoveLocation = Workspace WorkspaceNumber | Scratchpad
 data WorkspaceNumber = W1 | W2 | W3 | W4 | W5 | W6 | W7 | W8 | W9 | W0
 data Layout = Stacking | Tabbed | ToggleSplit
-data Action = ExecAction String | MoveAction MoveSubject MoveLocation | WorkspaceAction WorkspaceNumber | FocusAction | LayoutAction Layout | ModeAction
+
+data Action = ExecAction String
+            | MoveAction MoveSubject MoveLocation
+            | WorkspaceAction WorkspaceNumber
+            | FocusAction
+            | LayoutAction Layout
+            | ModeAction ModeName
+            | SemicolonActionGroup [Action]
+
+instance Show Action where
+  show (ExecAction x) = "exec " ++ x
+  show (MoveAction subject location) = "move " ++ show subject ++ " " ++ show location
+  show (WorkspaceAction workspaceNumber) = "workspace " ++ show workspaceNumber
+  show (ModeAction modeName) = "mode " ++ show modeName
+  show (SemicolonActionGroup actions) = intercalate "; " (map show actions)
+
 
 instance Show MoveSubject where
   show Window = ""
@@ -125,15 +142,10 @@ instance Show WorkspaceNumber where
   show W9 = "9"
   show W0 = "0"
 
-instance Show Action where
-  show (ExecAction x) = "exec " ++ x
-  show (MoveAction subject location) = "move " ++ show subject ++ " " ++ show location
-  show (WorkspaceAction workspaceNumber) = "workspace " ++ show workspaceNumber
-
 data ModeName = ModeName String
 
 instance Show ModeName where
-  show (ModeName name) = "\"" ++ name ++ " Mode" ++ "\""
+  show (ModeName name) = "\"" ++ name ++ "\""
 
 data I3ConfigStatement = Action Action
         | ExecAlways String
@@ -174,7 +186,8 @@ bindcode = liftF'' . BindCode
 bar = liftF' . Bar
 hide_edge_borders = liftF' HideEdgeBorders
 for_window = liftF'' . ForWindow
-mode name config = liftF' (Mode name (toList config))
+mode name config = liftF' (Mode name modeStatements)
+  where modeStatements = toList ((bindsym [Escape] (ModeAction defaultMode)) >> config)
 
 chrome = [Instance "google-chrome-unstable"]
 rubymine = [Class "jetbrains-rubymine"]
@@ -182,7 +195,10 @@ slack = [Instance "slack"]
 telegram = [Title "Telegram"]
 terminal = [Instance "urxvt"]
 
+defaultMode = ModeName "default"
 keyboardLayoutMode = ModeName "Keyboard Layout"
+
+setXkb layout = "setxkbmap " ++ layout ++ " && xmodmap .xmodmap"
 
 config :: [I3ConfigStatement]
 config = toList $ do
@@ -214,9 +230,9 @@ config = toList $ do
   for_window telegram (MoveAction Window Scratchpad)
 
   mode keyboardLayoutMode $ do
-    bindcode [E] (ExecAction "setxkbmap us && xmodmap .xmodmap")
-    bindcode [R] (ExecAction "setxkbmap ru && xmodmap .xmodmap")
-    bindcode [U] (ExecAction "setxkbmap ua && xmodmap .xmodmap")
+    bindcode [E] (SemicolonActionGroup [ExecAction (setXkb "us"), ModeAction defaultMode])
+    bindcode [R] (SemicolonActionGroup [ExecAction (setXkb "ru"), ModeAction defaultMode])
+    bindcode [U] (SemicolonActionGroup [ExecAction (setXkb "ua"), ModeAction defaultMode])
 
 
 interpret :: [I3ConfigStatement] -> String
