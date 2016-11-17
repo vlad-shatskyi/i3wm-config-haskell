@@ -23,7 +23,7 @@ data KeyName = LowerVolume
              | Space
              | Equal
              | Minus
-
+             | LeftBracketSym
 
 instance Show KeyName where
   show LowerVolume = "XF86AudioLowerVolume"
@@ -37,8 +37,20 @@ instance Show KeyName where
   show Space = "space"
   show Equal = "equal"
   show Minus = "minus"
+  show LeftBracketSym = "bracketLeft"
 
-data Key = Q
+data Key = Tilde
+         | One
+         | Two
+         | Three
+         | Four
+         | Five
+         | Six
+         | Seven
+         | Eight
+         | Nine
+         | Zero
+         | Q
          | W
          | E
          | R
@@ -75,6 +87,17 @@ data Key = Q
          | Mod4
 
 instance Show Key where
+  show Tilde = "49"
+  show One = "10"
+  show Two = "11"
+  show Three = "12"
+  show Four = "13"
+  show Five = "14"
+  show Six = "15"
+  show Seven = "16"
+  show Eight = "17"
+  show Nine = "18"
+  show Zero = "19"
   show Q = "24"
   show W = "25"
   show E = "26"
@@ -127,6 +150,9 @@ data Action = ExecAction String
             | FocusUp
             | FocusDown
             | ToggleFullscreen
+            | Kill
+            | ReloadAction
+            | RestartAction
             | FloatingAction FloatingActionTarget
             | ShowScratchpad
             | LayoutAction Layout
@@ -140,6 +166,14 @@ instance Show Action where
   show (FocusAction target) = "focus " ++ show target
   show (FloatingAction target) = "floating " ++ show target
   show ShowScratchpad = "scratchpad show"
+  show FocusLeft = "focus left"
+  show FocusRight = "focus right"
+  show FocusUp = "focus up"
+  show FocusDown = "focus down"
+  show ToggleFullscreen = "fullscreeen toggle"
+  show Kill = "kill"
+  show ReloadAction = "reload"
+  show RestartAction = "restart"
 
 instance Show FocusActionTarget where
   show ModeToggleFocusActionTarget = "mode_toggle"
@@ -181,6 +215,7 @@ instance Show ActionList where
 data ActionsWithCriteria = ActionsWithCriteria [ActionCriteria] [Action]
 
 instance Show ActionsWithCriteria where
+  show (ActionsWithCriteria [] action) = intercalate ", " (map show action)
   show (ActionsWithCriteria criteria action) = "[" ++ (intercalate " " (map show criteria)) ++ "] " ++ (intercalate ", " (map show action))
 
 data I3ConfigStatement = I3Action ActionList
@@ -247,13 +282,20 @@ terminal = [Instance "urxvt"]
 
 defaultMode = ModeName "default"
 keyboardLayoutMode = ModeName "Keyboard Layout"
+i3ManagementMode = ModeName "i3 Management"
+resizeMode = ModeName "Resize Mode"
+moveMode = ModeName "Move Mode"
+rubyMineMode = ModeName "RubyMine Mode"
+favoritesMode = ModeName "Favorites Mode"
 
 setXkb layout = "setxkbmap " ++ layout ++ " && xmodmap .xmodmap"
 
 config :: [I3ConfigStatement]
 config = toList $ do
+  exec_always "xinput set-prop 12 278 1" -- Enable Tapping.
   exec_always "xinput set-prop 12 280 0" -- Disable Tapping Drag.
   exec_always "xinput set-prop 12 286 0.85" -- Increase Accel Speed.
+  exec_always "xinput set-prop 12 288 1" -- Enable natural scroll.
   exec_always "xmodmap ~/.xmodmap"
 
   exec "google-chrome-unstable"
@@ -273,6 +315,10 @@ config = toList $ do
   bindsym [BrightnessDown] (action (ExecAction "xbacklight -dec 10"))
 
   bindcode [Mod4, Return] (action (ExecAction "i3-sensible-terminal"))
+  bindcode [Mod4, W] (action Kill)
+  bindcode [Mod4, Slash] (action (ExecAction "rofi -show drun"))
+  bindcode [Mod4, I] (action (ModeAction keyboardLayoutMode))
+  bindcode [Mod4, Tilde] (action (ModeAction i3ManagementMode))
 
   for_window chrome (MoveAction Container (Workspace W1))
   for_window rubymine (MoveAction Container (Workspace W2))
@@ -293,11 +339,28 @@ config = toList $ do
 
   bindsym [Mod4Sym, LeftBracketSym] (action FocusLeft)
   bindcode [Mod4, RightBracket] (action FocusRight)
+  bindcode [Mod4, F] (action ToggleFullscreen)
+
+  bindcode [Mod4, One] (action (WorkspaceAction W1))
+  bindcode [Mod4, Two] (action (WorkspaceAction W2))
+  bindcode [Mod4, Three] (action (WorkspaceAction W3))
+  bindcode [Mod4, Four] (action (WorkspaceAction W4))
+  bindcode [Mod4, Five] (action (WorkspaceAction W5))
+  bindcode [Mod4, Six] (action (WorkspaceAction W6))
+  bindcode [Mod4, Seven] (action (WorkspaceAction W7))
+  bindcode [Mod4, Eight] (action (WorkspaceAction W8))
+  bindcode [Mod4, Nine] (action (WorkspaceAction W9))
+  bindcode [Mod4, Zero] (action (WorkspaceAction W0))
 
   mode keyboardLayoutMode $ do
     bindcode [E] (actionList [ExecAction (setXkb "us"), ModeAction defaultMode])
     bindcode [R] (actionList [ExecAction (setXkb "ru"), ModeAction defaultMode])
     bindcode [U] (actionList [ExecAction (setXkb "ua"), ModeAction defaultMode])
+
+  mode i3ManagementMode $ do
+    bindcode [C] (actionList [ReloadAction, ModeAction defaultMode])
+    bindcode [R] (actionList [RestartAction, ModeAction defaultMode])
+    bindcode [W] (actionList [ExecAction "rofi -show window", ModeAction defaultMode])
 
 
 interpret :: [I3ConfigStatement] -> String
