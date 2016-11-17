@@ -253,30 +253,36 @@ liftF' x = liftF $ Op x ()
 
 liftF'' = (liftF' .)
 
+class ActionListConvertible x where
+  toActionList :: x -> ActionList
+
+instance ActionListConvertible Action where
+  toActionList x = toActionList [x]
+
+instance ActionListConvertible [Action] where
+  toActionList xs = ActionList [ActionsWithCriteria [] xs]
+
+instance ActionListConvertible ActionList where
+  toActionList = id
+
 actionList' :: [ActionCriteria] -> [Action] -> ActionList
 actionList' cs xs = ActionList [ActionsWithCriteria cs xs]
-
-actionList :: [Action] -> ActionList
-actionList xs = actionList' [] xs
 
 action' :: [ActionCriteria] -> Action -> ActionList
 action' cs x = actionList' cs [x]
 
-action :: Action -> ActionList
-action x = actionList' [] [x]
-
 focus = FocusAction BasedOnCriteriaFocusActionTarget
 
-exec x = liftF' (I3Action (action (ExecAction x)))
+exec x = liftF' (I3Action (toActionList (ExecAction x)))
 exec_always = liftF' . ExecAlways
 font = liftF'' . Font
-bindsym = liftF'' . BindSym
-bindcode = liftF'' . BindCode
+bindsym k a= liftF' (BindSym k (toActionList a))
+bindcode k a = liftF' (BindCode k (toActionList a))
 bar = liftF' . Bar
 hide_edge_borders = liftF' HideEdgeBorders
 for_window criteria action = liftF' (ForWindow (ActionsWithCriteria criteria [action]))
 mode name config = liftF' (Mode name modeStatements)
-  where modeStatements = toList ((bindsym [EscapeSym] (action (ModeAction defaultMode))) >> config)
+  where modeStatements = toList ((bindsym [EscapeSym] (ModeAction defaultMode)) >> config)
 
 chrome = [Instance "google-chrome-unstable"]
 rubymine = [Class "jetbrains-rubymine"]
@@ -311,29 +317,29 @@ config = toList $ do
   bar "i3blocks"
   hide_edge_borders
 
-  bindsym [RaiseVolumeSym] (action (ExecAction "amixer -q sset Master 5%+ unmute"))
-  bindsym [LowerVolumeSym] (action (ExecAction "amixer -q sset Master 5%- unmute"))
-  bindsym [MuteSym] (action (ExecAction "amixer -q sset Master,0 toggle"))
+  bindsym [RaiseVolumeSym] (ExecAction "amixer -q sset Master 5%+ unmute")
+  bindsym [LowerVolumeSym] (ExecAction "amixer -q sset Master 5%- unmute")
+  bindsym [MuteSym] (ExecAction "amixer -q sset Master,0 toggle")
 
-  bindsym [BrightnessUpSym] (action (ExecAction "xbacklight -inc 10"))
-  bindsym [BrightnessDownSym] (action (ExecAction "xbacklight -dec 10"))
+  bindsym [BrightnessUpSym] (ExecAction "xbacklight -inc 10")
+  bindsym [BrightnessDownSym] (ExecAction "xbacklight -dec 10")
 
-  bindcode [Mod4, Return] (action (ExecAction "i3-sensible-terminal"))
-  bindcode [Mod4, W] (action Kill)
-  bindcode [Mod4, Slash] (action (ExecAction "rofi -show drun"))
-  bindcode [Mod4, I] (action (ModeAction keyboardLayoutMode))
-  bindcode [Mod4, Tilde] (action (ModeAction i3ManagementMode))
+  bindcode [Mod4, Return] (ExecAction "i3-sensible-terminal")
+  bindcode [Mod4, W] Kill
+  bindcode [Mod4, Slash] (ExecAction "rofi -show drun")
+  bindcode [Mod4, I] (ModeAction keyboardLayoutMode)
+  bindcode [Mod4, Tilde] (ModeAction i3ManagementMode)
 
   for_window chrome (MoveAction Container (Workspace W1))
   for_window rubymine (MoveAction Container (Workspace W2))
   for_window slack (MoveAction Container (Workspace W4))
   for_window telegram (MoveAction Window Scratchpad)
 
-  bindsym [Mod4Sym, SpaceSym] (action (FocusAction ModeToggleFocusActionTarget))
-  bindsym [Mod4Sym, ShiftSym, SpaceSym] (action (FloatingAction ToggleFloatingActionTarget))
+  bindsym [Mod4Sym, SpaceSym] (FocusAction ModeToggleFocusActionTarget)
+  bindsym [Mod4Sym, ShiftSym, SpaceSym] (FloatingAction ToggleFloatingActionTarget)
 
-  bindcode [Mod4, Minus] (action ShowScratchpad)
-  bindcode [Mod4, Shift, Minus] (action (MoveAction Window Scratchpad))
+  bindcode [Mod4, Minus] ShowScratchpad
+  bindcode [Mod4, Shift, Minus] (MoveAction Window Scratchpad)
 
   bindcode [Mod4, J] (action' chrome focus)
   bindcode [Mod4, N] (action' terminal ShowScratchpad)
@@ -341,30 +347,30 @@ config = toList $ do
   bindcode [Mod4, Semicolon] (action' slack focus)
   bindsym [Mod4Sym, EqualSym] (action' telegram ShowScratchpad)
 
-  bindcode [Mod4, LeftBracket] (action FocusLeft)
-  bindcode [Mod4, RightBracket] (action FocusRight)
-  bindcode [Mod4, F] (action ToggleFullscreen)
+  bindcode [Mod4, LeftBracket] FocusLeft
+  bindcode [Mod4, RightBracket] FocusRight
+  bindcode [Mod4, F] ToggleFullscreen
 
-  bindcode [Mod4, One] (action (WorkspaceAction W1))
-  bindcode [Mod4, Two] (action (WorkspaceAction W2))
-  bindcode [Mod4, Three] (action (WorkspaceAction W3))
-  bindcode [Mod4, Four] (action (WorkspaceAction W4))
-  bindcode [Mod4, Five] (action (WorkspaceAction W5))
-  bindcode [Mod4, Six] (action (WorkspaceAction W6))
-  bindcode [Mod4, Seven] (action (WorkspaceAction W7))
-  bindcode [Mod4, Eight] (action (WorkspaceAction W8))
-  bindcode [Mod4, Nine] (action (WorkspaceAction W9))
-  bindcode [Mod4, Zero] (action (WorkspaceAction W0))
+  bindcode [Mod4, One] (WorkspaceAction W1)
+  bindcode [Mod4, Two] (WorkspaceAction W2)
+  bindcode [Mod4, Three] (WorkspaceAction W3)
+  bindcode [Mod4, Four] (WorkspaceAction W4)
+  bindcode [Mod4, Five] (WorkspaceAction W5)
+  bindcode [Mod4, Six] (WorkspaceAction W6)
+  bindcode [Mod4, Seven] (WorkspaceAction W7)
+  bindcode [Mod4, Eight] (WorkspaceAction W8)
+  bindcode [Mod4, Nine] (WorkspaceAction W9)
+  bindcode [Mod4, Zero] (WorkspaceAction W0)
 
   mode keyboardLayoutMode $ do
-    bindcode [E] (actionList [ExecAction (setXkb "us"), ModeAction defaultMode])
-    bindcode [R] (actionList [ExecAction (setXkb "ru"), ModeAction defaultMode])
-    bindcode [U] (actionList [ExecAction (setXkb "ua"), ModeAction defaultMode])
+    bindcode [E] [ExecAction (setXkb "us"), ModeAction defaultMode]
+    bindcode [R] [ExecAction (setXkb "ru"), ModeAction defaultMode]
+    bindcode [U] [ExecAction (setXkb "ua"), ModeAction defaultMode]
 
   mode i3ManagementMode $ do
-    bindcode [C] (actionList [ReloadAction, ModeAction defaultMode])
-    bindcode [R] (actionList [RestartAction, ModeAction defaultMode])
-    bindcode [W] (actionList [ExecAction "rofi -show window", ModeAction defaultMode])
+    bindcode [C] [ReloadAction, ModeAction defaultMode]
+    bindcode [R] [RestartAction, ModeAction defaultMode]
+    bindcode [W] [ExecAction "rofi -show window", ModeAction defaultMode]
 
 
 interpret :: [I3ConfigStatement] -> String
