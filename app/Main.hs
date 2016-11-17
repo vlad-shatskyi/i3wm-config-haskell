@@ -214,10 +214,14 @@ config = do
 
   return ()
 
-interpret :: Config a -> String
-interpret = interpret' ""
-  where interpret' accumulator (Pure _) = accumulator
-        interpret' accumulator (Free (Op i3 next)) = interpret' (accumulator ++ show i3 ++ "\n") next
+interpret :: [I3ConfigStatement] -> String
+interpret = (intercalate "\n") . (map show)
+
+
+toList :: Config a -> [I3ConfigStatement]
+toList = reverse . toList' []
+  where toList' accumulator (Pure _) = accumulator
+        toList' accumulator (Free (Op i3 next)) = toList' (i3:accumulator) next
 
 main :: IO ()
-main = putStrLn $ interpret config
+main = putStrLn $ interpret (toList config)
