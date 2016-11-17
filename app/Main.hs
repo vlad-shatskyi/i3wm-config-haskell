@@ -174,7 +174,7 @@ instance Show Action where
   show FocusRight = "focus right"
   show FocusUp = "focus up"
   show FocusDown = "focus down"
-  show ToggleFullscreen = "fullscreeen toggle"
+  show ToggleFullscreen = "fullscreen toggle"
   show Kill = "kill"
   show ReloadAction = "reload"
   show RestartAction = "restart"
