@@ -153,29 +153,20 @@ data Op next = Op I3ConfigStatement next deriving (Functor)
 
 type Config = Free Op
 
-exec :: String -> Config ()
-exec x = liftF $ Op (Action (ExecAction x)) ()
 
-exec_always :: String -> Config ()
-exec_always x = liftF $ Op (ExecAlways x) ()
+liftF' :: I3ConfigStatement -> Config ()
+liftF' x = liftF $ Op x ()
 
-font :: [String] -> Int -> Config ()
-font names size = liftF $ Op (Font names size) ()
+liftF'' = (liftF' .)
 
-bindsym :: [KeyName] -> Action -> Config ()
-bindsym keys command = liftF $ Op (BindSym keys command) ()
-
-bindcode :: [Key] -> Action -> Config ()
-bindcode keys command = liftF $ Op (BindCode keys command) ()
-
-bar :: String -> Config ()
-bar command = liftF $ Op (Bar command) ()
-
-hide_edge_borders :: Config ()
-hide_edge_borders = liftF $ Op HideEdgeBorders ()
-
-for_window :: [CommandCriteria] -> Action -> Config ()
-for_window commandCriteria action = liftF $ Op (ForWindow commandCriteria action) ()
+exec x = liftF' (Action (ExecAction x))
+exec_always = liftF' . ExecAlways
+font = liftF'' . Font
+bindsym = liftF'' . BindSym
+bindcode = liftF'' . BindCode
+bar = liftF' . Bar
+hide_edge_borders = liftF' HideEdgeBorders
+for_window = liftF'' . ForWindow
 
 chrome = [Instance "google-chrome-unstable"]
 rubymine = [Class "jetbrains-rubymine"]
