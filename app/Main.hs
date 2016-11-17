@@ -3,11 +3,11 @@ module Main where
 import Control.Monad.Free
 import Data.List (intercalate)
 
-data CommandCriteria = Instance String
+data ActionCriteria = Instance String
                      | Class String
                      | Title String
 
-instance Show CommandCriteria where
+instance Show ActionCriteria where
   show (Instance name) = "instance=\"" ++ name ++ "\""
   show (Class name) = "class=\"" ++ name ++ "\""
   show (Title name) = "title=\"" ++ name ++ "\""
@@ -115,31 +115,35 @@ data MoveSubject = Window | Container
 data MoveLocation = Workspace WorkspaceNumber | Scratchpad
 data WorkspaceNumber = W1 | W2 | W3 | W4 | W5 | W6 | W7 | W8 | W9 | W0
 data Layout = Stacking | Tabbed | ToggleSplit
-data FocusActionTarget = ModeToggleFocusActionTarget
+data FocusActionTarget = ModeToggleFocusActionTarget | BasedOnCriteriaFocusActionTarget
 data FloatingActionTarget = ToggleFloatingActionTarget
 
 data Action = ExecAction String
             | MoveAction MoveSubject MoveLocation
             | WorkspaceAction WorkspaceNumber
             | FocusAction FocusActionTarget
+            | FocusLeft
+            | FocusRight
+            | FocusUp
+            | FocusDown
+            | ToggleFullscreen
             | FloatingAction FloatingActionTarget
             | ShowScratchpad
             | LayoutAction Layout
             | ModeAction ModeName
-            | SemicolonActionGroup [Action]
 
 instance Show Action where
   show (ExecAction x) = "exec " ++ x
   show (MoveAction subject location) = "move " ++ show subject ++ " " ++ show location
   show (WorkspaceAction workspaceNumber) = "workspace " ++ show workspaceNumber
   show (ModeAction modeName) = "mode " ++ show modeName
-  show (SemicolonActionGroup actions) = intercalate "; " (map show actions)
   show (FocusAction target) = "focus " ++ show target
   show (FloatingAction target) = "floating " ++ show target
   show ShowScratchpad = "scratchpad show"
 
 instance Show FocusActionTarget where
   show ModeToggleFocusActionTarget = "mode_toggle"
+  show BasedOnCriteriaFocusActionTarget = ""
 
 instance Show FloatingActionTarget where
   show ToggleFloatingActionTarget = "toggle"
@@ -169,25 +173,35 @@ data ModeName = ModeName String
 instance Show ModeName where
   show (ModeName name) = "\"" ++ name ++ "\""
 
-data I3ConfigStatement = Action Action
+data ActionList = ActionList [ActionsWithCriteria]
+
+instance Show ActionList where
+  show (ActionList xs) = intercalate "; " (map show xs)
+
+data ActionsWithCriteria = ActionsWithCriteria [ActionCriteria] [Action]
+
+instance Show ActionsWithCriteria where
+  show (ActionsWithCriteria criteria action) = "[" ++ (intercalate " " (map show criteria)) ++ "] " ++ (intercalate ", " (map show action))
+
+data I3ConfigStatement = I3Action ActionList
         | ExecAlways String
         | Font [String] Int
-        | BindSym [KeyName] Action
-        | BindCode [Key] Action
+        | BindSym [KeyName] ActionList
+        | BindCode [Key] ActionList
         | Bar String
         | HideEdgeBorders
-        | ForWindow [CommandCriteria] Action
+        | ForWindow ActionsWithCriteria
         | Mode ModeName [I3ConfigStatement]
 
 instance Show I3ConfigStatement where
-  show (Action exec) = show exec
+  show (I3Action exec) = show exec
   show (ExecAlways x) = "exec_always " ++ x
   show (Font names size) = "font " ++ (intercalate ":" names) ++ " " ++ show size
   show (BindSym keys exec) = "bindsym " ++ (intercalate "+" (map show keys)) ++ " " ++ show exec
   show (BindCode codes exec) = "bindcode " ++ (intercalate "+" (map show codes)) ++ " " ++ show exec
   show (Bar command) = "bar {\n    status_command " ++ command ++ "\n    position top\n}"
   show HideEdgeBorders = "hide_edge_borders both"
-  show (ForWindow criteria action) = "for_window [" ++ (intercalate " " (map show criteria)) ++ "] " ++ show action
+  show (ForWindow x) = "for_window " ++ show x
   show (Mode name statements) = "mode " ++ (show name) ++ " {\n" ++ interpret statements ++ "\n}\n"
 
 data Op next = Op I3ConfigStatement next deriving (Functor)
@@ -200,16 +214,30 @@ liftF' x = liftF $ Op x ()
 
 liftF'' = (liftF' .)
 
-exec x = liftF' (Action (ExecAction x))
+actionList' :: [ActionCriteria] -> [Action] -> ActionList
+actionList' cs xs = ActionList [ActionsWithCriteria cs xs]
+
+actionList :: [Action] -> ActionList
+actionList xs = actionList' [] xs
+
+action' :: [ActionCriteria] -> Action -> ActionList
+action' cs x = actionList' cs [x]
+
+action :: Action -> ActionList
+action x = actionList' [] [x]
+
+focus = FocusAction BasedOnCriteriaFocusActionTarget
+
+exec x = liftF' (I3Action (action (ExecAction x)))
 exec_always = liftF' . ExecAlways
 font = liftF'' . Font
 bindsym = liftF'' . BindSym
 bindcode = liftF'' . BindCode
 bar = liftF' . Bar
 hide_edge_borders = liftF' HideEdgeBorders
-for_window = liftF'' . ForWindow
+for_window criteria action = liftF' (ForWindow (ActionsWithCriteria criteria [action]))
 mode name config = liftF' (Mode name modeStatements)
-  where modeStatements = toList ((bindsym [Escape] (ModeAction defaultMode)) >> config)
+  where modeStatements = toList ((bindsym [Escape] (action (ModeAction defaultMode))) >> config)
 
 chrome = [Instance "google-chrome-unstable"]
 rubymine = [Class "jetbrains-rubymine"]
@@ -237,30 +265,39 @@ config = toList $ do
   bar "i3blocks"
   hide_edge_borders
 
-  bindsym [RaiseVolume] (ExecAction "amixer -q sset Master 5%+ unmute")
-  bindsym [LowerVolume] (ExecAction "amixer -q sset Master 5%- unmute")
-  bindsym [Mute] (ExecAction "amixer -q sset Master,0 toggle")
+  bindsym [RaiseVolume] (action (ExecAction "amixer -q sset Master 5%+ unmute"))
+  bindsym [LowerVolume] (action (ExecAction "amixer -q sset Master 5%- unmute"))
+  bindsym [Mute] (action (ExecAction "amixer -q sset Master,0 toggle"))
 
-  bindsym [BrightnessUp] (ExecAction "xbacklight -inc 10")
-  bindsym [BrightnessDown] (ExecAction "xbacklight -dec 10")
+  bindsym [BrightnessUp] (action (ExecAction "xbacklight -inc 10"))
+  bindsym [BrightnessDown] (action (ExecAction "xbacklight -dec 10"))
 
-  bindcode [Mod4, Return] (ExecAction "i3-sensible-terminal")
+  bindcode [Mod4, Return] (action (ExecAction "i3-sensible-terminal"))
 
   for_window chrome (MoveAction Container (Workspace W1))
   for_window rubymine (MoveAction Container (Workspace W2))
   for_window slack (MoveAction Container (Workspace W4))
   for_window telegram (MoveAction Window Scratchpad)
 
-  bindsym [Mod4Sym, Space] (FocusAction ModeToggleFocusActionTarget)
-  bindsym [Mod4Sym, Shift, Space] (FloatingAction ToggleFloatingActionTarget)
+  bindsym [Mod4Sym, Space] (action (FocusAction ModeToggleFocusActionTarget))
+  bindsym [Mod4Sym, Shift, Space] (action (FloatingAction ToggleFloatingActionTarget))
 
-  bindsym [Mod4Sym, Minus] ShowScratchpad
-  bindsym [Mod4Sym, Shift, Minus] (MoveAction Window Scratchpad)
+  bindsym [Mod4Sym, Minus] (action ShowScratchpad)
+  bindsym [Mod4Sym, Shift, Minus] (action (MoveAction Window Scratchpad))
+
+  bindcode [Mod4, J] (action' chrome focus)
+  bindcode [Mod4, N] (action' terminal ShowScratchpad)
+  bindcode [Mod4, K] (action' rubymine focus)
+  bindcode [Mod4, Semicolon] (action' slack focus)
+  bindsym [Mod4Sym, Equal] (action' telegram ShowScratchpad)
+
+  bindsym [Mod4Sym, LeftBracketSym] (action FocusLeft)
+  bindcode [Mod4, RightBracket] (action FocusRight)
 
   mode keyboardLayoutMode $ do
-    bindcode [E] (SemicolonActionGroup [ExecAction (setXkb "us"), ModeAction defaultMode])
-    bindcode [R] (SemicolonActionGroup [ExecAction (setXkb "ru"), ModeAction defaultMode])
-    bindcode [U] (SemicolonActionGroup [ExecAction (setXkb "ua"), ModeAction defaultMode])
+    bindcode [E] (actionList [ExecAction (setXkb "us"), ModeAction defaultMode])
+    bindcode [R] (actionList [ExecAction (setXkb "ru"), ModeAction defaultMode])
+    bindcode [U] (actionList [ExecAction (setXkb "ua"), ModeAction defaultMode])
 
 
 interpret :: [I3ConfigStatement] -> String
