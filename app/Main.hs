@@ -130,6 +130,11 @@ instance Show Action where
   show (MoveAction subject location) = "move " ++ show subject ++ " " ++ show location
   show (WorkspaceAction workspaceNumber) = "workspace " ++ show workspaceNumber
 
+data ModeName = ModeName String
+
+instance Show ModeName where
+  show (ModeName name) = "\"" ++ name ++ " Mode" ++ "\""
+
 data I3ConfigStatement = Action Action
         | ExecAlways String
         | Font [String] Int
@@ -138,6 +143,7 @@ data I3ConfigStatement = Action Action
         | Bar String
         | HideEdgeBorders
         | ForWindow [CommandCriteria] Action
+        | Mode ModeName [I3ConfigStatement]
 
 instance Show I3ConfigStatement where
   show (Action exec) = show exec
@@ -148,6 +154,7 @@ instance Show I3ConfigStatement where
   show (Bar command) = "bar {\n    status_command " ++ command ++ "\n    position top\n}"
   show HideEdgeBorders = "hide_edge_borders both"
   show (ForWindow criteria action) = "for_window [" ++ (intercalate " " (map show criteria)) ++ "] " ++ show action
+  show (Mode name statements) = "mode " ++ (show name) ++ " {\n" ++ interpret statements ++ "\n}\n"
 
 data Op next = Op I3ConfigStatement next deriving (Functor)
 
@@ -167,6 +174,7 @@ bindcode = liftF'' . BindCode
 bar = liftF' . Bar
 hide_edge_borders = liftF' HideEdgeBorders
 for_window = liftF'' . ForWindow
+mode name config = liftF' (Mode name (toList config))
 
 chrome = [Instance "google-chrome-unstable"]
 rubymine = [Class "jetbrains-rubymine"]
@@ -174,8 +182,10 @@ slack = [Instance "slack"]
 telegram = [Title "Telegram"]
 terminal = [Instance "urxvt"]
 
-config :: Config ()
-config = do
+keyboardLayoutMode = ModeName "Keyboard Layout"
+
+config :: [I3ConfigStatement]
+config = toList $ do
   exec_always "xinput set-prop 12 280 0" -- Disable Tapping Drag.
   exec_always "xinput set-prop 12 286 0.85" -- Increase Accel Speed.
   exec_always "xmodmap ~/.xmodmap"
@@ -203,11 +213,14 @@ config = do
   for_window slack (MoveAction Container (Workspace W4))
   for_window telegram (MoveAction Window Scratchpad)
 
-  return ()
+  mode keyboardLayoutMode $ do
+    bindcode [E] (ExecAction "setxkbmap us && xmodmap .xmodmap")
+    bindcode [R] (ExecAction "setxkbmap ru && xmodmap .xmodmap")
+    bindcode [U] (ExecAction "setxkbmap ua && xmodmap .xmodmap")
+
 
 interpret :: [I3ConfigStatement] -> String
 interpret = (intercalate "\n") . (map show)
-
 
 toList :: Config a -> [I3ConfigStatement]
 toList = reverse . toList' []
@@ -215,4 +228,4 @@ toList = reverse . toList' []
         toList' accumulator (Free (Op i3 next)) = toList' (i3:accumulator) next
 
 main :: IO ()
-main = putStrLn $ interpret (toList config)
+main = putStrLn $ interpret config
