@@ -144,15 +144,31 @@ data WorkspaceNumber = W1 | W2 | W3 | W4 | W5 | W6 | W7 | W8 | W9 | W0
 data Layout = Stacking | Tabbed | ToggleSplit
 data FocusActionTarget = ModeToggleFocusActionTarget | BasedOnCriteriaFocusActionTarget
 data FloatingActionTarget = ToggleFloatingActionTarget
+data GrowOrShrink = Grow | Shrink
+data WidthOrHeight = Width | Height
+
+instance Show GrowOrShrink where
+  show Grow = "grow"
+  show Shrink = "shrink"
+
+instance Show WidthOrHeight where
+  show Width = "width"
+  show Height = "height"
 
 data Action = ExecAction String
             | MoveAction MoveSubject MoveLocation
             | WorkspaceAction WorkspaceNumber
             | FocusAction FocusActionTarget
+            | MoveLeft
+            | MoveRight
+            | MoveUp
+            | MoveDown
+            | MoveCenter
             | FocusLeft
             | FocusRight
             | FocusUp
             | FocusDown
+            | ResizeAction GrowOrShrink WidthOrHeight Int
             | ToggleFullscreen
             | Kill
             | ReloadAction
@@ -174,6 +190,12 @@ instance Show Action where
   show FocusRight = "focus right"
   show FocusUp = "focus up"
   show FocusDown = "focus down"
+  show MoveLeft = "move left"
+  show MoveRight = "move right"
+  show MoveUp = "move up"
+  show MoveDown = "move down"
+  show MoveCenter = "move position center"
+  show (ResizeAction growOrShrink widthOrHeight amount) = "resize " ++ show growOrShrink ++ " " ++ show widthOrHeight ++ " " ++ show amount ++ " px or " ++ show amount ++ " ppt"
   show ToggleFullscreen = "fullscreen toggle"
   show Kill = "kill"
   show ReloadAction = "reload"
@@ -281,8 +303,9 @@ bindcode k a = liftF' (BindCode k (toActionList a))
 bar = liftF' . Bar
 hide_edge_borders = liftF' HideEdgeBorders
 for_window criteria action = liftF' (ForWindow (ActionsWithCriteria criteria [action]))
-mode name config = liftF' (Mode name modeStatements)
-  where modeStatements = toList ((bindsym [EscapeSym] (ModeAction defaultMode)) >> config)
+mode keys name config = bindcode keys (ModeAction modeName) >> liftF' (Mode modeName modeStatements)
+  where modeName = ModeName name
+        modeStatements = toList ((bindsym [EscapeSym] exitMode) >> config)
 
 chrome = [Instance "google-chrome-unstable"]
 rubymine = [Class "jetbrains-rubymine"]
@@ -290,13 +313,7 @@ slack = [Instance "slack"]
 telegram = [Title "Telegram"]
 terminal = [Instance "urxvt"]
 
-defaultMode = ModeName "default"
-keyboardLayoutMode = ModeName "Keyboard Layout"
-i3ManagementMode = ModeName "i3 Management"
-resizeMode = ModeName "Resize Mode"
-moveMode = ModeName "Move Mode"
-rubyMineMode = ModeName "RubyMine Mode"
-favoritesMode = ModeName "Favorites Mode"
+exitMode = ModeAction (ModeName "default")
 
 setXkb layout = "setxkbmap " ++ layout ++ " && xmodmap .xmodmap && pkill -RTMIN+11 i3blocks"
 
@@ -327,8 +344,6 @@ config = toList $ do
   bindcode [Mod4, Return] (ExecAction "i3-sensible-terminal")
   bindcode [Mod4, W] Kill
   bindcode [Mod4, Slash] (ExecAction "rofi -show drun")
-  bindcode [Mod4, I] (ModeAction keyboardLayoutMode)
-  bindcode [Mod4, Tilde] (ModeAction i3ManagementMode)
 
   for_window chrome (MoveAction Container (Workspace W1))
   for_window rubymine (MoveAction Container (Workspace W2))
@@ -362,15 +377,22 @@ config = toList $ do
   bindcode [Mod4, Nine] (WorkspaceAction W9)
   bindcode [Mod4, Zero] (WorkspaceAction W0)
 
-  mode keyboardLayoutMode $ do
-    bindcode [E] [ExecAction (setXkb "us"), ModeAction defaultMode]
-    bindcode [R] [ExecAction (setXkb "ru"), ModeAction defaultMode]
-    bindcode [U] [ExecAction (setXkb "ua"), ModeAction defaultMode]
+  mode [Mod4, I] "Keyboard Layout" $ do
+    bindcode [E] [ExecAction (setXkb "us"), exitMode]
+    bindcode [R] [ExecAction (setXkb "ru"), exitMode]
+    bindcode [U] [ExecAction (setXkb "ua"), exitMode]
 
-  mode i3ManagementMode $ do
-    bindcode [C] [ReloadAction, ModeAction defaultMode]
-    bindcode [R] [RestartAction, ModeAction defaultMode]
-    bindcode [W] [ExecAction "rofi -show window", ModeAction defaultMode]
+  mode [Mod4, Tilde] "i3 Management" $ do
+    bindcode [C] [ReloadAction, exitMode]
+    bindcode [R] [RestartAction, exitMode]
+    bindcode [W] [ExecAction "rofi -show window", exitMode]
+
+  mode [Mod4, M] "Move Mode" $ do
+    bindcode [H] MoveLeft
+    bindcode [L] MoveRight
+    bindcode [J] MoveDown
+    bindcode [K] MoveUp
+    bindcode [C] [MoveCenter, exitMode]
 
 
 interpret :: [I3ConfigStatement] -> String
