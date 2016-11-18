@@ -377,15 +377,21 @@ config = toList $ do
   bindcode [Mod4, Nine] (WorkspaceAction W9)
   bindcode [Mod4, Zero] (WorkspaceAction W0)
 
-  mode [Mod4, I] "Keyboard Layout" $ do
+  mode [Mod4, I] "Keyboard Layout Mode" $ do
     bindcode [E] [ExecAction (setXkb "us"), exitMode]
     bindcode [R] [ExecAction (setXkb "ru"), exitMode]
     bindcode [U] [ExecAction (setXkb "ua"), exitMode]
 
-  mode [Mod4, Tilde] "i3 Management" $ do
+  mode [Mod4, Tilde] "i3 Management Mode" $ do
     bindcode [C] [ReloadAction, exitMode]
     bindcode [R] [RestartAction, exitMode]
     bindcode [W] [ExecAction "rofi -show window", exitMode]
+
+  mode [Mod4, R] "Resize Mode" $ do
+    bindcode [H] (ResizeAction Grow Width 10)
+    bindcode [L] (ResizeAction Shrink Width 10)
+    bindcode [J] (ResizeAction Grow Height 10)
+    bindcode [K] (ResizeAction Shrink Height 10)
 
   mode [Mod4, M] "Move Mode" $ do
     bindcode [H] MoveLeft
