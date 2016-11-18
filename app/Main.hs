@@ -147,6 +147,11 @@ data FloatingActionTarget = ToggleFloatingActionTarget
 data GrowOrShrink = Grow | Shrink
 data WidthOrHeight = Width | Height
 
+instance Show Layout where
+  show Stacking = "stacking"
+  show Tabbed = "tabbed"
+  show ToggleSplit = "toggle split"
+
 instance Show GrowOrShrink where
   show Grow = "grow"
   show Shrink = "shrink"
@@ -179,7 +184,8 @@ data Action = ExecAction String
             | ModeAction ModeName
 
 instance Show Action where
-  show (ExecAction x) = "exec " ++ x
+  show (ExecAction x) = "exec \"" ++ x ++ "\""
+  show (LayoutAction x) = "layout " ++ show x
   show (MoveAction subject location) = "move " ++ show subject ++ " " ++ show location
   show (WorkspaceAction workspaceNumber) = "workspace " ++ show workspaceNumber
   show (ModeAction modeName) = "mode " ++ show modeName
@@ -336,7 +342,7 @@ config = toList $ do
 
   bindsym [RaiseVolumeSym] (ExecAction "amixer -q sset Master 5%+ unmute && pkill -RTMIN+10 i3blocks")
   bindsym [LowerVolumeSym] (ExecAction "amixer -q sset Master 5%- unmute && pkill -RTMIN+10 i3blocks")
-  bindsym [MuteSym] (ExecAction "\"amixer -q sset Master,0 toggle && pkill -RTMIN+10 i3blocks\"")
+  bindsym [MuteSym] (ExecAction "amixer -q sset Master,0 toggle && pkill -RTMIN+10 i3blocks")
 
   bindsym [BrightnessUpSym] (ExecAction "xbacklight -inc 10")
   bindsym [BrightnessDownSym] (ExecAction "xbacklight -dec 10")
@@ -387,6 +393,11 @@ config = toList $ do
     bindcode [R] [RestartAction, exitMode]
     bindcode [W] [ExecAction "rofi -show window", exitMode]
 
+    -- mode [L] "Layout Mode" $ do
+    --   bindcode [S] [LayoutAction Stacking, exitMode]
+    --   bindcode [T] [LayoutAction Tabbed, exitMode]
+    --   bindcode [E] [LayoutAction ToggleSplit, exitMode]
+
   mode [Mod4, R] "Resize Mode" $ do
     bindcode [H] (ResizeAction Grow Width 10)
     bindcode [L] (ResizeAction Shrink Width 10)
@@ -402,7 +413,7 @@ config = toList $ do
 
 
 interpret :: [I3ConfigStatement] -> String
-interpret = (intercalate "\n") . (map show)
+interpret xs = intercalate "\n" (map show xs)
 
 toList :: Config a -> [I3ConfigStatement]
 toList = reverse . toList' []
