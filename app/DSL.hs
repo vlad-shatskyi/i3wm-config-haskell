@@ -25,6 +25,7 @@ exec_always = liftF' . ExecAlways
 font = liftF'' . Font
 bindsym k a= liftF' (BindSym k (toActionList a))
 bindcode k a = liftF' (BindCode k (toActionList a))
+a --> b = bindcode a b
 bar = liftF' . Bar
 hide_edge_borders = liftF' HideEdgeBorders
 for_window criteria action = liftF' (ForWindow (ActionsWithCriteria criteria [action]))
