@@ -325,10 +325,10 @@ setXkb layout = "setxkbmap " ++ layout ++ " && xmodmap .xmodmap && pkill -RTMIN+
 
 config :: [I3ConfigStatement]
 config = toList $ do
-  exec_always "xinput set-prop 12 278 1" -- Enable Tapping.
-  exec_always "xinput set-prop 12 280 0" -- Disable Tapping Drag.
-  exec_always "xinput set-prop 12 286 0.85" -- Increase Accel Speed.
-  exec_always "xinput set-prop 12 288 1" -- Enable natural scroll.
+  exec_always "xinput set-prop 12 281 1" -- Enable Tapping.
+  exec_always "xinput set-prop 12 283 0" -- Disable Tapping Drag.
+  exec_always "xinput set-prop 12 289 0.85" -- Increase Accel Speed.
+  exec_always "xinput set-prop 12 291 1" -- Enable natural scroll.
   exec_always "xmodmap ~/.xmodmap"
 
   exec "google-chrome-unstable"
@@ -399,10 +399,10 @@ config = toList $ do
     --   bindcode [E] [LayoutAction ToggleSplit, exitMode]
 
   mode [Mod4, R] "Resize Mode" $ do
-    bindcode [H] (ResizeAction Grow Width 10)
-    bindcode [L] (ResizeAction Shrink Width 10)
-    bindcode [J] (ResizeAction Grow Height 10)
-    bindcode [K] (ResizeAction Shrink Height 10)
+    bindcode [W] (ResizeAction Grow Width 10)
+    bindcode [N] (ResizeAction Shrink Width 10)
+    bindcode [H] (ResizeAction Grow Height 10)
+    bindcode [L] (ResizeAction Shrink Height 10)
 
   mode [Mod4, M] "Move Mode" $ do
     bindcode [H] MoveLeft
@@ -410,7 +410,6 @@ config = toList $ do
     bindcode [J] MoveDown
     bindcode [K] MoveUp
     bindcode [C] [MoveCenter, exitMode]
-
 
 interpret :: [I3ConfigStatement] -> String
 interpret xs = intercalate "\n" (map show xs)
