@@ -7,10 +7,13 @@ data ActionCriteria = Instance String
                      | Class String
                      | Title String
 
-instance Show ActionCriteria where
-  show (Instance name) = "instance=\"" ++ name ++ "\""
-  show (Class name) = "class=\"" ++ name ++ "\""
-  show (Title name) = "title=\"" ++ name ++ "\""
+class I3Serializable a where
+  serialize :: a -> String
+
+instance I3Serializable ActionCriteria where
+  serialize (Instance name) = "instance=\"" ++ name ++ "\""
+  serialize (Class name) = "class=\"" ++ name ++ "\""
+  serialize (Title name) = "title=\"" ++ name ++ "\""
 
 data KeyName = LowerVolumeSym
              | RaiseVolumeSym
@@ -25,19 +28,19 @@ data KeyName = LowerVolumeSym
              | MinusSym
              | LeftBracketSym
 
-instance Show KeyName where
-  show LowerVolumeSym = "XF86AudioLowerVolume"
-  show RaiseVolumeSym = "XF86AudioRaiseVolume"
-  show MuteSym = "XF86AudioMute"
-  show BrightnessUpSym = "XF86MonBrightnessUp"
-  show BrightnessDownSym = "XF86MonBrightnessDown"
-  show EscapeSym = "Escape"
-  show Mod4Sym = "Mod4"
-  show ShiftSym = "Shift"
-  show SpaceSym = "space"
-  show EqualSym = "equal"
-  show MinusSym = "minus"
-  show LeftBracketSym = "bracketLeft"
+instance I3Serializable KeyName where
+  serialize LowerVolumeSym = "XF86AudioLowerVolume"
+  serialize RaiseVolumeSym = "XF86AudioRaiseVolume"
+  serialize MuteSym = "XF86AudioMute"
+  serialize BrightnessUpSym = "XF86MonBrightnessUp"
+  serialize BrightnessDownSym = "XF86MonBrightnessDown"
+  serialize EscapeSym = "Escape"
+  serialize Mod4Sym = "Mod4"
+  serialize ShiftSym = "Shift"
+  serialize SpaceSym = "space"
+  serialize EqualSym = "equal"
+  serialize MinusSym = "minus"
+  serialize LeftBracketSym = "bracketLeft"
 
 data Key = Tilde
          | One
@@ -88,55 +91,55 @@ data Key = Tilde
          | Mod4
          | Shift
 
-instance Show Key where
-  show Tilde = "49"
-  show Shift = "Shift"
-  show One = "10"
-  show Two = "11"
-  show Three = "12"
-  show Four = "13"
-  show Five = "14"
-  show Six = "15"
-  show Seven = "16"
-  show Eight = "17"
-  show Nine = "18"
-  show Zero = "19"
-  show Minus = "20"
-  show Q = "24"
-  show W = "25"
-  show E = "26"
-  show R = "27"
-  show T = "28"
-  show Y = "29"
-  show U = "30"
-  show I = "31"
-  show O = "32"
-  show P = "33"
-  show LeftBracket = "34"
-  show RightBracket = "35"
-  show Return = "36"
-  show A = "38"
-  show S = "39"
-  show D = "40"
-  show F = "41"
-  show G = "42"
-  show H = "43"
-  show J = "44"
-  show K = "45"
-  show L = "46"
-  show Semicolon = "47"
-  show Quote = "48"
-  show Z = "52"
-  show X = "53"
-  show C = "54"
-  show V = "55"
-  show B = "56"
-  show N = "57"
-  show M = "58"
-  show Comma = "59"
-  show Period = "60"
-  show Slash = "61"
-  show Mod4 = "Mod4"
+instance I3Serializable Key where
+  serialize Tilde = "49"
+  serialize Shift = "Shift"
+  serialize One = "10"
+  serialize Two = "11"
+  serialize Three = "12"
+  serialize Four = "13"
+  serialize Five = "14"
+  serialize Six = "15"
+  serialize Seven = "16"
+  serialize Eight = "17"
+  serialize Nine = "18"
+  serialize Zero = "19"
+  serialize Minus = "20"
+  serialize Q = "24"
+  serialize W = "25"
+  serialize E = "26"
+  serialize R = "27"
+  serialize T = "28"
+  serialize Y = "29"
+  serialize U = "30"
+  serialize I = "31"
+  serialize O = "32"
+  serialize P = "33"
+  serialize LeftBracket = "34"
+  serialize RightBracket = "35"
+  serialize Return = "36"
+  serialize A = "38"
+  serialize S = "39"
+  serialize D = "40"
+  serialize F = "41"
+  serialize G = "42"
+  serialize H = "43"
+  serialize J = "44"
+  serialize K = "45"
+  serialize L = "46"
+  serialize Semicolon = "47"
+  serialize Quote = "48"
+  serialize Z = "52"
+  serialize X = "53"
+  serialize C = "54"
+  serialize V = "55"
+  serialize B = "56"
+  serialize N = "57"
+  serialize M = "58"
+  serialize Comma = "59"
+  serialize Period = "60"
+  serialize Slash = "61"
+  serialize Mod4 = "Mod4"
 
 data MoveSubject = Window | Container
 data MoveLocation = Workspace WorkspaceNumber | Scratchpad
@@ -147,18 +150,18 @@ data FloatingActionTarget = ToggleFloatingActionTarget
 data GrowOrShrink = Grow | Shrink
 data WidthOrHeight = Width | Height
 
-instance Show Layout where
-  show Stacking = "stacking"
-  show Tabbed = "tabbed"
-  show ToggleSplit = "toggle split"
+instance I3Serializable Layout where
+  serialize Stacking = "stacking"
+  serialize Tabbed = "tabbed"
+  serialize ToggleSplit = "toggle split"
 
-instance Show GrowOrShrink where
-  show Grow = "grow"
-  show Shrink = "shrink"
+instance I3Serializable GrowOrShrink where
+  serialize Grow = "grow"
+  serialize Shrink = "shrink"
 
-instance Show WidthOrHeight where
-  show Width = "width"
-  show Height = "height"
+instance I3Serializable WidthOrHeight where
+  serialize Width = "width"
+  serialize Height = "height"
 
 data Action = ExecAction String
             | MoveAction MoveSubject MoveLocation
@@ -183,72 +186,72 @@ data Action = ExecAction String
             | LayoutAction Layout
             | ModeAction ModeName
 
-instance Show Action where
-  show (ExecAction x) = "exec \"" ++ x ++ "\""
-  show (LayoutAction x) = "layout " ++ show x
-  show (MoveAction subject location) = "move " ++ show subject ++ " " ++ show location
-  show (WorkspaceAction workspaceNumber) = "workspace " ++ show workspaceNumber
-  show (ModeAction modeName) = "mode " ++ show modeName
-  show (FocusAction target) = "focus " ++ show target
-  show (FloatingAction target) = "floating " ++ show target
-  show ShowScratchpad = "scratchpad show"
-  show FocusLeft = "focus left"
-  show FocusRight = "focus right"
-  show FocusUp = "focus up"
-  show FocusDown = "focus down"
-  show MoveLeft = "move left"
-  show MoveRight = "move right"
-  show MoveUp = "move up"
-  show MoveDown = "move down"
-  show MoveCenter = "move position center"
-  show (ResizeAction growOrShrink widthOrHeight amount) = "resize " ++ show growOrShrink ++ " " ++ show widthOrHeight ++ " " ++ show amount ++ " px or " ++ show amount ++ " ppt"
-  show ToggleFullscreen = "fullscreen toggle"
-  show Kill = "kill"
-  show ReloadAction = "reload"
-  show RestartAction = "restart"
+instance I3Serializable Action where
+  serialize (ExecAction x) = "exec \"" ++ x ++ "\""
+  serialize (LayoutAction x) = "layout " ++ serialize x
+  serialize (MoveAction subject location) = "move " ++ serialize subject ++ " " ++ serialize location
+  serialize (WorkspaceAction workspaceNumber) = "workspace " ++ serialize workspaceNumber
+  serialize (ModeAction modeName) = "mode " ++ serialize modeName
+  serialize (FocusAction target) = "focus " ++ serialize target
+  serialize (FloatingAction target) = "floating " ++ serialize target
+  serialize ShowScratchpad = "scratchpad show"
+  serialize FocusLeft = "focus left"
+  serialize FocusRight = "focus right"
+  serialize FocusUp = "focus up"
+  serialize FocusDown = "focus down"
+  serialize MoveLeft = "move left"
+  serialize MoveRight = "move right"
+  serialize MoveUp = "move up"
+  serialize MoveDown = "move down"
+  serialize MoveCenter = "move position center"
+  serialize (ResizeAction growOrShrink widthOrHeight amount) = "resize " ++ serialize growOrShrink ++ " " ++ serialize widthOrHeight ++ " " ++ show amount ++ " px or " ++ show amount ++ " ppt"
+  serialize ToggleFullscreen = "fullscreen toggle"
+  serialize Kill = "kill"
+  serialize ReloadAction = "reload"
+  serialize RestartAction = "restart"
 
-instance Show FocusActionTarget where
-  show ModeToggleFocusActionTarget = "mode_toggle"
-  show BasedOnCriteriaFocusActionTarget = ""
+instance I3Serializable FocusActionTarget where
+  serialize ModeToggleFocusActionTarget = "mode_toggle"
+  serialize BasedOnCriteriaFocusActionTarget = ""
 
-instance Show FloatingActionTarget where
-  show ToggleFloatingActionTarget = "toggle"
+instance I3Serializable FloatingActionTarget where
+  serialize ToggleFloatingActionTarget = "toggle"
 
-instance Show MoveSubject where
-  show Window = ""
-  show Container = "container"
+instance I3Serializable MoveSubject where
+  serialize Window = ""
+  serialize Container = "container"
 
-instance Show MoveLocation where
-  show (Workspace workspaceNumber) = "to workspace " ++ show workspaceNumber
-  show Scratchpad = "scratchpad"
+instance I3Serializable MoveLocation where
+  serialize (Workspace workspaceNumber) = "to workspace " ++ serialize workspaceNumber
+  serialize Scratchpad = "scratchpad"
 
-instance Show WorkspaceNumber where
-  show W1 = "1"
-  show W2 = "2"
-  show W3 = "3"
-  show W4 = "4"
-  show W5 = "5"
-  show W6 = "6"
-  show W7 = "7"
-  show W8 = "8"
-  show W9 = "9"
-  show W0 = "0"
+instance I3Serializable WorkspaceNumber where
+  serialize W1 = "1"
+  serialize W2 = "2"
+  serialize W3 = "3"
+  serialize W4 = "4"
+  serialize W5 = "5"
+  serialize W6 = "6"
+  serialize W7 = "7"
+  serialize W8 = "8"
+  serialize W9 = "9"
+  serialize W0 = "0"
 
 data ModeName = ModeName String
 
-instance Show ModeName where
-  show (ModeName name) = "\"" ++ name ++ "\""
+instance I3Serializable ModeName where
+  serialize (ModeName name) = "\"" ++ name ++ "\""
 
 data ActionList = ActionList [ActionsWithCriteria]
 
-instance Show ActionList where
-  show (ActionList xs) = intercalate "; " (map show xs)
+instance I3Serializable ActionList where
+  serialize (ActionList xs) = intercalate "; " (map serialize xs)
 
 data ActionsWithCriteria = ActionsWithCriteria [ActionCriteria] [Action]
 
-instance Show ActionsWithCriteria where
-  show (ActionsWithCriteria [] action) = intercalate ", " (map show action)
-  show (ActionsWithCriteria criteria action) = "[" ++ (intercalate " " (map show criteria)) ++ "] " ++ (intercalate ", " (map show action))
+instance I3Serializable ActionsWithCriteria where
+  serialize (ActionsWithCriteria [] action) = intercalate ", " (map serialize action)
+  serialize (ActionsWithCriteria criteria action) = "[" ++ (intercalate " " (map serialize criteria)) ++ "] " ++ (intercalate ", " (map serialize action))
 
 data I3ConfigStatement = I3Action ActionList
         | ExecAlways String
@@ -260,16 +263,16 @@ data I3ConfigStatement = I3Action ActionList
         | ForWindow ActionsWithCriteria
         | Mode ModeName [I3ConfigStatement]
 
-instance Show I3ConfigStatement where
-  show (I3Action exec) = show exec
-  show (ExecAlways x) = "exec_always " ++ x
-  show (Font names size) = "font " ++ (intercalate ":" names) ++ " " ++ show size
-  show (BindSym keys exec) = "bindsym " ++ (intercalate "+" (map show keys)) ++ " " ++ show exec
-  show (BindCode codes exec) = "bindcode " ++ (intercalate "+" (map show codes)) ++ " " ++ show exec
-  show (Bar command) = "bar {\n    status_command " ++ command ++ "\n    position top\n}"
-  show HideEdgeBorders = "hide_edge_borders both"
-  show (ForWindow x) = "for_window " ++ show x
-  show (Mode name statements) = "mode " ++ (show name) ++ " {\n" ++ interpret statements ++ "\n}\n"
+instance I3Serializable I3ConfigStatement where
+  serialize (I3Action exec) = serialize exec
+  serialize (ExecAlways x) = "exec_always " ++ x
+  serialize (Font names size) = "font " ++ (intercalate ":" names) ++ " " ++ show size
+  serialize (BindSym keys exec) = "bindsym " ++ (intercalate "+" (map serialize keys)) ++ " " ++ serialize exec
+  serialize (BindCode codes exec) = "bindcode " ++ (intercalate "+" (map serialize codes)) ++ " " ++ serialize exec
+  serialize (Bar command) = "bar {\n    status_command " ++ command ++ "\n    position top\n}"
+  serialize HideEdgeBorders = "hide_edge_borders both"
+  serialize (ForWindow x) = "for_window " ++ serialize x
+  serialize (Mode name statements) = "mode " ++ (serialize name) ++ " {\n" ++ interpret statements ++ "\n}\n"
 
 data Op next = Op I3ConfigStatement next deriving (Functor)
 
@@ -412,7 +415,7 @@ config = toList $ do
     bindcode [C] [MoveCenter, exitMode]
 
 interpret :: [I3ConfigStatement] -> String
-interpret xs = intercalate "\n" (map show xs)
+interpret xs = intercalate "\n" (map serialize xs)
 
 toList :: Config a -> [I3ConfigStatement]
 toList = reverse . toList' []
