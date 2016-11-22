@@ -272,7 +272,17 @@ instance I3Serializable I3ConfigStatement where
   serialize (Bar command) = "bar {\n    status_command " ++ command ++ "\n    position top\n}"
   serialize HideEdgeBorders = "hide_edge_borders both"
   serialize (ForWindow x) = "for_window " ++ serialize x
+  serialize (Mode (ModeName "default") statements) = interpret statements
   serialize (Mode name statements) = "mode " ++ (serialize name) ++ " {\n" ++ interpret statements ++ "\n}\n"
+
+-- TODO: refactor.
+flatten :: [I3ConfigStatement] -> [I3ConfigStatement]
+flatten ss = modes
+  where modes = foldl f [] ss
+        f acc s@(Mode name css) = ((Mode name (filter (not . isMode) css)):acc) ++ flatten css
+        f acc s = acc
+        isMode (Mode _ _) = True
+        isMode _ = False
 
 data Op next = Op I3ConfigStatement next deriving (Functor)
 
@@ -396,10 +406,10 @@ config = toList $ do
     bindcode [R] [RestartAction, exitMode]
     bindcode [W] [ExecAction "rofi -show window", exitMode]
 
-    -- mode [L] "Layout Mode" $ do
-    --   bindcode [S] [LayoutAction Stacking, exitMode]
-    --   bindcode [T] [LayoutAction Tabbed, exitMode]
-    --   bindcode [E] [LayoutAction ToggleSplit, exitMode]
+    mode [L] "Layout Mode" $ do
+      bindcode [S] [LayoutAction Stacking, exitMode]
+      bindcode [T] [LayoutAction Tabbed, exitMode]
+      bindcode [E] [LayoutAction ToggleSplit, exitMode]
 
   mode [Mod4, R] "Resize Mode" $ do
     bindcode [W] (ResizeAction Grow Width 10)
@@ -423,4 +433,4 @@ toList = reverse . toList' []
         toList' accumulator (Free (Op i3 next)) = toList' (i3:accumulator) next
 
 main :: IO ()
-main = putStrLn $ interpret config
+main = putStrLn $ interpret $ flatten [Mode (ModeName "default") config]
