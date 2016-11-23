@@ -36,9 +36,9 @@ config = toList $ do
   bindsym [BrightnessUpSym] (ExecAction "xbacklight -inc 10")
   bindsym [BrightnessDownSym] (ExecAction "xbacklight -dec 10")
 
-  Super Return --> (ExecAction "i3-sensible-terminal")
+  Super Return --> ExecAction "i3-sensible-terminal"
   Super W --> Kill
-  Super Slash --> (ExecAction "rofi -show drun")
+  Super Slash --> ExecAction "rofi -show drun"
 
   for_window chrome (MoveAction Container (Workspace W1))
   for_window rubymine (MoveAction Container (Workspace W2))
@@ -49,12 +49,12 @@ config = toList $ do
   bindsym [Mod4Sym, ShiftSym, SpaceSym] (FloatingAction ToggleFloatingActionTarget)
 
   Super Minus --> ShowScratchpad
-  SuperShift Minus --> (MoveAction Window Scratchpad)
+  SuperShift Minus --> MoveAction Window Scratchpad
 
-  Super J --> (action' chrome focus)
-  Super N --> (action' terminal ShowScratchpad)
-  Super K --> (action' rubymine focus)
-  Super Semicolon --> (action' slack focus)
+  Super J --> action' chrome focus
+  Super N --> action' terminal ShowScratchpad
+  Super K --> action' rubymine focus
+  Super Semicolon --> action' slack focus
   bindsym [Mod4Sym, EqualSym] (action' telegram ShowScratchpad)
 
   Super LeftBracket --> FocusLeft
@@ -88,10 +88,10 @@ config = toList $ do
       E --> [LayoutAction ToggleSplit, exitMode]
 
   mode (Super R) "Resize Mode" $ do
-    W --> (ResizeAction Grow Width 10)
-    N --> (ResizeAction Shrink Width 10)
-    H --> (ResizeAction Grow Height 10)
-    L --> (ResizeAction Shrink Height 10)
+    W --> ResizeAction Grow Width 10
+    N --> ResizeAction Shrink Width 10
+    H --> ResizeAction Grow Height 10
+    L --> ResizeAction Shrink Height 10
 
   mode (Super M) "Move Mode" $ do
     H --> MoveLeft
