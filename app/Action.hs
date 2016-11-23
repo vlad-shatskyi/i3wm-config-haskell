@@ -35,7 +35,7 @@ data Action = ExecAction String
             | ShowScratchpad
             | LayoutAction Layout
             | ModeAction ModeName
-            | ToggleSticky
+            | EnableSticky
 
 instance Serializable Action where
   serialize (ExecAction x) = "exec \"" ++ x ++ "\""
@@ -60,7 +60,7 @@ instance Serializable Action where
   serialize Kill = "kill"
   serialize ReloadAction = "reload"
   serialize RestartAction = "restart"
-  serialize ToggleSticky = "sticky toggle"
+  serialize EnableSticky = "sticky enable"
 
 data ModeName = ModeName String
 
@@ -110,11 +110,13 @@ instance Serializable WorkspaceNumber where
 data ActionCriteria = Instance String
                      | Class String
                      | Title String
+                     | IsFloating
 
 instance Serializable ActionCriteria where
   serialize (Instance name) = "instance=\"" ++ name ++ "\""
   serialize (Class name) = "class=\"" ++ name ++ "\""
   serialize (Title name) = "title=\"" ++ name ++ "\""
+  serialize IsFloating = "floating"
 
 data ActionList = ActionList [ActionsWithCriteria]
 

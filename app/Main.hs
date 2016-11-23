@@ -8,7 +8,7 @@ chrome = [Instance "google-chrome-unstable"]
 rubymine = [Class "jetbrains-rubymine"]
 slack = [Instance "slack"]
 telegram = [Title "Telegram"]
-terminal = [Instance "urxvt"]
+terminal = [Instance "urxvt", IsFloating]
 
 setXkb layout = "setxkbmap " ++ layout ++ " && xmodmap .xmodmap && pkill -RTMIN+11 i3blocks"
 
@@ -43,13 +43,13 @@ config = toList $ do
   for_window chrome [MoveAction Container (Workspace W1)]
   for_window rubymine [MoveAction Container (Workspace W2)]
   for_window slack [MoveAction Container (Workspace W4)]
-  for_window telegram [MoveAction Window Scratchpad, ToggleSticky]
+  for_window telegram [MoveAction Window Scratchpad, EnableSticky]
 
   bindsym [Mod4Sym, SpaceSym] (FocusAction ModeToggleFocusActionTarget)
-  bindsym [Mod4Sym, ShiftSym, SpaceSym] (FloatingAction ToggleFloatingActionTarget)
+  bindsym [Mod4Sym, ShiftSym, SpaceSym] [FloatingAction ToggleFloatingActionTarget]
 
   Super Minus --> ShowScratchpad
-  SuperShift Minus --> MoveAction Window Scratchpad
+  SuperShift Minus --> [EnableSticky, MoveAction Window Scratchpad]
 
   Super J --> action' chrome focus
   Super N --> action' terminal ShowScratchpad
