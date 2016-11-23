@@ -35,6 +35,7 @@ data Action = ExecAction String
             | ShowScratchpad
             | LayoutAction Layout
             | ModeAction ModeName
+            | ToggleSticky
 
 instance Serializable Action where
   serialize (ExecAction x) = "exec \"" ++ x ++ "\""
@@ -59,6 +60,7 @@ instance Serializable Action where
   serialize Kill = "kill"
   serialize ReloadAction = "reload"
   serialize RestartAction = "restart"
+  serialize ToggleSticky = "sticky toggle"
 
 data ModeName = ModeName String
 
