@@ -21,19 +21,19 @@ action' cs x = actionList' cs [x]
 focus = FocusAction BasedOnCriteriaFocusActionTarget
 
 exec x = liftF' (I3Action (toActionList (ExecAction x)))
-exec_always = liftF' . ExecAlways
+execAlways = liftF' . ExecAlways
 font = liftF'' . Font
 bindsym k a= liftF' (BindSym k (toActionList a))
 
 bindcode s a = liftF' (BindCode (shortcut s) (toActionList a))
-a --> b = bindcode a b
+a ==> b = bindcode a b
 
 bar = liftF' . Bar
-hide_edge_borders = liftF' HideEdgeBorders
-for_window criteria actions = liftF' (ForWindow (ActionsWithCriteria criteria actions))
+hideEdgeBorders = liftF' HideEdgeBorders
+forWindow criteria actions = liftF' (ForWindow (ActionsWithCriteria criteria actions))
 mode shortcut name config = bindcode shortcut (ModeAction modeName) >> liftF' (Mode modeName modeStatements)
   where modeName = ModeName name
-        modeStatements = toList ((bindsym [EscapeSym] exit) >> config)
+        modeStatements = toList (bindsym [EscapeSym] exit >> config)
 exit = ModeAction (ModeName "default")
 
 class ActionListConvertible x where
@@ -57,7 +57,7 @@ toList = reverse . toList' []
 flatten :: [I3ConfigStatement] -> [I3ConfigStatement]
 flatten ss = modes
   where modes = foldl f [] ss
-        f acc (Mode name css) = ((Mode name (filter (not . isMode) css)):acc) ++ flatten css
+        f acc (Mode name css) = (Mode name (filter (not . isMode) css):acc) ++ flatten css
         f acc _ = acc
         isMode (Mode _ _) = True
         isMode _ = False

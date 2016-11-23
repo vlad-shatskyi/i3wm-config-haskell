@@ -127,7 +127,7 @@ data ActionsWithCriteria = ActionsWithCriteria [ActionCriteria] [Action]
 
 instance Serializable ActionsWithCriteria where
   serialize (ActionsWithCriteria [] action) = intercalate ", " (map serialize action)
-  serialize (ActionsWithCriteria criteria action) = "[" ++ (intercalate " " (map serialize criteria)) ++ "] " ++ (intercalate ", " (map serialize action))
+  serialize (ActionsWithCriteria criteria action) = "[" ++ unwords (map serialize criteria) ++ "] " ++ intercalate ", " (map serialize action)
 
 data I3ConfigStatement = I3Action ActionList
         | ExecAlways String
@@ -142,14 +142,14 @@ data I3ConfigStatement = I3Action ActionList
 instance Serializable I3ConfigStatement where
   serialize (I3Action exec) = serialize exec
   serialize (ExecAlways x) = "exec_always " ++ x
-  serialize (Font names size) = "font " ++ (intercalate ":" names) ++ " " ++ show size
-  serialize (BindSym keys exec) = "bindsym " ++ (intercalate "+" (map serialize keys)) ++ " " ++ serialize exec
+  serialize (Font names size) = "font " ++ intercalate ":" names ++ " " ++ show size
+  serialize (BindSym keys exec) = "bindsym " ++ intercalate "+" (map serialize keys) ++ " " ++ serialize exec
   serialize (BindCode shortcut exec) = "bindcode " ++ serialize shortcut ++ " " ++ serialize exec
   serialize (Bar command) = "bar {\n    status_command " ++ command ++ "\n    position top\n}"
   serialize HideEdgeBorders = "hide_edge_borders both"
   serialize (ForWindow x) = "for_window " ++ serialize x
   serialize (Mode (ModeName "default") statements) = interpret statements
-  serialize (Mode name statements) = "mode " ++ (serialize name) ++ " {\n" ++ interpret statements ++ "\n}\n"
+  serialize (Mode name statements) = "mode " ++ serialize name ++ " {\n" ++ interpret statements ++ "\n}\n"
 
 interpret :: [I3ConfigStatement] -> String
 interpret xs = intercalate "\n" (map serialize xs)
