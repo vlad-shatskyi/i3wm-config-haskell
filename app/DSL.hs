@@ -30,7 +30,7 @@ a --> b = bindcode a b
 
 bar = liftF' . Bar
 hide_edge_borders = liftF' HideEdgeBorders
-for_window criteria action = liftF' (ForWindow (ActionsWithCriteria criteria [action]))
+for_window criteria actions = liftF' (ForWindow (ActionsWithCriteria criteria actions))
 mode shortcut name config = bindcode shortcut (ModeAction modeName) >> liftF' (Mode modeName modeStatements)
   where modeName = ModeName name
         modeStatements = toList ((bindsym [EscapeSym] exit) >> config)

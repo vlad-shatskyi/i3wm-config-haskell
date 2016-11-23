@@ -40,10 +40,10 @@ config = toList $ do
   Super W --> Kill
   Super Slash --> ExecAction "rofi -show drun"
 
-  for_window chrome (MoveAction Container (Workspace W1))
-  for_window rubymine (MoveAction Container (Workspace W2))
-  for_window slack (MoveAction Container (Workspace W4))
-  for_window telegram (MoveAction Window Scratchpad)
+  for_window chrome [MoveAction Container (Workspace W1)]
+  for_window rubymine [MoveAction Container (Workspace W2)]
+  for_window slack [MoveAction Container (Workspace W4)]
+  for_window telegram [MoveAction Window Scratchpad, ToggleSticky]
 
   bindsym [Mod4Sym, SpaceSym] (FocusAction ModeToggleFocusActionTarget)
   bindsym [Mod4Sym, ShiftSym, SpaceSym] (FloatingAction ToggleFloatingActionTarget)
