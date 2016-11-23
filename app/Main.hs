@@ -36,9 +36,9 @@ config = toList $ do
   bindsym [BrightnessUpSym] (ExecAction "xbacklight -inc 10")
   bindsym [BrightnessDownSym] (ExecAction "xbacklight -dec 10")
 
-  [Mod4, Return] --> (ExecAction "i3-sensible-terminal")
-  [Mod4, W] --> Kill
-  [Mod4, Slash] --> (ExecAction "rofi -show drun")
+  Super Return --> (ExecAction "i3-sensible-terminal")
+  Super W --> Kill
+  Super Slash --> (ExecAction "rofi -show drun")
 
   for_window chrome (MoveAction Container (Workspace W1))
   for_window rubymine (MoveAction Container (Workspace W2))
@@ -48,57 +48,57 @@ config = toList $ do
   bindsym [Mod4Sym, SpaceSym] (FocusAction ModeToggleFocusActionTarget)
   bindsym [Mod4Sym, ShiftSym, SpaceSym] (FloatingAction ToggleFloatingActionTarget)
 
-  [Mod4, Minus] --> ShowScratchpad
-  [Mod4, Shift, Minus] --> (MoveAction Window Scratchpad)
+  Super Minus --> ShowScratchpad
+  SuperShift Minus --> (MoveAction Window Scratchpad)
 
-  [Mod4, J] --> (action' chrome focus)
-  [Mod4, N] --> (action' terminal ShowScratchpad)
-  [Mod4, K] --> (action' rubymine focus)
-  [Mod4, Semicolon] --> (action' slack focus)
+  Super J --> (action' chrome focus)
+  Super N --> (action' terminal ShowScratchpad)
+  Super K --> (action' rubymine focus)
+  Super Semicolon --> (action' slack focus)
   bindsym [Mod4Sym, EqualSym] (action' telegram ShowScratchpad)
 
-  [Mod4, LeftBracket] --> FocusLeft
-  [Mod4, RightBracket] --> FocusRight
-  [Mod4, F] --> ToggleFullscreen
+  Super LeftBracket --> FocusLeft
+  Super RightBracket --> FocusRight
+  Super F --> ToggleFullscreen
 
-  [Mod4, One] --> WorkspaceAction W1
-  [Mod4, Two] --> WorkspaceAction W2
-  [Mod4, Three] --> WorkspaceAction W3
-  [Mod4, Four] --> WorkspaceAction W4
-  [Mod4, Five] --> WorkspaceAction W5
-  [Mod4, Six] --> WorkspaceAction W6
-  [Mod4, Seven] --> WorkspaceAction W7
-  [Mod4, Eight] --> WorkspaceAction W8
-  [Mod4, Nine] --> WorkspaceAction W9
-  [Mod4, Zero] --> WorkspaceAction W0
+  Super One --> WorkspaceAction W1
+  Super Two --> WorkspaceAction W2
+  Super Three --> WorkspaceAction W3
+  Super Four --> WorkspaceAction W4
+  Super Five --> WorkspaceAction W5
+  Super Six --> WorkspaceAction W6
+  Super Seven --> WorkspaceAction W7
+  Super Eight --> WorkspaceAction W8
+  Super Nine --> WorkspaceAction W9
+  Super Zero --> WorkspaceAction W0
 
-  mode [Mod4, I] "Keyboard Layout Mode" $ do
-    [E] --> [ExecAction (setXkb "us"), exitMode]
-    [R] --> [ExecAction (setXkb "ru"), exitMode]
-    [U] --> [ExecAction (setXkb "ua"), exitMode]
+  mode (Super I) "Keyboard Layout Mode" $ do
+    E --> [ExecAction (setXkb "us"), exitMode]
+    R --> [ExecAction (setXkb "ru"), exitMode]
+    U --> [ExecAction (setXkb "ua"), exitMode]
 
-  mode [Mod4, Tilde] "i3 Management Mode" $ do
-    [C] --> [ReloadAction, exitMode]
-    [R] --> [RestartAction, exitMode]
-    [W] --> [ExecAction "rofi -show window", exitMode]
+  mode (Super Tilde) "i3 Management Mode" $ do
+    C --> [ReloadAction, exitMode]
+    R --> [RestartAction, exitMode]
+    W --> [ExecAction "rofi -show window", exitMode]
 
-    mode [L] "Layout Mode" $ do
-      [S] --> [LayoutAction Stacking, exitMode]
-      [T] --> [LayoutAction Tabbed, exitMode]
-      [E] --> [LayoutAction ToggleSplit, exitMode]
+    mode L "Layout Mode" $ do
+      S --> [LayoutAction Stacking, exitMode]
+      T --> [LayoutAction Tabbed, exitMode]
+      E --> [LayoutAction ToggleSplit, exitMode]
 
-  mode [Mod4, R] "Resize Mode" $ do
-    [W] --> (ResizeAction Grow Width 10)
-    [N] --> (ResizeAction Shrink Width 10)
-    [H] --> (ResizeAction Grow Height 10)
-    [L] --> (ResizeAction Shrink Height 10)
+  mode (Super R) "Resize Mode" $ do
+    W --> (ResizeAction Grow Width 10)
+    N --> (ResizeAction Shrink Width 10)
+    H --> (ResizeAction Grow Height 10)
+    L --> (ResizeAction Shrink Height 10)
 
-  mode [Mod4, M] "Move Mode" $ do
-    [H] --> MoveLeft
-    [L] --> MoveRight
-    [J] --> MoveDown
-    [K] --> MoveUp
-    [C] --> [MoveCenter, exitMode]
+  mode (Super M) "Move Mode" $ do
+    H --> MoveLeft
+    L --> MoveRight
+    J --> MoveDown
+    K --> MoveUp
+    C --> [MoveCenter, exitMode]
 
 main :: IO ()
 main = putStrLn $ interpret $ flatten [Mode (ModeName "default") config]

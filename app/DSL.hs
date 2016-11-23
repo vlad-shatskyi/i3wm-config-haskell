@@ -24,12 +24,14 @@ exec x = liftF' (I3Action (toActionList (ExecAction x)))
 exec_always = liftF' . ExecAlways
 font = liftF'' . Font
 bindsym k a= liftF' (BindSym k (toActionList a))
-bindcode k a = liftF' (BindCode k (toActionList a))
+
+bindcode s a = liftF' (BindCode (shortcut s) (toActionList a))
 a --> b = bindcode a b
+
 bar = liftF' . Bar
 hide_edge_borders = liftF' HideEdgeBorders
 for_window criteria action = liftF' (ForWindow (ActionsWithCriteria criteria [action]))
-mode keys name config = bindcode keys (ModeAction modeName) >> liftF' (Mode modeName modeStatements)
+mode shortcut name config = bindcode shortcut (ModeAction modeName) >> liftF' (Mode modeName modeStatements)
   where modeName = ModeName name
         modeStatements = toList ((bindsym [EscapeSym] exitMode) >> config)
 exitMode = ModeAction (ModeName "default")

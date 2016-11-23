@@ -75,55 +75,71 @@ data Key = Tilde
          | Comma
          | Period
          | Slash
-         | Mod4
-         | Shift
+
+
+keyCode :: Key -> Integer
+keyCode Tilde = 49
+keyCode One = 10
+keyCode Two = 11
+keyCode Three = 12
+keyCode Four = 13
+keyCode Five = 14
+keyCode Six = 15
+keyCode Seven = 16
+keyCode Eight = 17
+keyCode Nine = 18
+keyCode Zero = 19
+keyCode Minus = 20
+keyCode Q = 24
+keyCode W = 25
+keyCode E = 26
+keyCode R = 27
+keyCode T = 28
+keyCode Y = 29
+keyCode U = 30
+keyCode I = 31
+keyCode O = 32
+keyCode P = 33
+keyCode LeftBracket = 34
+keyCode RightBracket = 35
+keyCode Return = 36
+keyCode A = 38
+keyCode S = 39
+keyCode D = 40
+keyCode F = 41
+keyCode G = 42
+keyCode H = 43
+keyCode J = 44
+keyCode K = 45
+keyCode L = 46
+keyCode Semicolon = 47
+keyCode Quote = 48
+keyCode Z = 52
+keyCode X = 53
+keyCode C = 54
+keyCode V = 55
+keyCode B = 56
+keyCode N = 57
+keyCode M = 58
+keyCode Comma = 59
+keyCode Period = 60
+keyCode Slash = 61
 
 instance Serializable Key where
-  serialize Tilde = "49"
-  serialize Shift = "Shift"
-  serialize One = "10"
-  serialize Two = "11"
-  serialize Three = "12"
-  serialize Four = "13"
-  serialize Five = "14"
-  serialize Six = "15"
-  serialize Seven = "16"
-  serialize Eight = "17"
-  serialize Nine = "18"
-  serialize Zero = "19"
-  serialize Minus = "20"
-  serialize Q = "24"
-  serialize W = "25"
-  serialize E = "26"
-  serialize R = "27"
-  serialize T = "28"
-  serialize Y = "29"
-  serialize U = "30"
-  serialize I = "31"
-  serialize O = "32"
-  serialize P = "33"
-  serialize LeftBracket = "34"
-  serialize RightBracket = "35"
-  serialize Return = "36"
-  serialize A = "38"
-  serialize S = "39"
-  serialize D = "40"
-  serialize F = "41"
-  serialize G = "42"
-  serialize H = "43"
-  serialize J = "44"
-  serialize K = "45"
-  serialize L = "46"
-  serialize Semicolon = "47"
-  serialize Quote = "48"
-  serialize Z = "52"
-  serialize X = "53"
-  serialize C = "54"
-  serialize V = "55"
-  serialize B = "56"
-  serialize N = "57"
-  serialize M = "58"
-  serialize Comma = "59"
-  serialize Period = "60"
-  serialize Slash = "61"
-  serialize Mod4 = "Mod4"
+  serialize = show . keyCode
+
+data Shortcut = NoModifier Key | Super Key | SuperShift Key
+
+instance Serializable Shortcut where
+  serialize (NoModifier key) = serialize key
+  serialize (Super key) = "Mod4+" ++ serialize key
+  serialize (SuperShift key) = "Mod4+Shift+" ++ serialize key
+
+class ToShortcut a where
+  shortcut :: a -> Shortcut
+
+instance ToShortcut Key where
+  shortcut = NoModifier
+
+instance ToShortcut Shortcut where
+  shortcut = id

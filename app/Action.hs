@@ -129,7 +129,7 @@ data I3ConfigStatement = I3Action ActionList
         | ExecAlways String
         | Font [String] Int
         | BindSym [KeyName] ActionList
-        | BindCode [Key] ActionList
+        | BindCode Shortcut ActionList
         | Bar String
         | HideEdgeBorders
         | ForWindow ActionsWithCriteria
@@ -140,7 +140,7 @@ instance Serializable I3ConfigStatement where
   serialize (ExecAlways x) = "exec_always " ++ x
   serialize (Font names size) = "font " ++ (intercalate ":" names) ++ " " ++ show size
   serialize (BindSym keys exec) = "bindsym " ++ (intercalate "+" (map serialize keys)) ++ " " ++ serialize exec
-  serialize (BindCode codes exec) = "bindcode " ++ (intercalate "+" (map serialize codes)) ++ " " ++ serialize exec
+  serialize (BindCode shortcut exec) = "bindcode " ++ serialize shortcut ++ " " ++ serialize exec
   serialize (Bar command) = "bar {\n    status_command " ++ command ++ "\n    position top\n}"
   serialize HideEdgeBorders = "hide_edge_borders both"
   serialize (ForWindow x) = "for_window " ++ serialize x
