@@ -138,6 +138,7 @@ data I3ConfigStatement = I3Action ActionList
         | HideEdgeBorders
         | ForWindow ActionsWithCriteria
         | Mode ModeName [I3ConfigStatement]
+        | Raw String
 
 instance Serializable I3ConfigStatement where
   serialize (I3Action exec) = serialize exec
@@ -150,6 +151,7 @@ instance Serializable I3ConfigStatement where
   serialize (ForWindow x) = "for_window " ++ serialize x
   serialize (Mode (ModeName "default") statements) = interpret statements
   serialize (Mode name statements) = "mode " ++ serialize name ++ " {\n" ++ interpret statements ++ "\n}\n"
+  serialize (Raw string) = string
 
 interpret :: [I3ConfigStatement] -> String
 interpret xs = intercalate "\n" (map serialize xs)

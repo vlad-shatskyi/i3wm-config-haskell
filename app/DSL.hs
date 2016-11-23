@@ -22,6 +22,7 @@ focus = FocusAction BasedOnCriteriaFocusActionTarget
 
 exec x = liftF' (I3Action (toActionList (ExecAction x)))
 execAlways = liftF' . ExecAlways
+raw = liftF' . Raw
 font = liftF'' . Font
 bindsym k a= liftF' (BindSym k (toActionList a))
 

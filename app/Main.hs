@@ -19,6 +19,7 @@ config = toList $ do
   execAlways "xinput set-prop 12 289 0.85" -- Increase Accel Speed.
   execAlways "xinput set-prop 12 291 1" -- Enable natural scroll.
   execAlways "xmodmap ~/.xmodmap"
+  raw "exec --no-startup-id dunst"
 
   exec "google-chrome-unstable"
   exec "slack"
