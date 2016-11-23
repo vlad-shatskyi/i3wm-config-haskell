@@ -10,7 +10,7 @@ slack = [Instance "slack"]
 telegram = [Title "Telegram"]
 terminal = [Instance "urxvt", IsFloating]
 
-setXkb layout = "setxkbmap " ++ layout ++ " && xmodmap .xmodmap && pkill -RTMIN+11 i3blocks"
+setXkb layout = "setxkbmap " ++ layout ++ " && pkill -RTMIN+11 i3blocks"
 
 config :: [I3ConfigStatement]
 config = toList $ do
@@ -18,7 +18,8 @@ config = toList $ do
   execAlways "xinput set-prop 12 283 0" -- Disable Tapping Drag.
   execAlways "xinput set-prop 12 289 0.85" -- Increase Accel Speed.
   execAlways "xinput set-prop 12 291 1" -- Enable natural scroll.
-  execAlways "xmodmap ~/.xmodmap"
+  execAlways "setxkbmap -option altwin:swap_alt_win"
+  execAlways "setxkbmap -option ctrl:nocaps"
   raw "exec --no-startup-id dunst"
 
   exec "google-chrome-unstable"
