@@ -33,8 +33,8 @@ hide_edge_borders = liftF' HideEdgeBorders
 for_window criteria action = liftF' (ForWindow (ActionsWithCriteria criteria [action]))
 mode shortcut name config = bindcode shortcut (ModeAction modeName) >> liftF' (Mode modeName modeStatements)
   where modeName = ModeName name
-        modeStatements = toList ((bindsym [EscapeSym] exitMode) >> config)
-exitMode = ModeAction (ModeName "default")
+        modeStatements = toList ((bindsym [EscapeSym] exit) >> config)
+exit = ModeAction (ModeName "default")
 
 class ActionListConvertible x where
   toActionList :: x -> ActionList

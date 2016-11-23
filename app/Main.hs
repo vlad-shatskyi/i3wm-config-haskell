@@ -73,19 +73,19 @@ config = toList $ do
   Super Zero --> WorkspaceAction W0
 
   mode (Super I) "Keyboard Layout Mode" $ do
-    E --> [ExecAction (setXkb "us"), exitMode]
-    R --> [ExecAction (setXkb "ru"), exitMode]
-    U --> [ExecAction (setXkb "ua"), exitMode]
+    E --> [ExecAction (setXkb "us"), exit]
+    R --> [ExecAction (setXkb "ru"), exit]
+    U --> [ExecAction (setXkb "ua"), exit]
 
   mode (Super Tilde) "i3 Management Mode" $ do
-    C --> [ReloadAction, exitMode]
-    R --> [RestartAction, exitMode]
-    W --> [ExecAction "rofi -show window", exitMode]
+    C --> [ReloadAction, exit]
+    R --> [RestartAction, exit]
+    W --> [ExecAction "rofi -show window", exit]
 
     mode L "Layout Mode" $ do
-      S --> [LayoutAction Stacking, exitMode]
-      T --> [LayoutAction Tabbed, exitMode]
-      E --> [LayoutAction ToggleSplit, exitMode]
+      S --> [LayoutAction Stacking, exit]
+      T --> [LayoutAction Tabbed, exit]
+      E --> [LayoutAction ToggleSplit, exit]
 
   mode (Super R) "Resize Mode" $ do
     W --> ResizeAction Grow Width 10
@@ -98,7 +98,7 @@ config = toList $ do
     L --> MoveRight
     J --> MoveDown
     K --> MoveUp
-    C --> [MoveCenter, exitMode]
+    C --> [MoveCenter, exit]
 
 main :: IO ()
 main = putStrLn $ interpret $ flatten [Mode (ModeName "default") config]
