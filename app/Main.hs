@@ -1,7 +1,7 @@
 module Main where
 
 import Key
-import Action
+import DataTypes.Action
 import DSL
 
 chrome = [Instance "google-chrome-unstable"]
@@ -13,7 +13,7 @@ terminal = [Instance "urxvt", IsFloating]
 setXkb layout = "setxkbmap " ++ layout ++ " && pkill -RTMIN+11 i3blocks"
 stepSize = 50
 
-config :: [I3ConfigStatement]
+config :: [Statement]
 config = toList $ do
   execAlways "xinput set-prop 12 281 1" -- Enable Tapping.
   execAlways "xinput set-prop 12 283 0" -- Disable Tapping Drag.

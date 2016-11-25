@@ -1,13 +1,13 @@
 module DSL where
 
 import Key
-import Action
+import DataTypes.Action
 import Control.Monad.Free
 
-data Op next = Op I3ConfigStatement next deriving (Functor)
+data Op next = Op Statement next deriving (Functor)
 type Config = Free Op
 
-liftF' :: I3ConfigStatement -> Config ()
+liftF' :: Statement -> Config ()
 liftF' x = liftF $ Op x ()
 
 liftF'' = (liftF' .)
@@ -47,13 +47,13 @@ instance ActionListConvertible [Action] where
 instance ActionListConvertible ActionList where
   toActionList = id
 
-toList :: Config a -> [I3ConfigStatement]
+toList :: Config a -> [Statement]
 toList = reverse . toList' []
   where toList' accumulator (Pure _) = accumulator
         toList' accumulator (Free (Op i3 next)) = toList' (i3:accumulator) next
 
 -- TODO: refactor.
-flatten :: [I3ConfigStatement] -> [I3ConfigStatement]
+flatten :: [Statement] -> [Statement]
 flatten ss = modes
   where modes = foldl f [] ss
         f acc (Mode name css) = (Mode name (filter (not . isMode) css):acc) ++ flatten css

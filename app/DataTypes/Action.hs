@@ -1,12 +1,55 @@
-module Action where
+module DataTypes.Action where
 
 import Serializable
 import Key
 import Data.List (intercalate)
 
 data WorkspaceNumber = W1 | W2 | W3 | W4 | W5 | W6 | W7 | W8 | W9 | W0
+
+instance Serializable WorkspaceNumber where
+  serialize W1 = "1"
+  serialize W2 = "2"
+  serialize W3 = "3"
+  serialize W4 = "4"
+  serialize W5 = "5"
+  serialize W6 = "6"
+  serialize W7 = "7"
+  serialize W8 = "8"
+  serialize W9 = "9"
+  serialize W0 = "0"
+
+
+data ModeName = ModeName String
+
+instance Serializable ModeName where
+  serialize (ModeName name) = "\"" ++ name ++ "\""
+
+
 data GrowOrShrink = Grow | Shrink
+
+instance Serializable GrowOrShrink where
+  serialize Grow = "grow"
+  serialize Shrink = "shrink"
+
+
 data WidthOrHeight = Width | Height
+
+instance Serializable WidthOrHeight where
+  serialize Width = "width"
+  serialize Height = "height"
+
+
+data ActionCriteria = Instance String
+                     | Class String
+                     | Title String
+                     | IsFloating
+
+instance Serializable ActionCriteria where
+  serialize (Instance name) = "instance=\"" ++ name ++ "\""
+  serialize (Class name) = "class=\"" ++ name ++ "\""
+  serialize (Title name) = "title=\"" ++ name ++ "\""
+  serialize IsFloating = "floating"
+
 
 data Action = Exec String
             | FocusWorkspace WorkspaceNumber
@@ -117,42 +160,6 @@ instance Serializable Action where
   serialize RestartWM = "restart"
   serialize ExitWM = "exit"
 
-data ModeName = ModeName String
-
-instance Serializable ModeName where
-  serialize (ModeName name) = "\"" ++ name ++ "\""
-
-instance Serializable GrowOrShrink where
-  serialize Grow = "grow"
-  serialize Shrink = "shrink"
-
-instance Serializable WidthOrHeight where
-  serialize Width = "width"
-  serialize Height = "height"
-
-instance Serializable WorkspaceNumber where
-  serialize W1 = "1"
-  serialize W2 = "2"
-  serialize W3 = "3"
-  serialize W4 = "4"
-  serialize W5 = "5"
-  serialize W6 = "6"
-  serialize W7 = "7"
-  serialize W8 = "8"
-  serialize W9 = "9"
-  serialize W0 = "0"
-
-data ActionCriteria = Instance String
-                     | Class String
-                     | Title String
-                     | IsFloating
-
-instance Serializable ActionCriteria where
-  serialize (Instance name) = "instance=\"" ++ name ++ "\""
-  serialize (Class name) = "class=\"" ++ name ++ "\""
-  serialize (Title name) = "title=\"" ++ name ++ "\""
-  serialize IsFloating = "floating"
-
 data ActionList = ActionList [ActionsWithCriteria]
 
 instance Serializable ActionList where
@@ -170,7 +177,7 @@ instance Serializable ShouldRelease where
   serialize DontRelease = ""
   serialize Release = "--release"
 
-data I3ConfigStatement = I3Action ActionList
+data Statement = I3Action ActionList
         | ExecAlways String
         | Font [String] Int
         | BindSym [KeyName] ActionList
@@ -178,10 +185,10 @@ data I3ConfigStatement = I3Action ActionList
         | Bar String
         | HideEdgeBorders
         | ForWindow ActionsWithCriteria
-        | Mode ModeName [I3ConfigStatement]
+        | Mode ModeName [Statement]
         | Raw String
 
-instance Serializable I3ConfigStatement where
+instance Serializable Statement where
   serialize (I3Action exec) = serialize exec
   serialize (ExecAlways x) = "exec_always " ++ x
   serialize (Font names size) = "font " ++ intercalate ":" names ++ " " ++ show size
@@ -194,5 +201,5 @@ instance Serializable I3ConfigStatement where
   serialize (Mode name statements) = "mode " ++ serialize name ++ " {\n" ++ interpret statements ++ "\n}\n"
   serialize (Raw string) = string
 
-interpret :: [I3ConfigStatement] -> String
+interpret :: [Statement] -> String
 interpret xs = intercalate "\n" (map serialize xs)
