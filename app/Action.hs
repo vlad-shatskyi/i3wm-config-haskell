@@ -5,7 +5,6 @@ import Key
 import Data.List (intercalate)
 
 data WorkspaceNumber = W1 | W2 | W3 | W4 | W5 | W6 | W7 | W8 | W9 | W0
-data FloatingActionTarget = ToggleFloatingActionTarget
 data GrowOrShrink = Grow | Shrink
 data WidthOrHeight = Width | Height
 
@@ -56,7 +55,9 @@ data Action = ExecAction String
             | MoveToMousePosition
             | MoveToWorkspace WorkspaceNumber
 
-            | FloatingAction FloatingActionTarget
+            | FloatingEnable
+            | FloatingDisable
+            | FloatingToggle
             | ModeAction ModeName
             | EnableSticky
 
@@ -64,7 +65,9 @@ instance Serializable Action where
   serialize (ExecAction x) = "exec \"" ++ x ++ "\""
   serialize (FocusWorkspace workspaceNumber) = "workspace " ++ serialize workspaceNumber
   serialize (ModeAction modeName) = "mode " ++ serialize modeName
-  serialize (FloatingAction target) = "floating " ++ serialize target
+  serialize FloatingEnable = "floating enable"
+  serialize FloatingDisable = "floating disable"
+  serialize FloatingToggle = "floating toggle"
   serialize MoveToScratchpad = "move scratchpad"
   serialize ToggleScratchpad = "scratchpad show"
   serialize Nop = "nop"
@@ -115,9 +118,6 @@ instance Serializable GrowOrShrink where
 instance Serializable WidthOrHeight where
   serialize Width = "width"
   serialize Height = "height"
-
-instance Serializable FloatingActionTarget where
-  serialize ToggleFloatingActionTarget = "toggle"
 
 instance Serializable WorkspaceNumber where
   serialize W1 = "1"

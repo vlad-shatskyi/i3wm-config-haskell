@@ -50,7 +50,7 @@ config = toList $ do
   forWindow telegram [MoveToScratchpad, EnableSticky]
 
   bindsym [Mod4Sym, SpaceSym] FocusModeToggle
-  bindsym [Mod4Sym, ShiftSym, SpaceSym] [FloatingAction ToggleFloatingActionTarget]
+  bindsym [Mod4Sym, ShiftSym, SpaceSym] FloatingToggle
 
   Super Minus ==> ToggleScratchpad
   SuperShift Minus ==> [EnableSticky, MoveToScratchpad]
