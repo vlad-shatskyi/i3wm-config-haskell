@@ -45,20 +45,20 @@ config = toList $ do
   forWindow chrome [MoveAction Container (Workspace W1)]
   forWindow rubymine [MoveAction Container (Workspace W2)]
   forWindow slack [MoveAction Container (Workspace W4)]
-  forWindow telegram [MoveAction Window Scratchpad, EnableSticky]
+  forWindow telegram [MoveToScratchpad, EnableSticky]
 
   bindsym [Mod4Sym, SpaceSym] (FocusAction ModeToggleFocusActionTarget)
   bindsym [Mod4Sym, ShiftSym, SpaceSym] [FloatingAction ToggleFloatingActionTarget]
 
-  Super Minus ==> ShowScratchpad
-  SuperShift Minus ==> [EnableSticky, MoveAction Window Scratchpad]
+  Super Minus ==> ToggleScratchpad
+  SuperShift Minus ==> [EnableSticky, MoveToScratchpad]
 
 --   Super J ==> action' chrome focus
 --   Super K ==> action' rubymine focus
 --   Super Semicolon ==> action' slack focus
-  Super T ==> action' terminal ShowScratchpad
+  Super T ==> action' terminal ToggleScratchpad
   Super O ==> ExecAction "emacsclient -c -n ~/notes/notes.org"
-  bindsym [Mod4Sym, EqualSym] (action' telegram ShowScratchpad)
+  bindsym [Mod4Sym, EqualSym] (action' telegram ToggleScratchpad)
 
   Super LeftBracket ==> FocusLeft
   Super RightBracket ==> FocusRight
@@ -82,8 +82,8 @@ config = toList $ do
     U ==> [ExecAction (setXkb "ua"), exit]
 
   mode (Super Tilde) "i3 Management Mode" $ do
-    C ==> [ReloadAction, exit]
-    R ==> [RestartAction, exit]
+    C ==> [ReloadWM, exit]
+    R ==> [RestartWM, exit]
     W ==> [ExecAction "rofi -show window", exit]
 
     mode L "Layout Mode" $ do

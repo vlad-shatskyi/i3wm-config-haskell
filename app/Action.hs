@@ -5,7 +5,7 @@ import Key
 import Data.List (intercalate)
 
 data MoveSubject = Window | Container
-data MoveLocation = Workspace WorkspaceNumber | Scratchpad
+data MoveLocation = Workspace WorkspaceNumber
 data WorkspaceNumber = W1 | W2 | W3 | W4 | W5 | W6 | W7 | W8 | W9 | W0
 data Layout = Stacking | Tabbed | ToggleSplit
 data FocusActionTarget = ModeToggleFocusActionTarget | BasedOnCriteriaFocusActionTarget
@@ -34,6 +34,7 @@ data Action = ExecAction String
             | RestartWM
             | ExitWM
 
+            | MoveToScratchpad
             | ToggleScratchpad
 
             | FloatingAction FloatingActionTarget
@@ -49,6 +50,7 @@ instance Serializable Action where
   serialize (ModeAction modeName) = "mode " ++ serialize modeName
   serialize (FocusAction target) = "focus " ++ serialize target
   serialize (FloatingAction target) = "floating " ++ serialize target
+  serialize MoveToScratchpad = "move scratchpad"
   serialize ToggleScratchpad = "scratchpad show"
   serialize FocusLeft = "focus left"
   serialize FocusRight = "focus right"
@@ -98,7 +100,6 @@ instance Serializable MoveSubject where
 
 instance Serializable MoveLocation where
   serialize (Workspace workspaceNumber) = "to workspace " ++ serialize workspaceNumber
-  serialize Scratchpad = "scratchpad"
 
 instance Serializable WorkspaceNumber where
   serialize W1 = "1"

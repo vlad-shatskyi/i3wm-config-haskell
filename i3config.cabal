@@ -27,8 +27,12 @@ executable i3config-exe
                      , i3config
                      , free
   default-language:    Haskell2010
-  extensions:          DeriveFunctor
+  default-extensions:  DeriveFunctor
                      , FlexibleInstances
+  other-modules:       Action
+                     , DSL
+                     , Key
+                     , Serializable
   ghc-options:         -Wall -fno-warn-name-shadowing -fno-warn-missing-signatures
 
 test-suite i3config-test
