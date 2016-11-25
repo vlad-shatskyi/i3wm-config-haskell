@@ -18,8 +18,6 @@ actionList' cs xs = ActionList [ActionsWithCriteria cs xs]
 action' :: [ActionCriteria] -> Action -> ActionList
 action' cs x = actionList' cs [x]
 
-focus = FocusAction BasedOnCriteriaFocusActionTarget
-
 exec x = liftF' (I3Action (toActionList (ExecAction x)))
 execAlways = liftF' . ExecAlways
 raw = liftF' . Raw

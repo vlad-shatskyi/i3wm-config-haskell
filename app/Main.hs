@@ -49,7 +49,7 @@ config = toList $ do
   forWindow slack [MoveAction Container (Workspace W4)]
   forWindow telegram [MoveToScratchpad, EnableSticky]
 
-  bindsym [Mod4Sym, SpaceSym] (FocusAction ModeToggleFocusActionTarget)
+  bindsym [Mod4Sym, SpaceSym] FocusModeToggle
   bindsym [Mod4Sym, ShiftSym, SpaceSym] [FloatingAction ToggleFloatingActionTarget]
 
   Super Minus ==> ToggleScratchpad

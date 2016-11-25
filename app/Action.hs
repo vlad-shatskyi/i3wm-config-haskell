@@ -7,7 +7,6 @@ import Data.List (intercalate)
 data MoveSubject = Window | Container
 data MoveLocation = Workspace WorkspaceNumber
 data WorkspaceNumber = W1 | W2 | W3 | W4 | W5 | W6 | W7 | W8 | W9 | W0
-data FocusActionTarget = ModeToggleFocusActionTarget | BasedOnCriteriaFocusActionTarget
 data FloatingActionTarget = ToggleFloatingActionTarget
 data GrowOrShrink = Grow | Shrink
 data WidthOrHeight = Width | Height
@@ -15,16 +14,11 @@ data WidthOrHeight = Width | Height
 data Action = ExecAction String
             | MoveAction MoveSubject MoveLocation
             | WorkspaceAction WorkspaceNumber
-            | FocusAction FocusActionTarget
             | MoveLeft
             | MoveRight
             | MoveUp
             | MoveDown
             | MoveCenter
-            | FocusLeft
-            | FocusRight
-            | FocusUp
-            | FocusDown
             | ResizeAction GrowOrShrink WidthOrHeight Int
             | ToggleFullscreen
             | Kill
@@ -50,6 +44,17 @@ data Action = ExecAction String
             | LayoutToggleSplit
             | LayoutToggleAll
 
+            | FocusLeft
+            | FocusRight
+            | FocusDown
+            | FocusUp
+
+            | FocusParent
+            | FocusChild
+            | FocusFloating
+            | FocusTiling
+            | FocusModeToggle
+
             | FloatingAction FloatingActionTarget
             | ModeAction ModeName
             | EnableSticky
@@ -59,7 +64,6 @@ instance Serializable Action where
   serialize (MoveAction subject location) = "move " ++ serialize subject ++ " " ++ serialize location
   serialize (WorkspaceAction workspaceNumber) = "workspace " ++ serialize workspaceNumber
   serialize (ModeAction modeName) = "mode " ++ serialize modeName
-  serialize (FocusAction target) = "focus " ++ serialize target
   serialize (FloatingAction target) = "floating " ++ serialize target
   serialize MoveToScratchpad = "move scratchpad"
   serialize ToggleScratchpad = "scratchpad show"
@@ -76,8 +80,13 @@ instance Serializable Action where
   serialize LayoutToggleAll = "layout toggle all"
   serialize FocusLeft = "focus left"
   serialize FocusRight = "focus right"
-  serialize FocusUp = "focus up"
   serialize FocusDown = "focus down"
+  serialize FocusUp = "focus up"
+  serialize FocusParent = "focus parent"
+  serialize FocusChild = "focus child"
+  serialize FocusFloating = "focus floating"
+  serialize FocusTiling = "focus tiling"
+  serialize FocusModeToggle = "focus mode_toggle"
   serialize MoveLeft = "move left"
   serialize MoveRight = "move right"
   serialize MoveUp = "move up"
@@ -103,10 +112,6 @@ instance Serializable GrowOrShrink where
 instance Serializable WidthOrHeight where
   serialize Width = "width"
   serialize Height = "height"
-
-instance Serializable FocusActionTarget where
-  serialize ModeToggleFocusActionTarget = "mode_toggle"
-  serialize BasedOnCriteriaFocusActionTarget = ""
 
 instance Serializable FloatingActionTarget where
   serialize ToggleFloatingActionTarget = "toggle"
