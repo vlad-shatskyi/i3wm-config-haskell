@@ -7,7 +7,6 @@ import Data.List (intercalate)
 data MoveSubject = Window | Container
 data MoveLocation = Workspace WorkspaceNumber
 data WorkspaceNumber = W1 | W2 | W3 | W4 | W5 | W6 | W7 | W8 | W9 | W0
-data Layout = Stacking | Tabbed | ToggleSplit
 data FocusActionTarget = ModeToggleFocusActionTarget | BasedOnCriteriaFocusActionTarget
 data FloatingActionTarget = ToggleFloatingActionTarget
 data GrowOrShrink = Grow | Shrink
@@ -43,14 +42,20 @@ data Action = ExecAction String
             | SplitHorizontal
             | SplitToggle
 
+            | LayoutDefault
+            | LayoutTabbed
+            | LayoutStacking
+            | LayoutSplitVertically
+            | LayoutSplitHorizontally
+            | LayoutToggleSplit
+            | LayoutToggleAll
+
             | FloatingAction FloatingActionTarget
-            | LayoutAction Layout
             | ModeAction ModeName
             | EnableSticky
 
 instance Serializable Action where
   serialize (ExecAction x) = "exec \"" ++ x ++ "\""
-  serialize (LayoutAction x) = "layout " ++ serialize x
   serialize (MoveAction subject location) = "move " ++ serialize subject ++ " " ++ serialize location
   serialize (WorkspaceAction workspaceNumber) = "workspace " ++ serialize workspaceNumber
   serialize (ModeAction modeName) = "mode " ++ serialize modeName
@@ -62,6 +67,13 @@ instance Serializable Action where
   serialize SplitVertical = "split vertical"
   serialize SplitHorizontal = "split horizontal"
   serialize SplitToggle = "split toggle"
+  serialize LayoutDefault = "layout default"
+  serialize LayoutTabbed = "layout tabbed"
+  serialize LayoutStacking = "layout stacking"
+  serialize LayoutSplitVertically = "layout splitv"
+  serialize LayoutSplitHorizontally = "layout splith"
+  serialize LayoutToggleSplit = "layout toggle split"
+  serialize LayoutToggleAll = "layout toggle all"
   serialize FocusLeft = "focus left"
   serialize FocusRight = "focus right"
   serialize FocusUp = "focus up"
@@ -83,11 +95,6 @@ data ModeName = ModeName String
 
 instance Serializable ModeName where
   serialize (ModeName name) = "\"" ++ name ++ "\""
-
-instance Serializable Layout where
-  serialize Stacking = "stacking"
-  serialize Tabbed = "tabbed"
-  serialize ToggleSplit = "toggle split"
 
 instance Serializable GrowOrShrink where
   serialize Grow = "grow"

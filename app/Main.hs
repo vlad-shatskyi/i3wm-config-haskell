@@ -90,9 +90,10 @@ config = toList $ do
     W ==> [ExecAction "rofi -show window", exit]
 
     mode L "Layout Mode" $ do
-      S ==> [LayoutAction Stacking, exit]
-      T ==> [LayoutAction Tabbed, exit]
-      E ==> [LayoutAction ToggleSplit, exit]
+      S ==> [LayoutStacking, exit]
+      T ==> [LayoutTabbed, exit]
+      V ==> [LayoutSplitHorizontally, exit]
+      H ==> [LayoutSplitVertically, exit]
 
   mode (Super R) "Resize Mode" $ do
     W ==> ResizeAction Grow Width 10
