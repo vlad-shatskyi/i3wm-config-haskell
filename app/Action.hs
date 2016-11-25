@@ -138,11 +138,17 @@ instance Serializable ActionsWithCriteria where
   serialize (ActionsWithCriteria [] action) = intercalate ", " (map serialize action)
   serialize (ActionsWithCriteria criteria action) = "[" ++ unwords (map serialize criteria) ++ "] " ++ intercalate ", " (map serialize action)
 
+data ShouldRelease = DontRelease | Release
+
+instance Serializable ShouldRelease where
+  serialize DontRelease = ""
+  serialize Release = "--release"
+
 data I3ConfigStatement = I3Action ActionList
         | ExecAlways String
         | Font [String] Int
         | BindSym [KeyName] ActionList
-        | BindCode Shortcut ActionList
+        | BindCode ShouldRelease Shortcut ActionList
         | Bar String
         | HideEdgeBorders
         | ForWindow ActionsWithCriteria
@@ -154,7 +160,7 @@ instance Serializable I3ConfigStatement where
   serialize (ExecAlways x) = "exec_always " ++ x
   serialize (Font names size) = "font " ++ intercalate ":" names ++ " " ++ show size
   serialize (BindSym keys exec) = "bindsym " ++ intercalate "+" (map serialize keys) ++ " " ++ serialize exec
-  serialize (BindCode shortcut exec) = "bindcode " ++ serialize shortcut ++ " " ++ serialize exec
+  serialize (BindCode shouldRelease shortcut exec) = "bindcode " ++ serialize shouldRelease ++ " " ++ serialize shortcut ++ " " ++ serialize exec
   serialize (Bar command) = "bar {\n    status_command " ++ command ++ "\n    position top\n}"
   serialize HideEdgeBorders = "hide_edge_borders both"
   serialize (ForWindow x) = "for_window " ++ serialize x

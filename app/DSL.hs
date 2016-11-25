@@ -26,7 +26,7 @@ raw = liftF' . Raw
 font = liftF'' . Font
 bindsym k a= liftF' (BindSym k (toActionList a))
 
-bindcode s a = liftF' (BindCode (shortcut s) (toActionList a))
+bindcode s a = liftF' (BindCode DontRelease (shortcut s) (toActionList a))
 a ==> b = bindcode a b
 
 bar = liftF' . Bar
