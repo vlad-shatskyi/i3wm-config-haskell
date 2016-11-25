@@ -2,6 +2,7 @@ module DSL where
 
 import Key
 import DataTypes.Action
+import DataTypes.Other
 import Control.Monad.Free
 
 data Op next = Op Statement next deriving (Functor)

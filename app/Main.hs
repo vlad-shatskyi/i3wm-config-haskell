@@ -2,6 +2,7 @@ module Main where
 
 import Key
 import DataTypes.Action
+import DataTypes.Other
 import DSL
 
 chrome = [Instance "google-chrome-unstable"]

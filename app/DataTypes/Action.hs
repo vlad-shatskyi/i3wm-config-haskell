@@ -2,54 +2,8 @@ module DataTypes.Action where
 
 import Serializable
 import Key
+import DataTypes.Other
 import Data.List (intercalate)
-
-data WorkspaceNumber = W1 | W2 | W3 | W4 | W5 | W6 | W7 | W8 | W9 | W0
-
-instance Serializable WorkspaceNumber where
-  serialize W1 = "1"
-  serialize W2 = "2"
-  serialize W3 = "3"
-  serialize W4 = "4"
-  serialize W5 = "5"
-  serialize W6 = "6"
-  serialize W7 = "7"
-  serialize W8 = "8"
-  serialize W9 = "9"
-  serialize W0 = "0"
-
-
-data ModeName = ModeName String
-
-instance Serializable ModeName where
-  serialize (ModeName name) = "\"" ++ name ++ "\""
-
-
-data GrowOrShrink = Grow | Shrink
-
-instance Serializable GrowOrShrink where
-  serialize Grow = "grow"
-  serialize Shrink = "shrink"
-
-
-data WidthOrHeight = Width | Height
-
-instance Serializable WidthOrHeight where
-  serialize Width = "width"
-  serialize Height = "height"
-
-
-data ActionCriteria = Instance String
-                     | Class String
-                     | Title String
-                     | IsFloating
-
-instance Serializable ActionCriteria where
-  serialize (Instance name) = "instance=\"" ++ name ++ "\""
-  serialize (Class name) = "class=\"" ++ name ++ "\""
-  serialize (Title name) = "title=\"" ++ name ++ "\""
-  serialize IsFloating = "floating"
-
 
 data Action = Exec String
             | FocusWorkspace WorkspaceNumber
@@ -160,6 +114,17 @@ instance Serializable Action where
   serialize RestartWM = "restart"
   serialize ExitWM = "exit"
 
+data ActionCriteria = Instance String
+                     | Class String
+                     | Title String
+                     | IsFloating
+
+instance Serializable ActionCriteria where
+  serialize (Instance name) = "instance=\"" ++ name ++ "\""
+  serialize (Class name) = "class=\"" ++ name ++ "\""
+  serialize (Title name) = "title=\"" ++ name ++ "\""
+  serialize IsFloating = "floating"
+
 data ActionList = ActionList [ActionsWithCriteria]
 
 instance Serializable ActionList where
@@ -170,12 +135,6 @@ data ActionsWithCriteria = ActionsWithCriteria [ActionCriteria] [Action]
 instance Serializable ActionsWithCriteria where
   serialize (ActionsWithCriteria [] action) = intercalate ", " (map serialize action)
   serialize (ActionsWithCriteria criteria action) = "[" ++ unwords (map serialize criteria) ++ "] " ++ intercalate ", " (map serialize action)
-
-data ShouldRelease = DontRelease | Release
-
-instance Serializable ShouldRelease where
-  serialize DontRelease = ""
-  serialize Release = "--release"
 
 data Statement = I3Action ActionList
         | ExecAlways String

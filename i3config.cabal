@@ -30,6 +30,7 @@ executable i3config-exe
   default-extensions:  DeriveFunctor
                      , FlexibleInstances
   other-modules:       DataTypes.Action
+                     , DataTypes.Other
                      , DSL
                      , Key
                      , Serializable
