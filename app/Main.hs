@@ -57,6 +57,7 @@ config = toList $ do
   Super N ==> action' terminal ShowScratchpad
   Super K ==> action' rubymine focus
   Super Semicolon ==> action' slack focus
+  Super O ==> ExecAction "emacsclient -c -n ~/notes/notes.org"
   bindsym [Mod4Sym, EqualSym] (action' telegram ShowScratchpad)
 
   Super LeftBracket ==> FocusLeft
