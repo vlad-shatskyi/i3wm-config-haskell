@@ -37,6 +37,8 @@ data Action = ExecAction String
             | MoveToScratchpad
             | ToggleScratchpad
 
+            | Nop
+
             | FloatingAction FloatingActionTarget
             | LayoutAction Layout
             | ModeAction ModeName
@@ -52,6 +54,7 @@ instance Serializable Action where
   serialize (FloatingAction target) = "floating " ++ serialize target
   serialize MoveToScratchpad = "move scratchpad"
   serialize ToggleScratchpad = "scratchpad show"
+  serialize Nop = "nop"
   serialize FocusLeft = "focus left"
   serialize FocusRight = "focus right"
   serialize FocusUp = "focus up"
