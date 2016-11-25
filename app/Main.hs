@@ -53,10 +53,10 @@ config = toList $ do
   Super Minus ==> ShowScratchpad
   SuperShift Minus ==> [EnableSticky, MoveAction Window Scratchpad]
 
-  Super J ==> action' chrome focus
-  Super N ==> action' terminal ShowScratchpad
-  Super K ==> action' rubymine focus
-  Super Semicolon ==> action' slack focus
+--   Super J ==> action' chrome focus
+--   Super K ==> action' rubymine focus
+--   Super Semicolon ==> action' slack focus
+  Super T ==> action' terminal ShowScratchpad
   Super O ==> ExecAction "emacsclient -c -n ~/notes/notes.org"
   bindsym [Mod4Sym, EqualSym] (action' telegram ShowScratchpad)
 
@@ -64,15 +64,16 @@ config = toList $ do
   Super RightBracket ==> FocusRight
   Super F ==> ToggleFullscreen
 
-  Super One ==> WorkspaceAction W1
-  Super Two ==> WorkspaceAction W2
-  Super Three ==> WorkspaceAction W3
-  Super Four ==> WorkspaceAction W4
+  Super J ==> WorkspaceAction W1
+  Super K ==> WorkspaceAction W2
+  Super L ==> WorkspaceAction W3
+  Super Semicolon ==> WorkspaceAction W4
+  Super Quote ==> WorkspaceAction W9
+
   Super Five ==> WorkspaceAction W5
   Super Six ==> WorkspaceAction W6
   Super Seven ==> WorkspaceAction W7
   Super Eight ==> WorkspaceAction W8
-  Super Nine ==> WorkspaceAction W9
   Super Zero ==> WorkspaceAction W0
 
   mode (Super I) "Keyboard Layout Mode" $ do
