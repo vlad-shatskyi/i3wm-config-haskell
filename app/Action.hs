@@ -29,10 +29,14 @@ data Action = ExecAction String
             | ResizeAction GrowOrShrink WidthOrHeight Int
             | ToggleFullscreen
             | Kill
-            | ReloadAction
-            | RestartAction
+
+            | ReloadWM
+            | RestartWM
+            | ExitWM
+
+            | ToggleScratchpad
+
             | FloatingAction FloatingActionTarget
-            | ShowScratchpad
             | LayoutAction Layout
             | ModeAction ModeName
             | EnableSticky
@@ -45,7 +49,7 @@ instance Serializable Action where
   serialize (ModeAction modeName) = "mode " ++ serialize modeName
   serialize (FocusAction target) = "focus " ++ serialize target
   serialize (FloatingAction target) = "floating " ++ serialize target
-  serialize ShowScratchpad = "scratchpad show"
+  serialize ToggleScratchpad = "scratchpad show"
   serialize FocusLeft = "focus left"
   serialize FocusRight = "focus right"
   serialize FocusUp = "focus up"
@@ -58,8 +62,9 @@ instance Serializable Action where
   serialize (ResizeAction growOrShrink widthOrHeight amount) = "resize " ++ serialize growOrShrink ++ " " ++ serialize widthOrHeight ++ " " ++ show amount ++ " px or " ++ show amount ++ " ppt"
   serialize ToggleFullscreen = "fullscreen toggle"
   serialize Kill = "kill"
-  serialize ReloadAction = "reload"
-  serialize RestartAction = "restart"
+  serialize ReloadWM = "reload"
+  serialize RestartWM = "restart"
+  serialize ExitWM = "exit"
   serialize EnableSticky = "sticky enable"
 
 data ModeName = ModeName String
