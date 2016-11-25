@@ -18,7 +18,7 @@ actionList' cs xs = ActionList [ActionsWithCriteria cs xs]
 action' :: [ActionCriteria] -> Action -> ActionList
 action' cs x = actionList' cs [x]
 
-exec x = liftF' (I3Action (toActionList (ExecAction x)))
+exec x = liftF' (I3Action (toActionList (Exec x)))
 execAlways = liftF' . ExecAlways
 raw = liftF' . Raw
 font = liftF'' . Font
@@ -30,10 +30,10 @@ a ==> b = bindcode a b
 bar = liftF' . Bar
 hideEdgeBorders = liftF' HideEdgeBorders
 forWindow criteria actions = liftF' (ForWindow (ActionsWithCriteria criteria actions))
-mode shortcut name config = bindcode shortcut (ModeAction modeName) >> liftF' (Mode modeName modeStatements)
+mode shortcut name config = bindcode shortcut (ActivateMode modeName) >> liftF' (Mode modeName modeStatements)
   where modeName = ModeName name
         modeStatements = toList (bindsym [EscapeSym] exit >> config)
-exit = ModeAction (ModeName "default")
+exit = ActivateMode (ModeName "default")
 
 class ActionListConvertible x where
   toActionList :: x -> ActionList

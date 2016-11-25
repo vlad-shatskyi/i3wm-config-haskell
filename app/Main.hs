@@ -11,6 +11,7 @@ telegram = [Title "Telegram"]
 terminal = [Instance "urxvt", IsFloating]
 
 setXkb layout = "setxkbmap " ++ layout ++ " && pkill -RTMIN+11 i3blocks"
+stepSize = 50
 
 config :: [I3ConfigStatement]
 config = toList $ do
@@ -33,38 +34,38 @@ config = toList $ do
   bar "i3blocks"
   hideEdgeBorders
 
-  bindsym [RaiseVolumeSym] (ExecAction "amixer -q sset Master 5%+ unmute && pkill -RTMIN+10 i3blocks")
-  bindsym [LowerVolumeSym] (ExecAction "amixer -q sset Master 5%- unmute && pkill -RTMIN+10 i3blocks")
-  bindsym [MuteSym] (ExecAction "amixer -q sset Master,0 toggle && pkill -RTMIN+10 i3blocks")
+  bindsym [RaiseVolumeSym] (Exec "amixer -q sset Master 5%+ unmute && pkill -RTMIN+10 i3blocks")
+  bindsym [LowerVolumeSym] (Exec "amixer -q sset Master 5%- unmute && pkill -RTMIN+10 i3blocks")
+  bindsym [MuteSym] (Exec "amixer -q sset Master,0 toggle && pkill -RTMIN+10 i3blocks")
 
-  bindsym [BrightnessUpSym] (ExecAction "xbacklight -inc 10")
-  bindsym [BrightnessDownSym] (ExecAction "xbacklight -dec 10")
+  bindsym [BrightnessUpSym] (Exec "xbacklight -inc 10")
+  bindsym [BrightnessDownSym] (Exec "xbacklight -dec 10")
 
-  Super Return ==> ExecAction "i3-sensible-terminal"
-  Super W ==> Kill
-  Super Slash ==> ExecAction "rofi -show drun"
+  Super Return ==> Exec "i3-sensible-terminal"
+  Super W ==> CloseWindow
+  Super Slash ==> Exec "rofi -show drun"
 
   forWindow chrome [MoveToWorkspace W1]
   forWindow rubymine [MoveToWorkspace W2]
   forWindow slack [MoveToWorkspace W4]
-  forWindow telegram [MoveToScratchpad, EnableSticky]
+  forWindow telegram [MoveToScratchpad, StickyEnable]
 
   bindsym [Mod4Sym, SpaceSym] FocusModeToggle
   bindsym [Mod4Sym, ShiftSym, SpaceSym] FloatingToggle
 
   Super Minus ==> ToggleScratchpad
-  SuperShift Minus ==> [EnableSticky, MoveToScratchpad]
+  SuperShift Minus ==> [StickyEnable, MoveToScratchpad]
 
 --   Super J ==> action' chrome focus
 --   Super K ==> action' rubymine focus
 --   Super Semicolon ==> action' slack focus
   Super T ==> action' terminal ToggleScratchpad
-  Super O ==> ExecAction "emacsclient -c -n ~/notes/notes.org"
+  Super O ==> Exec "emacsclient -c -n ~/notes/notes.org"
   bindsym [Mod4Sym, EqualSym] (action' telegram ToggleScratchpad)
 
   Super LeftBracket ==> FocusLeft
   Super RightBracket ==> FocusRight
-  Super F ==> ToggleFullscreen
+  Super F ==> FullscreenToggle
   Super H ==> SplitToggle
 
   Super J ==> FocusWorkspace W1
@@ -80,14 +81,14 @@ config = toList $ do
   Super N0 ==> FocusWorkspace W0
 
   mode (Super I) "Keyboard Layout Mode" $ do
-    E ==> [ExecAction (setXkb "us"), exit]
-    R ==> [ExecAction (setXkb "ru"), exit]
-    U ==> [ExecAction (setXkb "ua"), exit]
+    E ==> [Exec (setXkb "us"), exit]
+    R ==> [Exec (setXkb "ru"), exit]
+    U ==> [Exec (setXkb "ua"), exit]
 
   mode (Super Tilde) "i3 Management Mode" $ do
     C ==> [ReloadWM, exit]
     R ==> [RestartWM, exit]
-    W ==> [ExecAction "rofi -show window", exit]
+    W ==> [Exec "rofi -show window", exit]
 
     mode L "Layout Mode" $ do
       S ==> [LayoutStacking, exit]
@@ -96,16 +97,16 @@ config = toList $ do
       H ==> [LayoutSplitVertically, exit]
 
   mode (Super R) "Resize Mode" $ do
-    W ==> ResizeAction Grow Width 10
-    N ==> ResizeAction Shrink Width 10
-    H ==> ResizeAction Grow Height 10
-    L ==> ResizeAction Shrink Height 10
+    W ==> Resize Grow Width stepSize
+    N ==> Resize Shrink Width stepSize
+    H ==> Resize Grow Height stepSize
+    L ==> Resize Shrink Height stepSize
 
   mode (Super M) "Move Mode" $ do
-    H ==> MoveLeft 50
-    L ==> MoveRight 50
-    J ==> MoveDown 50
-    K ==> MoveUp 50
+    H ==> MoveLeft stepSize
+    L ==> MoveRight stepSize
+    J ==> MoveDown stepSize
+    K ==> MoveUp stepSize
     C ==> [MoveToCenter, exit]
 
     N1 ==> [MoveToWorkspace W1, FocusWorkspace W1, exit]

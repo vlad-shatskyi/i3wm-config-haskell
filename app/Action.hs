@@ -8,11 +8,10 @@ data WorkspaceNumber = W1 | W2 | W3 | W4 | W5 | W6 | W7 | W8 | W9 | W0
 data GrowOrShrink = Grow | Shrink
 data WidthOrHeight = Width | Height
 
-data Action = ExecAction String
+data Action = Exec String
             | FocusWorkspace WorkspaceNumber
-            | ResizeAction GrowOrShrink WidthOrHeight Int
-            | ToggleFullscreen
-            | Kill
+            | Resize GrowOrShrink WidthOrHeight Int
+            | CloseWindow
 
             | ReloadWM
             | RestartWM
@@ -58,16 +57,30 @@ data Action = ExecAction String
             | FloatingEnable
             | FloatingDisable
             | FloatingToggle
-            | ModeAction ModeName
-            | EnableSticky
+
+            | FullscreenEnable
+            | FullscreenDisable
+            | FullscreenToggle
+
+            | StickyEnable
+            | StickyDisable
+            | StickyToggle
+
+            | ActivateMode ModeName
 
 instance Serializable Action where
-  serialize (ExecAction x) = "exec \"" ++ x ++ "\""
+  serialize (Exec x) = "exec \"" ++ x ++ "\""
   serialize (FocusWorkspace workspaceNumber) = "workspace " ++ serialize workspaceNumber
-  serialize (ModeAction modeName) = "mode " ++ serialize modeName
+  serialize (ActivateMode modeName) = "mode " ++ serialize modeName
   serialize FloatingEnable = "floating enable"
   serialize FloatingDisable = "floating disable"
   serialize FloatingToggle = "floating toggle"
+  serialize StickyEnable = "sticky enable"
+  serialize StickyDisable = "sticky disable"
+  serialize StickyToggle = "sticky toggle"
+  serialize FullscreenEnable = "fullscreen enable"
+  serialize FullscreenDisable = "fullscreen disable"
+  serialize FullscreenToggle = "fullscreen toggle"
   serialize MoveToScratchpad = "move scratchpad"
   serialize ToggleScratchpad = "scratchpad show"
   serialize Nop = "nop"
@@ -98,13 +111,11 @@ instance Serializable Action where
   serialize (MoveToPosition x y) = "move position " ++ show x ++ " " ++ show y
   serialize MoveToMousePosition = "move position mouse"
   serialize (MoveToWorkspace workspaceNumber) = "move workspace " ++ serialize workspaceNumber
-  serialize (ResizeAction growOrShrink widthOrHeight amount) = "resize " ++ serialize growOrShrink ++ " " ++ serialize widthOrHeight ++ " " ++ show amount ++ " px or " ++ show amount ++ " ppt"
-  serialize ToggleFullscreen = "fullscreen toggle"
-  serialize Kill = "kill"
+  serialize (Resize growOrShrink widthOrHeight amount) = "resize " ++ serialize growOrShrink ++ " " ++ serialize widthOrHeight ++ " " ++ show amount ++ " px or " ++ show amount ++ " ppt"
+  serialize CloseWindow = "kill"
   serialize ReloadWM = "reload"
   serialize RestartWM = "restart"
   serialize ExitWM = "exit"
-  serialize EnableSticky = "sticky enable"
 
 data ModeName = ModeName String
 
