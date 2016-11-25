@@ -4,21 +4,13 @@ import Serializable
 import Key
 import Data.List (intercalate)
 
-data MoveSubject = Window | Container
-data MoveLocation = Workspace WorkspaceNumber
 data WorkspaceNumber = W1 | W2 | W3 | W4 | W5 | W6 | W7 | W8 | W9 | W0
 data FloatingActionTarget = ToggleFloatingActionTarget
 data GrowOrShrink = Grow | Shrink
 data WidthOrHeight = Width | Height
 
 data Action = ExecAction String
-            | MoveAction MoveSubject MoveLocation
             | WorkspaceAction WorkspaceNumber
-            | MoveLeft
-            | MoveRight
-            | MoveUp
-            | MoveDown
-            | MoveCenter
             | ResizeAction GrowOrShrink WidthOrHeight Int
             | ToggleFullscreen
             | Kill
@@ -55,13 +47,21 @@ data Action = ExecAction String
             | FocusTiling
             | FocusModeToggle
 
+            | MoveLeft Int
+            | MoveRight Int
+            | MoveUp Int
+            | MoveDown Int
+            | MoveToCenter
+            | MoveToPosition Int Int
+            | MoveToMousePosition
+            | MoveToWorkspace WorkspaceNumber
+
             | FloatingAction FloatingActionTarget
             | ModeAction ModeName
             | EnableSticky
 
 instance Serializable Action where
   serialize (ExecAction x) = "exec \"" ++ x ++ "\""
-  serialize (MoveAction subject location) = "move " ++ serialize subject ++ " " ++ serialize location
   serialize (WorkspaceAction workspaceNumber) = "workspace " ++ serialize workspaceNumber
   serialize (ModeAction modeName) = "mode " ++ serialize modeName
   serialize (FloatingAction target) = "floating " ++ serialize target
@@ -87,11 +87,14 @@ instance Serializable Action where
   serialize FocusFloating = "focus floating"
   serialize FocusTiling = "focus tiling"
   serialize FocusModeToggle = "focus mode_toggle"
-  serialize MoveLeft = "move left"
-  serialize MoveRight = "move right"
-  serialize MoveUp = "move up"
-  serialize MoveDown = "move down"
-  serialize MoveCenter = "move position center"
+  serialize (MoveLeft x) = "move left " ++ show x
+  serialize (MoveRight x) = "move right " ++ show x
+  serialize (MoveUp x) = "move up " ++ show x
+  serialize (MoveDown x) = "move down " ++ show x
+  serialize MoveToCenter = "move position center"
+  serialize (MoveToPosition x y) = "move position " ++ show x ++ " " ++ show y
+  serialize MoveToMousePosition = "move position mouse"
+  serialize (MoveToWorkspace workspaceNumber) = "move workspace " ++ serialize workspaceNumber
   serialize (ResizeAction growOrShrink widthOrHeight amount) = "resize " ++ serialize growOrShrink ++ " " ++ serialize widthOrHeight ++ " " ++ show amount ++ " px or " ++ show amount ++ " ppt"
   serialize ToggleFullscreen = "fullscreen toggle"
   serialize Kill = "kill"
@@ -115,13 +118,6 @@ instance Serializable WidthOrHeight where
 
 instance Serializable FloatingActionTarget where
   serialize ToggleFloatingActionTarget = "toggle"
-
-instance Serializable MoveSubject where
-  serialize Window = ""
-  serialize Container = "container"
-
-instance Serializable MoveLocation where
-  serialize (Workspace workspaceNumber) = "to workspace " ++ serialize workspaceNumber
 
 instance Serializable WorkspaceNumber where
   serialize W1 = "1"

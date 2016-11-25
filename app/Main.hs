@@ -44,9 +44,9 @@ config = toList $ do
   Super W ==> Kill
   Super Slash ==> ExecAction "rofi -show drun"
 
-  forWindow chrome [MoveAction Container (Workspace W1)]
-  forWindow rubymine [MoveAction Container (Workspace W2)]
-  forWindow slack [MoveAction Container (Workspace W4)]
+  forWindow chrome [MoveToWorkspace W1]
+  forWindow rubymine [MoveToWorkspace W2]
+  forWindow slack [MoveToWorkspace W4]
   forWindow telegram [MoveToScratchpad, EnableSticky]
 
   bindsym [Mod4Sym, SpaceSym] FocusModeToggle
@@ -102,11 +102,22 @@ config = toList $ do
     L ==> ResizeAction Shrink Height 10
 
   mode (Super M) "Move Mode" $ do
-    H ==> MoveLeft
-    L ==> MoveRight
-    J ==> MoveDown
-    K ==> MoveUp
-    C ==> [MoveCenter, exit]
+    H ==> MoveLeft 50
+    L ==> MoveRight 50
+    J ==> MoveDown 50
+    K ==> MoveUp 50
+    C ==> [MoveToCenter, exit]
+
+    One ==> MoveToWorkspace W1
+    Two ==> MoveToWorkspace W2
+    Three ==> MoveToWorkspace W3
+    Four ==> MoveToWorkspace W4
+    Five ==> MoveToWorkspace W5
+    Six ==> MoveToWorkspace W6
+    Seven ==> MoveToWorkspace W7
+    Eight ==> MoveToWorkspace W8
+    Nine ==> MoveToWorkspace W9
+    Zero ==> MoveToWorkspace W0
 
 main :: IO ()
 main = putStrLn $ interpret $ flatten [Mode (ModeName "default") config]
