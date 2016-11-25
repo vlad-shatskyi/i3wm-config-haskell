@@ -1,6 +1,6 @@
 module Main where
 
-import Key
+import DataTypes.Key
 import DataTypes.Action
 import DataTypes.Other
 import DSL

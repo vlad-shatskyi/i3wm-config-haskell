@@ -1,4 +1,4 @@
-module Key where
+module DataTypes.Key where
 
 import Serializable
 

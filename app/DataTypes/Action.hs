@@ -1,7 +1,7 @@
 module DataTypes.Action where
 
 import Serializable
-import Key
+import DataTypes.Key
 import DataTypes.Other
 import Data.List (intercalate)
 

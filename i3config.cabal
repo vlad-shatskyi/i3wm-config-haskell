@@ -31,8 +31,8 @@ executable i3config-exe
                      , FlexibleInstances
   other-modules:       DataTypes.Action
                      , DataTypes.Other
+                     , DataTypes.Key
                      , DSL
-                     , Key
                      , Serializable
   ghc-options:         -Wall -fno-warn-name-shadowing -fno-warn-missing-signatures
 
