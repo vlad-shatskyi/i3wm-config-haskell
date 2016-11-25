@@ -7,7 +7,10 @@ import Data.List (intercalate)
 
 data Action = Exec String
             | FocusWorkspace WorkspaceNumber
+
             | Resize GrowOrShrink WidthOrHeight Int
+            | ResizeTo Int Int
+
             | CloseWindow
 
             | ReloadWM
@@ -109,6 +112,7 @@ instance Serializable Action where
   serialize MoveToMousePosition = "move position mouse"
   serialize (MoveToWorkspace workspaceNumber) = "move workspace " ++ serialize workspaceNumber
   serialize (Resize growOrShrink widthOrHeight amount) = "resize " ++ serialize growOrShrink ++ " " ++ serialize widthOrHeight ++ " " ++ show amount ++ " px or " ++ show amount ++ " ppt"
+  serialize (ResizeTo w h) = "resize set " ++ show w ++ " " ++ show h
   serialize CloseWindow = "kill"
   serialize ReloadWM = "reload"
   serialize RestartWM = "restart"

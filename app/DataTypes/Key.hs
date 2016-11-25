@@ -41,6 +41,7 @@ data Key = Tilde
          | N9
          | N0
          | Minus
+         | Equal
          | Q
          | W
          | E
@@ -90,6 +91,7 @@ keyCode N8 = 17
 keyCode N9 = 18
 keyCode N0 = 19
 keyCode Minus = 20
+keyCode Equal = 21
 keyCode Q = 24
 keyCode W = 25
 keyCode E = 26
@@ -128,11 +130,12 @@ keyCode Slash = 61
 instance Serializable Key where
   serialize = show . keyCode
 
-data Shortcut = NoModifier Key | Super Key | SuperShift Key
+data Shortcut = NoModifier Key | Super Key | Shift Key | SuperShift Key
 
 instance Serializable Shortcut where
   serialize (NoModifier key) = serialize key
   serialize (Super key) = "Mod4+" ++ serialize key
+  serialize (Shift key) = "Shift+" ++ serialize key
   serialize (SuperShift key) = "Mod4+Shift+" ++ serialize key
 
 class ToShortcut a where

@@ -13,6 +13,11 @@ terminal = [Instance "urxvt", IsFloating]
 
 setXkb layout = "setxkbmap " ++ layout ++ " && pkill -RTMIN+11 i3blocks"
 stepSize = 50
+screenWidth = 3840
+screenHeight = 2190
+
+halfScreenWidth = quot screenWidth 2
+dockedWindowHeight = 100
 
 config :: [Statement]
 config = toList $ do
@@ -120,6 +125,18 @@ config = toList $ do
     N8 ==> [MoveToWorkspace W8, FocusWorkspace W8, exit]
     N9 ==> [MoveToWorkspace W9, FocusWorkspace W9, exit]
     N0 ==> [MoveToWorkspace W0, FocusWorkspace W0, exit]
+
+    D ==> [ ResizeTo halfScreenWidth dockedWindowHeight
+          , MoveToPosition (quot (screenWidth - halfScreenWidth) 2) (screenHeight - dockedWindowHeight)
+          , FocusTiling
+          , exit
+          ]
+
+    R ==> [ FocusFloating
+          , ResizeTo (quot screenWidth 3 * 2) (quot screenHeight 10 * 9)
+          , MoveToCenter
+          , exit
+          ]
 
 main :: IO ()
 main = putStrLn $ interpret $ flatten [Mode (ModeName "default") config]
