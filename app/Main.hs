@@ -67,17 +67,17 @@ config = toList $ do
   Super F ==> ToggleFullscreen
   Super H ==> SplitToggle
 
-  Super J ==> WorkspaceAction W1
-  Super K ==> WorkspaceAction W2
-  Super L ==> WorkspaceAction W3
-  Super Semicolon ==> WorkspaceAction W4
-  Super Quote ==> WorkspaceAction W9
+  Super J ==> FocusWorkspace W1
+  Super K ==> FocusWorkspace W2
+  Super L ==> FocusWorkspace W3
+  Super Semicolon ==> FocusWorkspace W4
+  Super Quote ==> FocusWorkspace W9
 
-  Super N5 ==> WorkspaceAction W5
-  Super N6 ==> WorkspaceAction W6
-  Super N7 ==> WorkspaceAction W7
-  Super N8 ==> WorkspaceAction W8
-  Super N0 ==> WorkspaceAction W0
+  Super N5 ==> FocusWorkspace W5
+  Super N6 ==> FocusWorkspace W6
+  Super N7 ==> FocusWorkspace W7
+  Super N8 ==> FocusWorkspace W8
+  Super N0 ==> FocusWorkspace W0
 
   mode (Super I) "Keyboard Layout Mode" $ do
     E ==> [ExecAction (setXkb "us"), exit]
@@ -108,16 +108,16 @@ config = toList $ do
     K ==> MoveUp 50
     C ==> [MoveToCenter, exit]
 
-    N1 ==> MoveToWorkspace W1
-    N2 ==> MoveToWorkspace W2
-    N3 ==> MoveToWorkspace W3
-    N4 ==> MoveToWorkspace W4
-    N5 ==> MoveToWorkspace W5
-    N6 ==> MoveToWorkspace W6
-    N7 ==> MoveToWorkspace W7
-    N8 ==> MoveToWorkspace W8
-    N9 ==> MoveToWorkspace W9
-    N0 ==> MoveToWorkspace W0
+    N1 ==> [MoveToWorkspace W1, FocusWorkspace W1, exit]
+    N2 ==> [MoveToWorkspace W2, FocusWorkspace W2, exit]
+    N3 ==> [MoveToWorkspace W3, FocusWorkspace W3, exit]
+    N4 ==> [MoveToWorkspace W4, FocusWorkspace W4, exit]
+    N5 ==> [MoveToWorkspace W5, FocusWorkspace W5, exit]
+    N6 ==> [MoveToWorkspace W6, FocusWorkspace W6, exit]
+    N7 ==> [MoveToWorkspace W7, FocusWorkspace W7, exit]
+    N8 ==> [MoveToWorkspace W8, FocusWorkspace W8, exit]
+    N9 ==> [MoveToWorkspace W9, FocusWorkspace W9, exit]
+    N0 ==> [MoveToWorkspace W0, FocusWorkspace W0, exit]
 
 main :: IO ()
 main = putStrLn $ interpret $ flatten [Mode (ModeName "default") config]

@@ -10,7 +10,7 @@ data GrowOrShrink = Grow | Shrink
 data WidthOrHeight = Width | Height
 
 data Action = ExecAction String
-            | WorkspaceAction WorkspaceNumber
+            | FocusWorkspace WorkspaceNumber
             | ResizeAction GrowOrShrink WidthOrHeight Int
             | ToggleFullscreen
             | Kill
@@ -62,7 +62,7 @@ data Action = ExecAction String
 
 instance Serializable Action where
   serialize (ExecAction x) = "exec \"" ++ x ++ "\""
-  serialize (WorkspaceAction workspaceNumber) = "workspace " ++ serialize workspaceNumber
+  serialize (FocusWorkspace workspaceNumber) = "workspace " ++ serialize workspaceNumber
   serialize (ModeAction modeName) = "mode " ++ serialize modeName
   serialize (FloatingAction target) = "floating " ++ serialize target
   serialize MoveToScratchpad = "move scratchpad"
