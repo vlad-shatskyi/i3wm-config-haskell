@@ -30,16 +30,16 @@ instance Serializable KeyName where
   serialize LeftBracketSym = "bracketLeft"
 
 data Key = Tilde
-         | One
-         | Two
-         | Three
-         | Four
-         | Five
-         | Six
-         | Seven
-         | Eight
-         | Nine
-         | Zero
+         | N1
+         | N2
+         | N3
+         | N4
+         | N5
+         | N6
+         | N7
+         | N8
+         | N9
+         | N0
          | Minus
          | Q
          | W
@@ -79,16 +79,16 @@ data Key = Tilde
 
 keyCode :: Key -> Integer
 keyCode Tilde = 49
-keyCode One = 10
-keyCode Two = 11
-keyCode Three = 12
-keyCode Four = 13
-keyCode Five = 14
-keyCode Six = 15
-keyCode Seven = 16
-keyCode Eight = 17
-keyCode Nine = 18
-keyCode Zero = 19
+keyCode N1 = 10
+keyCode N2 = 11
+keyCode N3 = 12
+keyCode N4 = 13
+keyCode N5 = 14
+keyCode N6 = 15
+keyCode N7 = 16
+keyCode N8 = 17
+keyCode N9 = 18
+keyCode N0 = 19
 keyCode Minus = 20
 keyCode Q = 24
 keyCode W = 25

@@ -73,11 +73,11 @@ config = toList $ do
   Super Semicolon ==> WorkspaceAction W4
   Super Quote ==> WorkspaceAction W9
 
-  Super Five ==> WorkspaceAction W5
-  Super Six ==> WorkspaceAction W6
-  Super Seven ==> WorkspaceAction W7
-  Super Eight ==> WorkspaceAction W8
-  Super Zero ==> WorkspaceAction W0
+  Super N5 ==> WorkspaceAction W5
+  Super N6 ==> WorkspaceAction W6
+  Super N7 ==> WorkspaceAction W7
+  Super N8 ==> WorkspaceAction W8
+  Super N0 ==> WorkspaceAction W0
 
   mode (Super I) "Keyboard Layout Mode" $ do
     E ==> [ExecAction (setXkb "us"), exit]
@@ -108,16 +108,16 @@ config = toList $ do
     K ==> MoveUp 50
     C ==> [MoveToCenter, exit]
 
-    One ==> MoveToWorkspace W1
-    Two ==> MoveToWorkspace W2
-    Three ==> MoveToWorkspace W3
-    Four ==> MoveToWorkspace W4
-    Five ==> MoveToWorkspace W5
-    Six ==> MoveToWorkspace W6
-    Seven ==> MoveToWorkspace W7
-    Eight ==> MoveToWorkspace W8
-    Nine ==> MoveToWorkspace W9
-    Zero ==> MoveToWorkspace W0
+    N1 ==> MoveToWorkspace W1
+    N2 ==> MoveToWorkspace W2
+    N3 ==> MoveToWorkspace W3
+    N4 ==> MoveToWorkspace W4
+    N5 ==> MoveToWorkspace W5
+    N6 ==> MoveToWorkspace W6
+    N7 ==> MoveToWorkspace W7
+    N8 ==> MoveToWorkspace W8
+    N9 ==> MoveToWorkspace W9
+    N0 ==> MoveToWorkspace W0
 
 main :: IO ()
 main = putStrLn $ interpret $ flatten [Mode (ModeName "default") config]
