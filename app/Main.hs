@@ -20,7 +20,9 @@ config = toList $ do
   execAlways "xinput set-prop 12 291 1" -- Enable natural scroll.
   execAlways "setxkbmap -option altwin:swap_alt_win"
   execAlways "setxkbmap -option ctrl:nocaps"
+
   raw "exec --no-startup-id dunst"
+  raw "floating_modifier Mod4"
 
   exec "google-chrome-unstable"
   exec "slack"
@@ -63,6 +65,7 @@ config = toList $ do
   Super LeftBracket ==> FocusLeft
   Super RightBracket ==> FocusRight
   Super F ==> ToggleFullscreen
+  Super H ==> SplitToggle
 
   Super J ==> WorkspaceAction W1
   Super K ==> WorkspaceAction W2

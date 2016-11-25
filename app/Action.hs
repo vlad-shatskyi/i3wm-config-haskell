@@ -39,6 +39,10 @@ data Action = ExecAction String
 
             | Nop
 
+            | SplitVertical
+            | SplitHorizontal
+            | SplitToggle
+
             | FloatingAction FloatingActionTarget
             | LayoutAction Layout
             | ModeAction ModeName
@@ -55,6 +59,9 @@ instance Serializable Action where
   serialize MoveToScratchpad = "move scratchpad"
   serialize ToggleScratchpad = "scratchpad show"
   serialize Nop = "nop"
+  serialize SplitVertical = "split vertical"
+  serialize SplitHorizontal = "split horizontal"
+  serialize SplitToggle = "split toggle"
   serialize FocusLeft = "focus left"
   serialize FocusRight = "focus right"
   serialize FocusUp = "focus up"
