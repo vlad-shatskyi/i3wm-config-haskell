@@ -130,13 +130,14 @@ keyCode Slash = 61
 instance Serializable Key where
   serialize = show . keyCode
 
-data Shortcut = NoModifier Key | Super Key | Shift Key | SuperShift Key
+data Shortcut = NoModifier Key | Super Key | Shift Key | SuperShift Key | SuperCtrl Key
 
 instance Serializable Shortcut where
   serialize (NoModifier key) = serialize key
   serialize (Super key) = "Mod4+" ++ serialize key
   serialize (Shift key) = "Shift+" ++ serialize key
   serialize (SuperShift key) = "Mod4+Shift+" ++ serialize key
+  serialize (SuperCtrl key) = "Mod4+Ctrl+" ++ serialize key
 
 class ToShortcut a where
   shortcut :: a -> Shortcut

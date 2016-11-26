@@ -9,7 +9,7 @@ chrome = [Instance "google-chrome-unstable"]
 rubymine = [Class "jetbrains-rubymine"]
 slack = [Instance "slack"]
 telegram = [Title "Telegram"]
-terminal = [Instance "urxvt", IsFloating]
+terminal = [Instance "konsole", IsFloating]
 
 setXkb layout = "setxkbmap " ++ layout ++ " && pkill -RTMIN+11 i3blocks"
 stepSize = 50
@@ -29,6 +29,7 @@ config = toList $ do
   execAlways "setxkbmap -option ctrl:nocaps"
 
   raw "exec --no-startup-id dunst"
+  raw "exec --no-startup-id clipmenud"
   raw "floating_modifier Mod4"
   raw "focus_follows_mouse no"
 
@@ -48,7 +49,7 @@ config = toList $ do
   bindsym [BrightnessUpSym] (Exec "xbacklight -inc 10")
   bindsym [BrightnessDownSym] (Exec "xbacklight -dec 10")
 
-  Super Return ==> Exec "i3-sensible-terminal"
+  Super Return ==> Exec "konsole"
   Super W ==> CloseWindow
   Super Slash ==> Exec "rofi -show drun"
 
@@ -62,6 +63,8 @@ config = toList $ do
 
   Super Minus ==> ToggleScratchpad
   SuperShift Minus ==> [StickyEnable, MoveToScratchpad]
+
+  SuperCtrl C ==> Exec "clipmenu"
 
 --   Super J ==> action' chrome focus
 --   Super K ==> action' rubymine focus
