@@ -30,6 +30,7 @@ config = toList $ do
 
   raw "exec --no-startup-id dunst"
   raw "floating_modifier Mod4"
+  raw "focus_follows_mouse no"
 
   exec "google-chrome-unstable"
   exec "slack"
