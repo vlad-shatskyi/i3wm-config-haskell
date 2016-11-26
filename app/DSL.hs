@@ -4,6 +4,7 @@ import DataTypes.Key
 import DataTypes.Action
 import DataTypes.Other
 import Control.Monad.Free
+import Data.Maybe (mapMaybe)
 
 data Op next = Op Statement next deriving (Functor)
 type Config = Free Op
@@ -31,9 +32,17 @@ a ==> b = bindcode a b
 bar = liftF' . Bar
 hideEdgeBorders = liftF' HideEdgeBorders
 forWindow criteria actions = liftF' (ForWindow (ActionsWithCriteria criteria actions))
+
 mode shortcut name config = bindcode shortcut (ActivateMode modeName) >> liftF' (Mode modeName modeStatements)
   where modeName = ModeName name
         modeStatements = toList (bindsym [EscapeSym] exit >> config)
+
+application :: [ActionCriteria] -> Config () -> Config ()
+application criteria config = liftF' (List (mapMaybe addCriteria (toList config)))
+  where addCriteria (BindCode r s (ActionList actionsWithCriteria)) = Just (BindCode r s (ActionList (map addCriteria' actionsWithCriteria)))
+        addCriteria _ = Nothing
+        addCriteria' (ActionsWithCriteria cs as) = ActionsWithCriteria (cs ++ criteria ++ [IsCurrent]) as
+
 exit = ActivateMode (ModeName "default")
 
 class ActionListConvertible x where

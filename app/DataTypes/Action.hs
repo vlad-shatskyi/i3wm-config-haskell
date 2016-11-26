@@ -122,12 +122,14 @@ data ActionCriteria = Instance String
                      | Class String
                      | Title String
                      | IsFloating
+                     | IsCurrent
 
 instance Serializable ActionCriteria where
   serialize (Instance name) = "instance=\"" ++ name ++ "\""
   serialize (Class name) = "class=\"" ++ name ++ "\""
   serialize (Title name) = "title=\"" ++ name ++ "\""
   serialize IsFloating = "floating"
+  serialize IsCurrent = "con_id=__focused__"
 
 data ActionList = ActionList [ActionsWithCriteria]
 
@@ -149,6 +151,7 @@ data Statement = I3Action ActionList
         | HideEdgeBorders
         | ForWindow ActionsWithCriteria
         | Mode ModeName [Statement]
+        | List [Statement]
         | Raw String
 
 instance Serializable Statement where
@@ -162,6 +165,7 @@ instance Serializable Statement where
   serialize (ForWindow x) = "for_window " ++ serialize x
   serialize (Mode (ModeName "default") statements) = interpret statements
   serialize (Mode name statements) = "mode " ++ serialize name ++ " {\n" ++ interpret statements ++ "\n}\n"
+  serialize (List statements) = interpret statements
   serialize (Raw string) = string
 
 interpret :: [Statement] -> String
