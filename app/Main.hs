@@ -7,6 +7,7 @@ import DSL
 
 chrome = [Instance "google-chrome-unstable"]
 rubymine = [Class "jetbrains-rubymine"]
+idea = [Class "jetbrains-idea-ce"]
 fileManager = [Class "Nautilus"]
 videoPlayer = [Class "mpv"]
 slack = [Instance "slack"]
@@ -57,6 +58,7 @@ config = toList $ do
 
   forWindow chrome [MoveToWorkspace W1]
   forWindow rubymine [MoveToWorkspace W2]
+  forWindow idea [MoveToWorkspace W2]
   forWindow slack [MoveToWorkspace W4]
   forWindow telegram [MoveToScratchpad, StickyEnable]
   forWindow fileManager [FloatingEnable, MoveToCenter]
