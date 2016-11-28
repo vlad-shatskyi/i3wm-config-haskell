@@ -1,7 +1,7 @@
 module Main where
 
+import Languages.I3
 import DataTypes.Key
-import DataTypes.Action
 import DataTypes.Other
 import DSL
 

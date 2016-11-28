@@ -1,7 +1,7 @@
 module DSL where
 
 import DataTypes.Key
-import DataTypes.Action
+import Languages.I3
 import DataTypes.Other
 import Control.Monad.Free
 import Data.Maybe (mapMaybe)

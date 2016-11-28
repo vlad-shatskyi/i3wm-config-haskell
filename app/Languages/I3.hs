@@ -1,9 +1,21 @@
-module DataTypes.Action where
+module Languages.I3 where
 
 import Serializable
 import DataTypes.Key
 import DataTypes.Other
 import Data.List (intercalate)
+
+data Statement = I3Action ActionList
+        | ExecAlways String
+        | Font [String] Int
+        | BindSym [KeyName] ActionList
+        | BindCode ShouldRelease Shortcut ActionList
+        | Bar String
+        | HideEdgeBorders
+        | ForWindow ActionsWithCriteria
+        | Mode ModeName [Statement]
+        | List [Statement]
+        | Raw String
 
 data Action = Exec String
             | FocusWorkspace WorkspaceNumber
@@ -142,18 +154,6 @@ instance Serializable ActionsWithCriteria where
   serialize (ActionsWithCriteria [] action) = intercalate ", " (map serialize action)
   serialize (ActionsWithCriteria criteria action) = "[" ++ unwords (map serialize criteria) ++ "] " ++ intercalate ", " (map serialize action)
 
-data Statement = I3Action ActionList
-        | ExecAlways String
-        | Font [String] Int
-        | BindSym [KeyName] ActionList
-        | BindCode ShouldRelease Shortcut ActionList
-        | Bar String
-        | HideEdgeBorders
-        | ForWindow ActionsWithCriteria
-        | Mode ModeName [Statement]
-        | List [Statement]
-        | Raw String
-
 instance Serializable Statement where
   serialize (I3Action exec) = serialize exec
   serialize (ExecAlways x) = "exec_always " ++ x
@@ -170,3 +170,4 @@ instance Serializable Statement where
 
 interpret :: [Statement] -> String
 interpret xs = intercalate "\n" (map serialize xs)
+
