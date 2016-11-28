@@ -7,6 +7,8 @@ import DSL
 
 chrome = [Instance "google-chrome-unstable"]
 rubymine = [Class "jetbrains-rubymine"]
+fileManager = [Class "Nautilus"]
+videoPlayer = [Class "mpv"]
 slack = [Instance "slack"]
 telegram = [Title "Telegram"]
 terminal = [Instance "konsole", IsFloating]
@@ -57,6 +59,8 @@ config = toList $ do
   forWindow rubymine [MoveToWorkspace W2]
   forWindow slack [MoveToWorkspace W4]
   forWindow telegram [MoveToScratchpad, StickyEnable]
+  forWindow fileManager [FloatingEnable, MoveToCenter]
+  forWindow videoPlayer [FullscreenEnable]
 
   bindsym [Mod4Sym, SpaceSym] FocusModeToggle
   bindsym [Mod4Sym, ShiftSym, SpaceSym] FloatingToggle
