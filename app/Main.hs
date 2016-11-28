@@ -90,10 +90,15 @@ config = toList $ do
   Super Semicolon ==> FocusWorkspace W4
   Super Quote ==> FocusWorkspace W9
 
+  Super N1 ==> FocusWorkspace W1
+  Super N2 ==> FocusWorkspace W2
+  Super N3 ==> FocusWorkspace W3
+  Super N4 ==> FocusWorkspace W4
   Super N5 ==> FocusWorkspace W5
   Super N6 ==> FocusWorkspace W6
   Super N7 ==> FocusWorkspace W7
   Super N8 ==> FocusWorkspace W8
+  Super N9 ==> FocusWorkspace W9
   Super N0 ==> FocusWorkspace W0
 
   mode (Super I) "Keyboard Layout Mode" $ do
