@@ -7,6 +7,7 @@ import DataTypes.Other
 import Data.List (intercalate)
 import Data.Function
 import Data.String.Interpolate
+import Data.String.Interpolate.Util
 
 data Binding = BindSym [KeyName] ActionList | BindCode ShouldRelease Shortcut ActionList
 
@@ -100,11 +101,20 @@ instance Show Statement where
     Font names size -> [i|font #{intercalate ":" names} #{size}|]
     BindingStatement (BindSym keys exec) -> [i|bindsym #{intercalate "+" (map show keys)} #{exec}|]
     BindingStatement (BindCode shouldRelease shortcut exec) -> [i|bindcode #{shouldRelease} #{shortcut} #{exec}|]
-    Bar command -> "bar {\n    status_command " ++ command ++ "\n    position top\n}"
     HideEdgeBorders -> "hide_edge_borders both"
     ForWindow x -> [i|for_window #{x}|]
-    ModeDefinition name bindings -> "mode " ++ show name ++ " {\n" ++ (bindings & map BindingStatement & map show & intercalate "\n") ++ "\n}\n"
     Raw string -> string
+    Bar command -> unindent [i|
+      bar {
+        status_command #{command}
+        position top
+      }
+    |]
+    ModeDefinition name bindings -> unindent [i|
+      mode "#{name}" {
+        #{bindings & map BindingStatement & map show & map (replicate 8 ' ' ++ ) & intercalate "\n"}
+      }
+    |]
 
 instance Show Action where
   show = \case
