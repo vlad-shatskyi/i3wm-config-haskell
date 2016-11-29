@@ -4,18 +4,21 @@ import Serializable
 import DataTypes.Key
 import DataTypes.Other
 import Data.List (intercalate)
+import Data.Function
 
-data Statement = I3Action ActionList
+data BindSym = BindSym [KeyName]
+data BindCode = BindCode ShouldRelease Shortcut
+data Binding = Binding (Either BindSym BindCode) ActionList
+
+data Statement = ExecStatement ActionList
         | ExecAlways String
         | Font [String] Int
-        | BindSym [KeyName] ActionList
-        | BindCode ShouldRelease Shortcut ActionList
+        | BindingStatement Binding
         | Bar String
         | HideEdgeBorders
         | ForWindow ActionsWithCriteria
-        | Mode ModeName [Statement]
-        | List [Statement]
-        | Raw String
+        | ModeDefinition ModeName [Binding]
+        | Raw String -- TODO: remove.
 
 data Action = Exec String
             | FocusWorkspace WorkspaceNumber
@@ -108,7 +111,7 @@ instance Serializable Action where
   serialize LayoutToggleAll = "layout toggle all"
   serialize FocusLeft = "focus left"
   serialize FocusRight = "focus right"
-  serialize FocusDown = "focus down"
+  serialize FocusDown = "foI3Actioncus down"
   serialize FocusUp = "focus up"
   serialize FocusParent = "focus parent"
   serialize FocusChild = "focus child"
@@ -155,17 +158,15 @@ instance Serializable ActionsWithCriteria where
   serialize (ActionsWithCriteria criteria action) = "[" ++ unwords (map serialize criteria) ++ "] " ++ intercalate ", " (map serialize action)
 
 instance Serializable Statement where
-  serialize (I3Action exec) = serialize exec
+  serialize (ExecStatement exec) = serialize exec
   serialize (ExecAlways x) = "exec_always " ++ x
   serialize (Font names size) = "font " ++ intercalate ":" names ++ " " ++ show size
-  serialize (BindSym keys exec) = "bindsym " ++ intercalate "+" (map serialize keys) ++ " " ++ serialize exec
-  serialize (BindCode shouldRelease shortcut exec) = "bindcode " ++ serialize shouldRelease ++ " " ++ serialize shortcut ++ " " ++ serialize exec
+  serialize (BindingStatement (Binding (Left (BindSym keys)) exec)) = "bindsym " ++ intercalate "+" (map serialize keys) ++ " " ++ serialize exec
+  serialize (BindingStatement (Binding (Right (BindCode shouldRelease shortcut)) exec)) = "bindcode " ++ serialize shouldRelease ++ " " ++ serialize shortcut ++ " " ++ serialize exec
   serialize (Bar command) = "bar {\n    status_command " ++ command ++ "\n    position top\n}"
   serialize HideEdgeBorders = "hide_edge_borders both"
   serialize (ForWindow x) = "for_window " ++ serialize x
-  serialize (Mode (ModeName "default") statements) = interpret statements
-  serialize (Mode name statements) = "mode " ++ serialize name ++ " {\n" ++ interpret statements ++ "\n}\n"
-  serialize (List statements) = interpret statements
+  serialize (ModeDefinition name bindings) = "mode " ++ serialize name ++ " {\n" ++ (bindings & map BindingStatement & interpret) ++ "\n}\n"
   serialize (Raw string) = string
 
 interpret :: [Statement] -> String

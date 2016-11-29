@@ -4,13 +4,12 @@ import DataTypes.Key
 import Languages.I3
 import DataTypes.Other
 import Control.Monad.Free
-import Data.Maybe (mapMaybe)
 
-data Op next = Op Statement next deriving (Functor)
-type Config = Free Op
+data BindingF next = BindingF Binding next deriving (Functor)
+data StatementF next = StatementF Statement next deriving (Functor)
 
-liftF' :: Statement -> Config ()
-liftF' x = liftF $ Op x ()
+liftF' :: Statement -> Free StatementF ()
+liftF' x = liftF $ StatementF x ()
 
 liftF'' = (liftF' .)
 
@@ -20,28 +19,26 @@ actionList' cs xs = ActionList [ActionsWithCriteria cs xs]
 action' :: [ActionCriteria] -> Action -> ActionList
 action' cs x = actionList' cs [x]
 
-exec x = liftF' (I3Action (toActionList (Exec x)))
+exec x = liftF' (ExecStatement (toActionList (Exec x)))
 execAlways = liftF' . ExecAlways
 raw = liftF' . Raw
 font = liftF'' . Font
-bindsym k a= liftF' (BindSym k (toActionList a))
 
-bindcode s a = liftF' (BindCode DontRelease (shortcut s) (toActionList a))
+bindsym :: (ActionListConvertible a) => [KeyName] -> a -> Free BindingF ()
+bindsym k a= liftF $ BindingF (Binding (Left (BindSym k)) (toActionList a)) ()
+
+bindcode :: (ToShortcut s, ActionListConvertible a) => s -> a -> Free BindingF ()
+bindcode s a = liftF $ BindingF (Binding (Right (BindCode DontRelease (shortcut s))) (toActionList a)) ()
+
 a ==> b = bindcode a b
 
 bar = liftF' . Bar
 hideEdgeBorders = liftF' HideEdgeBorders
 forWindow criteria actions = liftF' (ForWindow (ActionsWithCriteria criteria actions))
 
-mode shortcut name config = bindcode shortcut (ActivateMode modeName) >> liftF' (Mode modeName modeStatements)
+mode name config = liftF' (ModeDefinition modeName modeStatements)
   where modeName = ModeName name
-        modeStatements = toList (bindsym [EscapeSym] exit >> config)
-
-application :: [ActionCriteria] -> Config () -> Config ()
-application criteria config = liftF' (List (mapMaybe addCriteria (toList config)))
-  where addCriteria (BindCode r s (ActionList actionsWithCriteria)) = Just (BindCode r s (ActionList (map addCriteria' actionsWithCriteria)))
-        addCriteria _ = Nothing
-        addCriteria' (ActionsWithCriteria cs as) = ActionsWithCriteria (cs ++ criteria ++ [IsCurrent]) as
+        modeStatements = toBindingList (bindsym [EscapeSym] exit >> config)
 
 exit = ActivateMode (ModeName "default")
 
@@ -57,16 +54,15 @@ instance ActionListConvertible [Action] where
 instance ActionListConvertible ActionList where
   toActionList = id
 
-toList :: Config a -> [Statement]
+toList :: Free StatementF a -> [Statement]
 toList = reverse . toList' []
   where toList' accumulator (Pure _) = accumulator
-        toList' accumulator (Free (Op i3 next)) = toList' (i3:accumulator) next
+        toList' accumulator (Free (StatementF i3 next)) = toList' (i3:accumulator) next
 
--- TODO: refactor.
-flatten :: [Statement] -> [Statement]
-flatten ss = modes
-  where modes = foldl f [] ss
-        f acc (Mode name css) = (Mode name (filter (not . isMode) css):acc) ++ flatten css
-        f acc _ = acc
-        isMode (Mode _ _) = True
-        isMode _ = False
+toBindingList :: Free BindingF a -> [Binding]
+toBindingList = reverse . toList' []
+  where toList' accumulator (Pure _) = accumulator
+        toList' accumulator (Free (BindingF i3 next)) = toList' (i3:accumulator) next
+
+tempLift :: Free BindingF () -> Free StatementF ()
+tempLift x = liftF' (BindingStatement (head (toBindingList x)))
