@@ -93,22 +93,22 @@ data ActionsWithCriteria = ActionsWithCriteria [ActionCriteria] [Action]
 
 instance Serializable Statement where
   serialize = \case
-    (ExecStatement exec) -> serialize exec
-    (ExecAlways x) -> "exec_always " ++ x
-    (Font names size) -> "font " ++ intercalate ":" names ++ " " ++ show size
-    (BindingStatement (BindSym keys exec)) -> "bindsym " ++ intercalate "+" (map serialize keys) ++ " " ++ serialize exec
-    (BindingStatement (BindCode shouldRelease shortcut exec)) -> "bindcode " ++ serialize shouldRelease ++ " " ++ serialize shortcut ++ " " ++ serialize exec
-    (Bar command) -> "bar {\n    status_command " ++ command ++ "\n    position top\n}"
+    ExecStatement exec -> serialize exec
+    ExecAlways x -> "exec_always " ++ x
+    Font names size -> "font " ++ intercalate ":" names ++ " " ++ show size
+    BindingStatement (BindSym keys exec) -> "bindsym " ++ intercalate "+" (map serialize keys) ++ " " ++ serialize exec
+    BindingStatement (BindCode shouldRelease shortcut exec) -> "bindcode " ++ serialize shouldRelease ++ " " ++ serialize shortcut ++ " " ++ serialize exec
+    Bar command -> "bar {\n    status_command " ++ command ++ "\n    position top\n}"
     HideEdgeBorders -> "hide_edge_borders both"
-    (ForWindow x) -> "for_window " ++ serialize x
-    (ModeDefinition name bindings) -> "mode " ++ serialize name ++ " {\n" ++ (bindings & map BindingStatement & map serialize & intercalate "\n") ++ "\n}\n"
-    (Raw string) -> string
+    ForWindow x -> "for_window " ++ serialize x
+    ModeDefinition name bindings -> "mode " ++ serialize name ++ " {\n" ++ (bindings & map BindingStatement & map serialize & intercalate "\n") ++ "\n}\n"
+    Raw string -> string
 
 instance Serializable Action where
   serialize = \case
-    (Exec x) -> "exec \"" ++ x ++ "\""
-    (FocusWorkspace workspaceNumber) -> "workspace " ++ serialize workspaceNumber
-    (ActivateMode modeName) -> "mode " ++ serialize modeName
+    Exec x -> "exec \"" ++ x ++ "\""
+    FocusWorkspace workspaceNumber -> "workspace " ++ serialize workspaceNumber
+    ActivateMode modeName -> "mode " ++ serialize modeName
     FloatingEnable -> "floating enable"
     FloatingDisable -> "floating disable"
     FloatingToggle -> "floating toggle"
@@ -140,16 +140,16 @@ instance Serializable Action where
     FocusFloating -> "focus floating"
     FocusTiling -> "focus tiling"
     FocusModeToggle -> "focus mode_toggle"
-    (MoveLeft x) -> "move left " ++ show x
-    (MoveRight x) -> "move right " ++ show x
-    (MoveUp x) -> "move up " ++ show x
-    (MoveDown x) -> "move down " ++ show x
+    MoveLeft x -> "move left " ++ show x
+    MoveRight x -> "move right " ++ show x
+    MoveUp x -> "move up " ++ show x
+    MoveDown x -> "move down " ++ show x
     MoveToCenter -> "move position center"
-    (MoveToPosition x y) -> "move position " ++ show x ++ " " ++ show y
+    MoveToPosition x y -> "move position " ++ show x ++ " " ++ show y
     MoveToMousePosition -> "move position mouse"
-    (MoveToWorkspace workspaceNumber) -> "move workspace " ++ serialize workspaceNumber
-    (Resize growOrShrink widthOrHeight amount) -> "resize " ++ serialize growOrShrink ++ " " ++ serialize widthOrHeight ++ " " ++ show amount ++ " px or " ++ show amount ++ " ppt"
-    (ResizeTo w h) -> "resize set " ++ show w ++ " " ++ show h
+    MoveToWorkspace workspaceNumber -> "move workspace " ++ serialize workspaceNumber
+    Resize growOrShrink widthOrHeight amount -> "resize " ++ serialize growOrShrink ++ " " ++ serialize widthOrHeight ++ " " ++ show amount ++ " px or " ++ show amount ++ " ppt"
+    ResizeTo w h -> "resize set " ++ show w ++ " " ++ show h
     CloseWindow -> "kill"
     ReloadWM -> "reload"
     RestartWM -> "restart"
@@ -157,16 +157,17 @@ instance Serializable Action where
 
 instance Serializable ActionCriteria where
   serialize = \case
-    (Instance name) -> "instance=\"" ++ name ++ "\""
-    (Class name) -> "class=\"" ++ name ++ "\""
-    (Title name) -> "title=\"" ++ name ++ "\""
+    Instance name -> "instance=\"" ++ name ++ "\""
+    Class name -> "class=\"" ++ name ++ "\""
+    Title name -> "title=\"" ++ name ++ "\""
     IsFloating -> "floating"
     IsCurrent -> "con_id=__focused__"
 
 instance Serializable ActionList where
-  serialize (ActionList xs) = intercalate "; " (map serialize xs)
+  serialize = \case
+    ActionList xs -> intercalate "; " (map serialize xs)
 
 instance Serializable ActionsWithCriteria where
   serialize = \case
-    (ActionsWithCriteria [] action) -> intercalate ", " (map serialize action)
-    (ActionsWithCriteria criteria action) -> "[" ++ unwords (map serialize criteria) ++ "] " ++ intercalate ", " (map serialize action)
+    ActionsWithCriteria [] action -> intercalate ", " (map serialize action)
+    ActionsWithCriteria criteria action -> "[" ++ unwords (map serialize criteria) ++ "] " ++ intercalate ", " (map serialize action)
