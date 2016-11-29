@@ -1,10 +1,12 @@
+{-# LANGUAGE QuasiQuotes #-}
+
 module Languages.I3 where
 
-import Serializable
 import DataTypes.Key
 import DataTypes.Other
 import Data.List (intercalate)
 import Data.Function
+import Data.String.Interpolate
 
 data Binding = BindSym [KeyName] ActionList | BindCode ShouldRelease Shortcut ActionList
 
@@ -91,24 +93,24 @@ data ActionList = ActionList [ActionsWithCriteria]
 
 data ActionsWithCriteria = ActionsWithCriteria [ActionCriteria] [Action]
 
-instance Serializable Statement where
-  serialize = \case
-    ExecStatement exec -> serialize exec
+instance Show Statement where
+  show = \case
+    ExecStatement exec -> show exec
     ExecAlways x -> "exec_always " ++ x
     Font names size -> "font " ++ intercalate ":" names ++ " " ++ show size
-    BindingStatement (BindSym keys exec) -> "bindsym " ++ intercalate "+" (map serialize keys) ++ " " ++ serialize exec
-    BindingStatement (BindCode shouldRelease shortcut exec) -> "bindcode " ++ serialize shouldRelease ++ " " ++ serialize shortcut ++ " " ++ serialize exec
+    BindingStatement (BindSym keys exec) -> "bindsym " ++ intercalate "+" (map show keys) ++ " " ++ show exec
+    BindingStatement (BindCode shouldRelease shortcut exec) -> "bindcode " ++ show shouldRelease ++ " " ++ show shortcut ++ " " ++ show exec
     Bar command -> "bar {\n    status_command " ++ command ++ "\n    position top\n}"
     HideEdgeBorders -> "hide_edge_borders both"
-    ForWindow x -> "for_window " ++ serialize x
-    ModeDefinition name bindings -> "mode " ++ serialize name ++ " {\n" ++ (bindings & map BindingStatement & map serialize & intercalate "\n") ++ "\n}\n"
+    ForWindow x -> "for_window " ++ show x
+    ModeDefinition name bindings -> "mode " ++ show name ++ " {\n" ++ (bindings & map BindingStatement & map show & intercalate "\n") ++ "\n}\n"
     Raw string -> string
 
-instance Serializable Action where
-  serialize = \case
+instance Show Action where
+  show = \case
     Exec x -> "exec \"" ++ x ++ "\""
-    FocusWorkspace workspaceNumber -> "workspace " ++ serialize workspaceNumber
-    ActivateMode modeName -> "mode " ++ serialize modeName
+    FocusWorkspace workspaceNumber -> "workspace " ++ show workspaceNumber
+    ActivateMode modeName -> "mode " ++ show modeName
     FloatingEnable -> "floating enable"
     FloatingDisable -> "floating disable"
     FloatingToggle -> "floating toggle"
@@ -140,34 +142,34 @@ instance Serializable Action where
     FocusFloating -> "focus floating"
     FocusTiling -> "focus tiling"
     FocusModeToggle -> "focus mode_toggle"
-    MoveLeft x -> "move left " ++ show x
+    MoveLeft x -> [i|move left #{x}|]
     MoveRight x -> "move right " ++ show x
     MoveUp x -> "move up " ++ show x
     MoveDown x -> "move down " ++ show x
     MoveToCenter -> "move position center"
-    MoveToPosition x y -> "move position " ++ show x ++ " " ++ show y
+    MoveToPosition x y -> [i|move position #{x} #{y}|]
     MoveToMousePosition -> "move position mouse"
-    MoveToWorkspace workspaceNumber -> "move workspace " ++ serialize workspaceNumber
-    Resize growOrShrink widthOrHeight amount -> "resize " ++ serialize growOrShrink ++ " " ++ serialize widthOrHeight ++ " " ++ show amount ++ " px or " ++ show amount ++ " ppt"
+    MoveToWorkspace workspaceNumber -> "move workspace " ++ show workspaceNumber
+    Resize growOrShrink widthOrHeight amount -> "resize " ++ show growOrShrink ++ " " ++ show widthOrHeight ++ " " ++ show amount ++ " px or " ++ show amount ++ " ppt"
     ResizeTo w h -> "resize set " ++ show w ++ " " ++ show h
     CloseWindow -> "kill"
     ReloadWM -> "reload"
     RestartWM -> "restart"
     ExitWM -> "exit"
 
-instance Serializable ActionCriteria where
-  serialize = \case
+instance Show ActionCriteria where
+  show = \case
     Instance name -> "instance=\"" ++ name ++ "\""
     Class name -> "class=\"" ++ name ++ "\""
     Title name -> "title=\"" ++ name ++ "\""
     IsFloating -> "floating"
     IsCurrent -> "con_id=__focused__"
 
-instance Serializable ActionList where
-  serialize = \case
-    ActionList xs -> intercalate "; " (map serialize xs)
+instance Show ActionList where
+  show = \case
+    ActionList xs -> intercalate "; " (map show xs)
 
-instance Serializable ActionsWithCriteria where
-  serialize = \case
-    ActionsWithCriteria [] action -> intercalate ", " (map serialize action)
-    ActionsWithCriteria criteria action -> "[" ++ unwords (map serialize criteria) ++ "] " ++ intercalate ", " (map serialize action)
+instance Show ActionsWithCriteria where
+  show = \case
+    ActionsWithCriteria [] action -> intercalate ", " (map show action)
+    ActionsWithCriteria criteria action -> "[" ++ unwords (map show criteria) ++ "] " ++ intercalate ", " (map show action)

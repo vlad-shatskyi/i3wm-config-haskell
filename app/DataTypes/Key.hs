@@ -1,7 +1,5 @@
 module DataTypes.Key where
 
-import Serializable
-
 data KeyName = LowerVolumeSym
              | RaiseVolumeSym
              | MuteSym
@@ -15,19 +13,20 @@ data KeyName = LowerVolumeSym
              | MinusSym
              | LeftBracketSym
 
-instance Serializable KeyName where
-  serialize LowerVolumeSym = "XF86AudioLowerVolume"
-  serialize RaiseVolumeSym = "XF86AudioRaiseVolume"
-  serialize MuteSym = "XF86AudioMute"
-  serialize BrightnessUpSym = "XF86MonBrightnessUp"
-  serialize BrightnessDownSym = "XF86MonBrightnessDown"
-  serialize EscapeSym = "Escape"
-  serialize Mod4Sym = "Mod4"
-  serialize ShiftSym = "Shift"
-  serialize SpaceSym = "space"
-  serialize EqualSym = "equal"
-  serialize MinusSym = "minus"
-  serialize LeftBracketSym = "bracketLeft"
+instance Show KeyName where
+  show = \case
+    LowerVolumeSym -> "XF86AudioLowerVolume"
+    RaiseVolumeSym -> "XF86AudioRaiseVolume"
+    MuteSym -> "XF86AudioMute"
+    BrightnessUpSym -> "XF86MonBrightnessUp"
+    BrightnessDownSym -> "XF86MonBrightnessDown"
+    EscapeSym -> "Escape"
+    Mod4Sym -> "Mod4"
+    ShiftSym -> "Shift"
+    SpaceSym -> "space"
+    EqualSym -> "equal"
+    MinusSym -> "minus"
+    LeftBracketSym -> "bracketLeft"
 
 data Key = Tilde
          | N1
@@ -127,17 +126,18 @@ keyCode Comma = 59
 keyCode Period = 60
 keyCode Slash = 61
 
-instance Serializable Key where
-  serialize = show . keyCode
+instance Show Key where
+  show = show . keyCode
 
 data Shortcut = NoModifier Key | Super Key | Shift Key | SuperShift Key | SuperCtrl Key
 
-instance Serializable Shortcut where
-  serialize (NoModifier key) = serialize key
-  serialize (Super key) = "Mod4+" ++ serialize key
-  serialize (Shift key) = "Shift+" ++ serialize key
-  serialize (SuperShift key) = "Mod4+Shift+" ++ serialize key
-  serialize (SuperCtrl key) = "Mod4+Ctrl+" ++ serialize key
+instance Show Shortcut where
+  show = \case
+    NoModifier key -> show key
+    Super key -> "Mod4+" ++ show key
+    Shift key -> "Shift+" ++ show key
+    SuperShift key -> "Mod4+Shift+" ++ show key
+    SuperCtrl key -> "Mod4+Ctrl+" ++ show key
 
 class ToShortcut a where
   shortcut :: a -> Shortcut

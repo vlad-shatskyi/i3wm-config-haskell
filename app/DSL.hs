@@ -1,6 +1,5 @@
 module DSL where
 
-import Serializable
 import DataTypes.Key
 import Languages.I3
 import DataTypes.Other
@@ -65,4 +64,4 @@ instance (Functor f) => Hoistable f f where
 instance Hoistable BindingF StatementF where
   hoist (BindingF binding next) = StatementF (BindingStatement binding) next
 
-interpretStatementF (StatementF statement next) = putStrLn (serialize statement) >> next
+interpretStatementF (StatementF statement next) = print statement >> next
