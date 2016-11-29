@@ -1,4 +1,8 @@
+{-# LANGUAGE QuasiQuotes #-}
+
 module DataTypes.Key where
+
+import Data.String.Interpolate
 
 data KeyName = LowerVolumeSym
              | RaiseVolumeSym
@@ -12,21 +16,6 @@ data KeyName = LowerVolumeSym
              | EqualSym
              | MinusSym
              | LeftBracketSym
-
-instance Show KeyName where
-  show = \case
-    LowerVolumeSym -> "XF86AudioLowerVolume"
-    RaiseVolumeSym -> "XF86AudioRaiseVolume"
-    MuteSym -> "XF86AudioMute"
-    BrightnessUpSym -> "XF86MonBrightnessUp"
-    BrightnessDownSym -> "XF86MonBrightnessDown"
-    EscapeSym -> "Escape"
-    Mod4Sym -> "Mod4"
-    ShiftSym -> "Shift"
-    SpaceSym -> "space"
-    EqualSym -> "equal"
-    MinusSym -> "minus"
-    LeftBracketSym -> "bracketLeft"
 
 data Key = Tilde
          | N1
@@ -77,67 +66,83 @@ data Key = Tilde
          | Slash
 
 
+data Shortcut = NoModifier Key | Super Key | Shift Key | SuperShift Key | SuperCtrl Key
+
+instance Show KeyName where
+  show = \case
+    LowerVolumeSym -> "XF86AudioLowerVolume"
+    RaiseVolumeSym -> "XF86AudioRaiseVolume"
+    MuteSym -> "XF86AudioMute"
+    BrightnessUpSym -> "XF86MonBrightnessUp"
+    BrightnessDownSym -> "XF86MonBrightnessDown"
+    EscapeSym -> "Escape"
+    Mod4Sym -> "Mod4"
+    ShiftSym -> "Shift"
+    SpaceSym -> "space"
+    EqualSym -> "equal"
+    MinusSym -> "minus"
+    LeftBracketSym -> "bracketLeft"
+
 keyCode :: Key -> Integer
-keyCode Tilde = 49
-keyCode N1 = 10
-keyCode N2 = 11
-keyCode N3 = 12
-keyCode N4 = 13
-keyCode N5 = 14
-keyCode N6 = 15
-keyCode N7 = 16
-keyCode N8 = 17
-keyCode N9 = 18
-keyCode N0 = 19
-keyCode Minus = 20
-keyCode Equal = 21
-keyCode Q = 24
-keyCode W = 25
-keyCode E = 26
-keyCode R = 27
-keyCode T = 28
-keyCode Y = 29
-keyCode U = 30
-keyCode I = 31
-keyCode O = 32
-keyCode P = 33
-keyCode LeftBracket = 34
-keyCode RightBracket = 35
-keyCode Return = 36
-keyCode A = 38
-keyCode S = 39
-keyCode D = 40
-keyCode F = 41
-keyCode G = 42
-keyCode H = 43
-keyCode J = 44
-keyCode K = 45
-keyCode L = 46
-keyCode Semicolon = 47
-keyCode Quote = 48
-keyCode Z = 52
-keyCode X = 53
-keyCode C = 54
-keyCode V = 55
-keyCode B = 56
-keyCode N = 57
-keyCode M = 58
-keyCode Comma = 59
-keyCode Period = 60
-keyCode Slash = 61
+keyCode = \case
+  Tilde -> 49
+  N1 -> 10
+  N2 -> 11
+  N3 -> 12
+  N4 -> 13
+  N5 -> 14
+  N6 -> 15
+  N7 -> 16
+  N8 -> 17
+  N9 -> 18
+  N0 -> 19
+  Minus -> 20
+  Equal -> 21
+  Q -> 24
+  W -> 25
+  E -> 26
+  R -> 27
+  T -> 28
+  Y -> 29
+  U -> 30
+  I -> 31
+  O -> 32
+  P -> 33
+  LeftBracket -> 34
+  RightBracket -> 35
+  Return -> 36
+  A -> 38
+  S -> 39
+  D -> 40
+  F -> 41
+  G -> 42
+  H -> 43
+  J -> 44
+  K -> 45
+  L -> 46
+  Semicolon -> 47
+  Quote -> 48
+  Z -> 52
+  X -> 53
+  C -> 54
+  V -> 55
+  B -> 56
+  N -> 57
+  M -> 58
+  Comma -> 59
+  Period -> 60
+  Slash -> 61
 
 instance Show Key where
   show = show . keyCode
 
-data Shortcut = NoModifier Key | Super Key | Shift Key | SuperShift Key | SuperCtrl Key
-
 instance Show Shortcut where
   show = \case
     NoModifier key -> show key
-    Super key -> "Mod4+" ++ show key
-    Shift key -> "Shift+" ++ show key
-    SuperShift key -> "Mod4+Shift+" ++ show key
-    SuperCtrl key -> "Mod4+Ctrl+" ++ show key
+    Super key -> [i|Mod4+#{key}|]
+    Shift key -> [i|Shift+#{key}|]
+    SuperShift key -> [i|Mod4+Shift+#{key}|]
+    SuperCtrl key -> [i|Mod4+Ctrl+#{key}|]
 
 class ToShortcut a where
   shortcut :: a -> Shortcut

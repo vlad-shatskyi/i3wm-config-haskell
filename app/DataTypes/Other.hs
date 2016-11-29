@@ -1,6 +1,14 @@
+{-# LANGUAGE QuasiQuotes #-}
+
 module DataTypes.Other where
 
+import Data.String.Interpolate
+
 data WorkspaceNumber = W1 | W2 | W3 | W4 | W5 | W6 | W7 | W8 | W9 | W0
+data ModeName = ModeName String
+data GrowOrShrink = Grow | Shrink
+data WidthOrHeight = Width | Height
+data ShouldRelease = DontRelease | Release
 
 instance Show WorkspaceNumber where
   show = \case
@@ -15,30 +23,19 @@ instance Show WorkspaceNumber where
     W9 -> "9"
     W0 -> "0"
 
-
-data ModeName = ModeName String
-
 instance Show ModeName where
   show = \case
-    ModeName name -> "\"" ++ name ++ "\""
-
-
-data GrowOrShrink = Grow | Shrink
+    ModeName name -> [i|"#{name}"|]
 
 instance Show GrowOrShrink where
   show = \case
     Grow -> "grow"
     Shrink -> "shrink"
 
-
-data WidthOrHeight = Width | Height
-
 instance Show WidthOrHeight where
   show = \case
     Width -> "width"
     Height -> "height"
-
-data ShouldRelease = DontRelease | Release
 
 instance Show ShouldRelease where
   show = \case

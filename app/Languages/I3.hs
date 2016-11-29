@@ -96,21 +96,21 @@ data ActionsWithCriteria = ActionsWithCriteria [ActionCriteria] [Action]
 instance Show Statement where
   show = \case
     ExecStatement exec -> show exec
-    ExecAlways x -> "exec_always " ++ x
-    Font names size -> "font " ++ intercalate ":" names ++ " " ++ show size
-    BindingStatement (BindSym keys exec) -> "bindsym " ++ intercalate "+" (map show keys) ++ " " ++ show exec
-    BindingStatement (BindCode shouldRelease shortcut exec) -> "bindcode " ++ show shouldRelease ++ " " ++ show shortcut ++ " " ++ show exec
+    ExecAlways x -> [i|exec_always #{x}|]
+    Font names size -> [i|font #{intercalate ":" names} #{size}|]
+    BindingStatement (BindSym keys exec) -> [i|bindsym #{intercalate "+" (map show keys)} #{exec}|]
+    BindingStatement (BindCode shouldRelease shortcut exec) -> [i|bindcode #{shouldRelease} #{shortcut} #{exec}|]
     Bar command -> "bar {\n    status_command " ++ command ++ "\n    position top\n}"
     HideEdgeBorders -> "hide_edge_borders both"
-    ForWindow x -> "for_window " ++ show x
+    ForWindow x -> [i|for_window #{x}|]
     ModeDefinition name bindings -> "mode " ++ show name ++ " {\n" ++ (bindings & map BindingStatement & map show & intercalate "\n") ++ "\n}\n"
     Raw string -> string
 
 instance Show Action where
   show = \case
-    Exec x -> "exec \"" ++ x ++ "\""
-    FocusWorkspace workspaceNumber -> "workspace " ++ show workspaceNumber
-    ActivateMode modeName -> "mode " ++ show modeName
+    Exec x -> [i|exec "#{x}"|]
+    FocusWorkspace workspaceNumber -> [i|workspace #{workspaceNumber}|]
+    ActivateMode modeName -> [i|mode #{modeName}|]
     FloatingEnable -> "floating enable"
     FloatingDisable -> "floating disable"
     FloatingToggle -> "floating toggle"
@@ -143,15 +143,15 @@ instance Show Action where
     FocusTiling -> "focus tiling"
     FocusModeToggle -> "focus mode_toggle"
     MoveLeft x -> [i|move left #{x}|]
-    MoveRight x -> "move right " ++ show x
-    MoveUp x -> "move up " ++ show x
-    MoveDown x -> "move down " ++ show x
+    MoveRight x -> [i|move right #{x}|]
+    MoveUp x -> [i|move up #{x}|]
+    MoveDown x -> [i|move down #{x}|]
     MoveToCenter -> "move position center"
     MoveToPosition x y -> [i|move position #{x} #{y}|]
     MoveToMousePosition -> "move position mouse"
-    MoveToWorkspace workspaceNumber -> "move workspace " ++ show workspaceNumber
-    Resize growOrShrink widthOrHeight amount -> "resize " ++ show growOrShrink ++ " " ++ show widthOrHeight ++ " " ++ show amount ++ " px or " ++ show amount ++ " ppt"
-    ResizeTo w h -> "resize set " ++ show w ++ " " ++ show h
+    MoveToWorkspace workspaceNumber -> [i|move workspace #{workspaceNumber}|]
+    Resize growOrShrink widthOrHeight amount -> [i|resize #{growOrShrink} #{widthOrHeight} #{amount} px or #{amount} ppt|]
+    ResizeTo w h -> [i|resize set #{w} #{h}|]
     CloseWindow -> "kill"
     ReloadWM -> "reload"
     RestartWM -> "restart"
@@ -161,7 +161,7 @@ instance Show ActionCriteria where
   show = \case
     Instance name -> "instance=\"" ++ name ++ "\""
     Class name -> "class=\"" ++ name ++ "\""
-    Title name -> "title=\"" ++ name ++ "\""
+    Title name -> [i|title="#{name}"|]
     IsFloating -> "floating"
     IsCurrent -> "con_id=__focused__"
 
