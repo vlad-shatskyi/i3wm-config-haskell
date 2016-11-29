@@ -25,10 +25,10 @@ raw = liftF' . Raw
 font = liftF'' . Font
 
 bindsym :: (ActionListConvertible a) => [KeyName] -> a -> Free BindingF ()
-bindsym k a= liftF $ BindingF (Binding (Left (BindSym k)) (toActionList a)) ()
+bindsym k a= liftF $ BindingF (BindSym k (toActionList a)) ()
 
 bindcode :: (ToShortcut s, ActionListConvertible a) => s -> a -> Free BindingF ()
-bindcode s a = liftF $ BindingF (Binding (Right (BindCode DontRelease (shortcut s))) (toActionList a)) ()
+bindcode s a = liftF $ BindingF (BindCode DontRelease (shortcut s) (toActionList a)) ()
 
 a ==> b = bindcode a b
 

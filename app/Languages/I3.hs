@@ -6,9 +6,7 @@ import DataTypes.Other
 import Data.List (intercalate)
 import Data.Function
 
-data BindSym = BindSym [KeyName]
-data BindCode = BindCode ShouldRelease Shortcut
-data Binding = Binding (Either BindSym BindCode) ActionList
+data Binding = BindSym [KeyName] ActionList | BindCode ShouldRelease Shortcut ActionList
 
 data Statement = ExecStatement ActionList
         | ExecAlways String
@@ -161,8 +159,8 @@ instance Serializable Statement where
   serialize (ExecStatement exec) = serialize exec
   serialize (ExecAlways x) = "exec_always " ++ x
   serialize (Font names size) = "font " ++ intercalate ":" names ++ " " ++ show size
-  serialize (BindingStatement (Binding (Left (BindSym keys)) exec)) = "bindsym " ++ intercalate "+" (map serialize keys) ++ " " ++ serialize exec
-  serialize (BindingStatement (Binding (Right (BindCode shouldRelease shortcut)) exec)) = "bindcode " ++ serialize shouldRelease ++ " " ++ serialize shortcut ++ " " ++ serialize exec
+  serialize (BindingStatement (BindSym keys exec)) = "bindsym " ++ intercalate "+" (map serialize keys) ++ " " ++ serialize exec
+  serialize (BindingStatement (BindCode shouldRelease shortcut exec)) = "bindcode " ++ serialize shouldRelease ++ " " ++ serialize shortcut ++ " " ++ serialize exec
   serialize (Bar command) = "bar {\n    status_command " ++ command ++ "\n    position top\n}"
   serialize HideEdgeBorders = "hide_edge_borders both"
   serialize (ForWindow x) = "for_window " ++ serialize x
