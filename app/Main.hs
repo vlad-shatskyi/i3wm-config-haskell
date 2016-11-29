@@ -45,16 +45,16 @@ config = toList $ do
   bar "i3blocks"
   hideEdgeBorders
 
-  tempLift $ bindsym [RaiseVolumeSym] (Exec "amixer -q sset Master 5%+ unmute && pkill -RTMIN+10 i3blocks")
-  tempLift $ bindsym [LowerVolumeSym] (Exec "amixer -q sset Master 5%- unmute && pkill -RTMIN+10 i3blocks")
-  tempLift $ bindsym [MuteSym] (Exec "amixer -q sset Master,0 toggle && pkill -RTMIN+10 i3blocks")
+  bindsym [RaiseVolumeSym] (Exec "amixer -q sset Master 5%+ unmute && pkill -RTMIN+10 i3blocks")
+  bindsym [LowerVolumeSym] (Exec "amixer -q sset Master 5%- unmute && pkill -RTMIN+10 i3blocks")
+  bindsym [MuteSym] (Exec "amixer -q sset Master,0 toggle && pkill -RTMIN+10 i3blocks")
 
-  tempLift $ bindsym [BrightnessUpSym] (Exec "xbacklight -inc 10")
-  tempLift $ bindsym [BrightnessDownSym] (Exec "xbacklight -dec 10")
+  bindsym [BrightnessUpSym] (Exec "xbacklight -inc 10")
+  bindsym [BrightnessDownSym] (Exec "xbacklight -dec 10")
 
-  tempLift $ Super Return ==> Exec "konsole"
-  tempLift $ Super W ==> CloseWindow
-  tempLift $ Super Slash ==> Exec "rofi -show drun"
+  Super Return ==> Exec "konsole"
+  Super W ==> CloseWindow
+  Super Slash ==> Exec "rofi -show drun"
 
   forWindow chrome [MoveToWorkspace W1]
   forWindow rubymine [MoveToWorkspace W2]
@@ -64,50 +64,50 @@ config = toList $ do
   forWindow fileManager [FloatingEnable, MoveToCenter]
   forWindow videoPlayer [FullscreenEnable]
 
-  tempLift $ bindsym [Mod4Sym, SpaceSym] FocusModeToggle
-  tempLift $ bindsym [Mod4Sym, ShiftSym, SpaceSym] FloatingToggle
+  bindsym [Mod4Sym, SpaceSym] FocusModeToggle
+  bindsym [Mod4Sym, ShiftSym, SpaceSym] FloatingToggle
 
-  tempLift $ Super Minus ==> ToggleScratchpad
-  tempLift $ SuperShift Minus ==> [StickyEnable, MoveToScratchpad]
+  Super Minus ==> ToggleScratchpad
+  SuperShift Minus ==> [StickyEnable, MoveToScratchpad]
 
-  tempLift $ SuperCtrl C ==> Exec "clipmenu"
+  SuperCtrl C ==> Exec "clipmenu"
 
 --   Super J ==> action' chrome focus
 --   Super K ==> action' rubymine focus
 --   Super Semicolon ==> action' slack focus
-  tempLift $ Super T ==> action' terminal ToggleScratchpad
-  tempLift $ Super O ==> Exec "emacsclient -c -n ~/notes/notes.org"
-  tempLift $ bindsym [Mod4Sym, EqualSym] (action' telegram ToggleScratchpad)
+  Super T ==> action' terminal ToggleScratchpad
+  Super O ==> Exec "emacsclient -c -n ~/notes/notes.org"
+  bindsym [Mod4Sym, EqualSym] (action' telegram ToggleScratchpad)
 
-  tempLift $ Super LeftBracket ==> FocusLeft
-  tempLift $ Super RightBracket ==> FocusRight
-  tempLift $ Super F ==> FullscreenToggle
-  tempLift $ Super H ==> SplitToggle
+  Super LeftBracket ==> FocusLeft
+  Super RightBracket ==> FocusRight
+  Super F ==> FullscreenToggle
+  Super H ==> SplitToggle
 
-  tempLift $ Super J ==> FocusWorkspace W1
-  tempLift $ Super K ==> FocusWorkspace W2
-  tempLift $ Super L ==> FocusWorkspace W3
-  tempLift $ Super Semicolon ==> FocusWorkspace W4
-  tempLift $ Super Quote ==> FocusWorkspace W9
+  Super J ==> FocusWorkspace W1
+  Super K ==> FocusWorkspace W2
+  Super L ==> FocusWorkspace W3
+  Super Semicolon ==> FocusWorkspace W4
+  Super Quote ==> FocusWorkspace W9
 
-  tempLift $ Super N1 ==> FocusWorkspace W1
-  tempLift $ Super N2 ==> FocusWorkspace W2
-  tempLift $ Super N3 ==> FocusWorkspace W3
-  tempLift $ Super N4 ==> FocusWorkspace W4
-  tempLift $ Super N5 ==> FocusWorkspace W5
-  tempLift $ Super N6 ==> FocusWorkspace W6
-  tempLift $ Super N7 ==> FocusWorkspace W7
-  tempLift $ Super N8 ==> FocusWorkspace W8
-  tempLift $ Super N9 ==> FocusWorkspace W9
-  tempLift $ Super N0 ==> FocusWorkspace W0
+  Super N1 ==> FocusWorkspace W1
+  Super N2 ==> FocusWorkspace W2
+  Super N3 ==> FocusWorkspace W3
+  Super N4 ==> FocusWorkspace W4
+  Super N5 ==> FocusWorkspace W5
+  Super N6 ==> FocusWorkspace W6
+  Super N7 ==> FocusWorkspace W7
+  Super N8 ==> FocusWorkspace W8
+  Super N9 ==> FocusWorkspace W9
+  Super N0 ==> FocusWorkspace W0
 
-  tempLift $ Super I ==> ActivateMode (ModeName "Keyboard Layout Mode")
+  Super I ==> ActivateMode (ModeName "Keyboard Layout Mode")
   mode "Keyboard Layout Mode" $ do
     E ==> [Exec (setXkb "us"), exit]
     R ==> [Exec (setXkb "ru"), exit]
     U ==> [Exec (setXkb "ua"), exit]
 
-  tempLift $ Super Tilde ==> ActivateMode (ModeName "i3 Management Mode")
+  Super Tilde ==> ActivateMode (ModeName "i3 Management Mode")
   mode "i3 Management Mode" $ do
     C ==> [ReloadWM, exit]
     R ==> [RestartWM, exit]
@@ -121,14 +121,14 @@ config = toList $ do
     V ==> [LayoutSplitHorizontally, exit]
     H ==> [LayoutSplitVertically, exit]
 
-  tempLift $ Super R ==> ActivateMode (ModeName "Resize Mode")
+  Super R ==> ActivateMode (ModeName "Resize Mode")
   mode "Resize Mode" $ do
     W ==> Resize Grow Width stepSize
     N ==> Resize Shrink Width stepSize
     H ==> Resize Grow Height stepSize
     L ==> Resize Shrink Height stepSize
 
-  tempLift $ Super M ==> ActivateMode (ModeName "Move Mode")
+  Super M ==> ActivateMode (ModeName "Move Mode")
   mode "Move Mode" $ do
     H ==> MoveLeft stepSize
     L ==> MoveRight stepSize

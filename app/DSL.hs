@@ -24,12 +24,8 @@ execAlways = liftF' . ExecAlways
 raw = liftF' . Raw
 font = liftF'' . Font
 
-bindsym :: (ActionListConvertible a) => [KeyName] -> a -> Free BindingF ()
-bindsym k a= liftF $ BindingF (BindSym k (toActionList a)) ()
-
-bindcode :: (ToShortcut s, ActionListConvertible a) => s -> a -> Free BindingF ()
-bindcode s a = liftF $ BindingF (BindCode DontRelease (shortcut s) (toActionList a)) ()
-
+bindsym k a = hoistFree hoist $ liftF $ BindingF (BindSym k (toActionList a)) ()
+bindcode s a = hoistFree hoist $ liftF $ BindingF (BindCode DontRelease (shortcut s) (toActionList a)) ()
 a ==> b = bindcode a b
 
 bar = liftF' . Bar
@@ -64,5 +60,12 @@ toBindingList = reverse . toList' []
   where toList' accumulator (Pure _) = accumulator
         toList' accumulator (Free (BindingF i3 next)) = toList' (i3:accumulator) next
 
-tempLift :: Free BindingF () -> Free StatementF ()
-tempLift x = liftF' (BindingStatement (head (toBindingList x)))
+class (Functor g) => Hoistable f g where
+  hoist :: f b -> g b
+
+instance (Functor f) => Hoistable f f where
+  hoist = id
+
+instance Hoistable BindingF StatementF where
+  hoist :: BindingF a -> StatementF a
+  hoist (BindingF binding next) = StatementF (BindingStatement binding) next

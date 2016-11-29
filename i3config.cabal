@@ -29,6 +29,9 @@ executable i3config-exe
   default-language:    Haskell2010
   default-extensions:  DeriveFunctor
                      , FlexibleInstances
+                     , FlexibleContexts
+                     , MultiParamTypeClasses
+                     , InstanceSigs
   other-modules:       Languages.I3
                      , DataTypes.Other
                      , DataTypes.Key
