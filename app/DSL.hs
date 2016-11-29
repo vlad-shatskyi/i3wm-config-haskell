@@ -63,7 +63,6 @@ instance (Functor f) => Hoistable f f where
   hoist = id
 
 instance Hoistable BindingF StatementF where
-  hoist :: BindingF a -> StatementF a
   hoist (BindingF binding next) = StatementF (BindingStatement binding) next
 
 interpretStatementF (StatementF statement next) = putStrLn (serialize statement) >> next
