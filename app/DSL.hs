@@ -38,16 +38,16 @@ mode name config = liftF' (ModeDefinition modeName modeStatements)
 
 exit = ActivateMode (ModeName "default")
 
-class ActionListConvertible x where
+class ToActionList x where
   toActionList :: x -> ActionList
 
-instance ActionListConvertible Action where
+instance ToActionList Action where
   toActionList x = toActionList [x]
 
-instance ActionListConvertible [Action] where
+instance ToActionList [Action] where
   toActionList xs = ActionList [ActionsWithCriteria [] xs]
 
-instance ActionListConvertible ActionList where
+instance ToActionList ActionList where
   toActionList = id
 
 toList :: Free StatementF a -> [Statement]
