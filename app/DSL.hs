@@ -1,5 +1,6 @@
 module DSL where
 
+import Serializable
 import DataTypes.Key
 import Languages.I3
 import DataTypes.Other
@@ -50,11 +51,6 @@ instance ToActionList [Action] where
 instance ToActionList ActionList where
   toActionList = id
 
-toList :: Free StatementF a -> [Statement]
-toList = reverse . toList' []
-  where toList' accumulator (Pure _) = accumulator
-        toList' accumulator (Free (StatementF i3 next)) = toList' (i3:accumulator) next
-
 toBindingList :: Free BindingF a -> [Binding]
 toBindingList = reverse . toList' []
   where toList' accumulator (Pure _) = accumulator
@@ -69,3 +65,5 @@ instance (Functor f) => Hoistable f f where
 instance Hoistable BindingF StatementF where
   hoist :: BindingF a -> StatementF a
   hoist (BindingF binding next) = StatementF (BindingStatement binding) next
+
+interpretStatementF (StatementF statement next) = putStrLn (serialize statement) >> next

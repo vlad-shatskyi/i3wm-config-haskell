@@ -81,6 +81,28 @@ data Action = Exec String
 
             | ActivateMode ModeName
 
+data ActionCriteria = Instance String
+                     | Class String
+                     | Title String
+                     | IsFloating
+                     | IsCurrent
+
+data ActionList = ActionList [ActionsWithCriteria]
+
+data ActionsWithCriteria = ActionsWithCriteria [ActionCriteria] [Action]
+
+instance Serializable Statement where
+  serialize (ExecStatement exec) = serialize exec
+  serialize (ExecAlways x) = "exec_always " ++ x
+  serialize (Font names size) = "font " ++ intercalate ":" names ++ " " ++ show size
+  serialize (BindingStatement (BindSym keys exec)) = "bindsym " ++ intercalate "+" (map serialize keys) ++ " " ++ serialize exec
+  serialize (BindingStatement (BindCode shouldRelease shortcut exec)) = "bindcode " ++ serialize shouldRelease ++ " " ++ serialize shortcut ++ " " ++ serialize exec
+  serialize (Bar command) = "bar {\n    status_command " ++ command ++ "\n    position top\n}"
+  serialize HideEdgeBorders = "hide_edge_borders both"
+  serialize (ForWindow x) = "for_window " ++ serialize x
+  serialize (ModeDefinition name bindings) = "mode " ++ serialize name ++ " {\n" ++ (bindings & map BindingStatement & map serialize & intercalate "\n") ++ "\n}\n"
+  serialize (Raw string) = string
+
 instance Serializable Action where
   serialize (Exec x) = "exec \"" ++ x ++ "\""
   serialize (FocusWorkspace workspaceNumber) = "workspace " ++ serialize workspaceNumber
@@ -131,12 +153,6 @@ instance Serializable Action where
   serialize RestartWM = "restart"
   serialize ExitWM = "exit"
 
-data ActionCriteria = Instance String
-                     | Class String
-                     | Title String
-                     | IsFloating
-                     | IsCurrent
-
 instance Serializable ActionCriteria where
   serialize (Instance name) = "instance=\"" ++ name ++ "\""
   serialize (Class name) = "class=\"" ++ name ++ "\""
@@ -144,29 +160,9 @@ instance Serializable ActionCriteria where
   serialize IsFloating = "floating"
   serialize IsCurrent = "con_id=__focused__"
 
-data ActionList = ActionList [ActionsWithCriteria]
-
 instance Serializable ActionList where
   serialize (ActionList xs) = intercalate "; " (map serialize xs)
-
-data ActionsWithCriteria = ActionsWithCriteria [ActionCriteria] [Action]
 
 instance Serializable ActionsWithCriteria where
   serialize (ActionsWithCriteria [] action) = intercalate ", " (map serialize action)
   serialize (ActionsWithCriteria criteria action) = "[" ++ unwords (map serialize criteria) ++ "] " ++ intercalate ", " (map serialize action)
-
-instance Serializable Statement where
-  serialize (ExecStatement exec) = serialize exec
-  serialize (ExecAlways x) = "exec_always " ++ x
-  serialize (Font names size) = "font " ++ intercalate ":" names ++ " " ++ show size
-  serialize (BindingStatement (BindSym keys exec)) = "bindsym " ++ intercalate "+" (map serialize keys) ++ " " ++ serialize exec
-  serialize (BindingStatement (BindCode shouldRelease shortcut exec)) = "bindcode " ++ serialize shouldRelease ++ " " ++ serialize shortcut ++ " " ++ serialize exec
-  serialize (Bar command) = "bar {\n    status_command " ++ command ++ "\n    position top\n}"
-  serialize HideEdgeBorders = "hide_edge_borders both"
-  serialize (ForWindow x) = "for_window " ++ serialize x
-  serialize (ModeDefinition name bindings) = "mode " ++ serialize name ++ " {\n" ++ (bindings & map BindingStatement & interpret) ++ "\n}\n"
-  serialize (Raw string) = string
-
-interpret :: [Statement] -> String
-interpret xs = intercalate "\n" (map serialize xs)
-

@@ -4,6 +4,7 @@ import Languages.I3
 import DataTypes.Key
 import DataTypes.Other
 import DSL
+import Control.Monad.Free
 
 chrome = [Instance "google-chrome-unstable"]
 rubymine = [Class "jetbrains-rubymine"]
@@ -22,8 +23,7 @@ screenHeight = 2160
 dockedWindowWidth = quot screenWidth 3 * 2
 dockedWindowHeight = 140
 
-config :: [Statement]
-config = toList $ do
+config = do
   execAlways "xinput set-prop 12 281 1" -- Enable Tapping.
   execAlways "xinput set-prop 12 283 0" -- Disable Tapping Drag.
   execAlways "xinput set-prop 12 289 0.85" -- Increase Accel Speed.
@@ -72,9 +72,6 @@ config = toList $ do
 
   SuperCtrl C ==> Exec "clipmenu"
 
---   Super J ==> action' chrome focus
---   Super K ==> action' rubymine focus
---   Super Semicolon ==> action' slack focus
   Super T ==> action' terminal ToggleScratchpad
   Super O ==> Exec "emacsclient -c -n ~/notes/notes.org"
   bindsym [Mod4Sym, EqualSym] (action' telegram ToggleScratchpad)
@@ -160,4 +157,4 @@ config = toList $ do
           ]
 
 main :: IO ()
-main = putStrLn $ interpret config
+main = iterM interpretStatementF config
