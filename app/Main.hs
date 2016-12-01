@@ -16,7 +16,7 @@ telegram = [Title "Telegram"]
 terminal = [Instance "konsole", IsFloating]
 
 setXkb layout = "setxkbmap " ++ layout ++ " && pkill -RTMIN+11 i3blocks"
-stepSize = 50
+stepSize = 10
 screenWidth = 3840
 screenHeight = 2160
 
