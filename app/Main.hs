@@ -157,4 +157,4 @@ config = do
           ]
 
 main :: IO ()
-main = iterM interpretStatementF config
+main = iterM Languages.I3.interpretLanguageF config

@@ -3,13 +3,11 @@ module DSL where
 import DataTypes.Key
 import Languages.I3
 import DataTypes.Other
+import Hoistable
 import Control.Monad.Free
 
-data BindingF next = BindingF Binding next deriving (Functor)
-data StatementF next = StatementF Statement next deriving (Functor)
-
-liftF' :: Statement -> Free StatementF ()
-liftF' x = liftF $ StatementF x ()
+liftF' :: I3 -> Free LanguageF ()
+liftF' x = liftF $ LanguageF x ()
 
 liftF'' = (liftF' .)
 
@@ -54,14 +52,3 @@ toBindingList :: Free BindingF a -> [Binding]
 toBindingList = reverse . toList' []
   where toList' accumulator (Pure _) = accumulator
         toList' accumulator (Free (BindingF i3 next)) = toList' (i3:accumulator) next
-
-class (Functor g) => Hoistable f g where
-  hoist :: f b -> g b
-
-instance (Functor f) => Hoistable f f where
-  hoist = id
-
-instance Hoistable BindingF StatementF where
-  hoist (BindingF binding next) = StatementF (BindingStatement binding) next
-
-interpretStatementF (StatementF statement next) = print statement >> next

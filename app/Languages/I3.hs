@@ -4,6 +4,8 @@ module Languages.I3 where
 
 import DataTypes.Key
 import DataTypes.Other
+import Hoistable
+
 import Data.List (intercalate)
 import Data.Function
 import Data.String.Interpolate
@@ -11,7 +13,7 @@ import Data.String.Interpolate.Util
 
 data Binding = BindSym [KeyName] ActionList | BindCode ShouldRelease Shortcut ActionList
 
-data Statement = ExecStatement ActionList
+data I3 = ExecStatement ActionList
         | ExecAlways String
         | Font [String] Int
         | BindingStatement Binding
@@ -94,7 +96,13 @@ data ActionList = ActionList [ActionsWithCriteria]
 
 data ActionsWithCriteria = ActionsWithCriteria [ActionCriteria] [Action]
 
-instance Show Statement where
+data BindingF next = BindingF Binding next deriving (Functor)
+data LanguageF next = LanguageF I3 next deriving (Functor)
+
+instance Hoistable BindingF LanguageF where
+  hoist (BindingF binding next) = LanguageF (BindingStatement binding) next
+
+instance Show I3 where
   show = \case
     ExecStatement exec -> show exec
     ExecAlways x -> [i|exec_always #{x}|]
@@ -183,3 +191,5 @@ instance Show ActionsWithCriteria where
   show = \case
     ActionsWithCriteria [] action -> intercalate ", " (map show action)
     ActionsWithCriteria criteria action -> "[" ++ unwords (map show criteria) ++ "] " ++ intercalate ", " (map show action)
+
+interpretLanguageF (LanguageF statement next) = print statement >> next
