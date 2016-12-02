@@ -192,4 +192,5 @@ instance Show ActionsWithCriteria where
     ActionsWithCriteria [] action -> intercalate ", " (map show action)
     ActionsWithCriteria criteria action -> "[" ++ unwords (map show criteria) ++ "] " ++ intercalate ", " (map show action)
 
+interpretLanguageF :: LanguageF (IO a) -> IO a
 interpretLanguageF (LanguageF statement next) = print statement >> next
