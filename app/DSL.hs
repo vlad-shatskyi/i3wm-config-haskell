@@ -34,7 +34,7 @@ forWindow criteria actions = liftF' (ForWindow (ActionsWithCriteria criteria act
 
 mode name config = liftF' (ModeDefinition modeName modeStatements)
   where modeName = ModeName name
-        modeStatements = toBindingList (bindsym [EscapeSym] exit >> config)
+        modeStatements = toBindingList (bindsym [EscapeSym] exit >> bindcode Q exit >> config)
 
 exit = ActivateMode (ModeName "default")
 
