@@ -10,10 +10,10 @@ import Control.Monad.Free
 import Data.String.Interpolate
 import Data.String.Interpolate.Util
 
-data Binding = BindSym [KeyName] ActionList | BindCode ShouldRelease Shortcut ActionList
+data Binding = BindSym [KeyName] ActionsWithCriteria | BindCode ShouldRelease Shortcut ActionsWithCriteria
 
 data LanguageF next
-  = ExecStatement ActionList next
+  = ExecStatement ActionsWithCriteria next
   | ExecAlways String next
   | Font [String] Int next
   | Bar String next
@@ -92,8 +92,6 @@ data ActionCriteria = Instance String
                      | IsFloating
                      | IsCurrent
 
-data ActionList = ActionList [ActionsWithCriteria]
-
 data ActionsWithCriteria = ActionsWithCriteria [ActionCriteria] [Action]
 
 data BindingF next = BindingF Binding next deriving (Functor)
@@ -158,10 +156,6 @@ instance Show ActionCriteria where
     Title name -> [i|title="#{name}"|]
     IsFloating -> "floating"
     IsCurrent -> "con_id=__focused__"
-
-instance Show ActionList where
-  show = \case
-    ActionList xs -> intercalate "; " (map show xs)
 
 instance Show ActionsWithCriteria where
   show = \case

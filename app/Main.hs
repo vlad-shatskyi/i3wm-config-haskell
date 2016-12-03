@@ -76,9 +76,9 @@ config = do
 
   SuperCtrl C ==> Exec "clipmenu"
 
-  Super T ==> action' terminal ToggleScratchpad
+  Super T ==> ActionsWithCriteria terminal [ToggleScratchpad]
   Super O ==> Exec "emacsclient -c -n ~/notes/notes.org"
-  bindsym [Mod4Sym, EqualSym] (action' telegram ToggleScratchpad)
+  bindsym [Mod4Sym, EqualSym] (ActionsWithCriteria telegram [ToggleScratchpad])
 
   Super LeftBracket ==> FocusLeft
   Super RightBracket ==> FocusRight

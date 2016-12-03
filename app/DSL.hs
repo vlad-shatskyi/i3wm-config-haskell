@@ -20,12 +20,6 @@ instance LH LanguageF TopLevelF where
 instance LH BindingF TopLevelF where
   lh fx = liftF $ RR (fx ())
 
-actionList' :: [ActionCriteria] -> [Action] -> ActionList
-actionList' cs xs = ActionList [ActionsWithCriteria cs xs]
-
-action' :: [ActionCriteria] -> Action -> ActionList
-action' cs x = actionList' cs [x]
-
 exec x = lh $ ExecStatement (toActionList (Exec x))
 execAlways a = lh $ ExecAlways a
 raw a = lh $ Raw a
@@ -46,15 +40,15 @@ mode name config = lh $ ModeDefinition modeName bindings
 exit = ActivateMode (ModeName "default")
 
 class ToActionList x where
-  toActionList :: x -> ActionList
+  toActionList :: x -> ActionsWithCriteria
 
 instance ToActionList Action where
   toActionList x = toActionList [x]
 
 instance ToActionList [Action] where
-  toActionList xs = ActionList [ActionsWithCriteria [] xs]
+  toActionList = ActionsWithCriteria []
 
-instance ToActionList ActionList where
+instance ToActionList ActionsWithCriteria where
   toActionList = id
 
 toBindingList :: Free BindingF a -> [Binding]
