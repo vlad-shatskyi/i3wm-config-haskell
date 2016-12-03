@@ -40,127 +40,211 @@ config = do
   raw $ "floating_maximum_size " ++ show screenWidth ++ " x " ++ show screenHeight
   raw "focus_follows_mouse no"
 
-  exec "google-chrome-unstable"
-  exec "slack"
-  exec "telegram-desktop"
+  exec' "google-chrome-unstable"
+  exec' "slack"
+  exec' "telegram-desktop"
 
   font ["pango", "monospace"] 8
 
   bar "i3blocks"
   hideEdgeBorders ()
 
-  bindsym [RaiseVolumeSym] (Exec "amixer -q sset Master 5%+ unmute && pkill -RTMIN+10 i3blocks")
-  bindsym [LowerVolumeSym] (Exec "amixer -q sset Master 5%- unmute && pkill -RTMIN+10 i3blocks")
-  bindsym [MuteSym] (Exec "amixer -q sset Master,0 toggle && pkill -RTMIN+10 i3blocks")
+  bindsym [RaiseVolumeSym] (exec "amixer -q sset Master 5%+ unmute && pkill -RTMIN+10 i3blocks")
+  bindsym [LowerVolumeSym] (exec "amixer -q sset Master 5%- unmute && pkill -RTMIN+10 i3blocks")
+  bindsym [MuteSym] (exec "amixer -q sset Master,0 toggle && pkill -RTMIN+10 i3blocks")
 
-  bindsym [BrightnessUpSym] (Exec "xbacklight -inc 10")
-  bindsym [BrightnessDownSym] (Exec "xbacklight -dec 10")
+  bindsym [BrightnessUpSym] (exec "xbacklight -inc 10")
+  bindsym [BrightnessDownSym] (exec "xbacklight -dec 10")
 
-  Super Return ==> Exec "konsole"
-  Super W ==> CloseWindow
-  Super Slash ==> Exec "rofi -show drun"
+  Super Return ==> exec "konsole"
+  Super W ==> closeWindow
+  Super Slash ==> exec "rofi -show drun"
 
-  forWindow chrome [MoveToWorkspace W1]
-  forWindow rubymine [MoveToWorkspace W2]
-  forWindow idea [MoveToWorkspace W2]
-  forWindow slack [MoveToWorkspace W4]
-  forWindow telegram [MoveToScratchpad, StickyEnable]
-  forWindow fileManager [FloatingEnable, MoveToPosition 0 0]
-  forWindow videoPlayer [FullscreenEnable]
+  forWindow chrome (moveToWorkspace W1)
+  forWindow rubymine (moveToWorkspace W2)
+  forWindow idea (moveToWorkspace W2)
+  forWindow slack (moveToWorkspace W4)
+  forWindow telegram $ do
+    moveToScratchpad
+    stickyEnable
 
-  bindsym [Mod4Sym, SpaceSym] FocusModeToggle
-  bindsym [Mod4Sym, ShiftSym, SpaceSym] FloatingToggle
+  forWindow fileManager $ do
+    floatingEnable
+    moveToPosition 0 0
 
-  Super Minus ==> ToggleScratchpad
-  SuperShift Minus ==> [StickyEnable, MoveToScratchpad]
+  forWindow videoPlayer fullscreenEnable
 
-  SuperCtrl C ==> Exec "clipmenu"
+  bindsym [Mod4Sym, SpaceSym] focusModeToggle
+  bindsym [Mod4Sym, ShiftSym, SpaceSym] floatingToggle
 
-  Super T ==> ActionsWithCriteria terminal [ToggleScratchpad]
-  Super O ==> Exec "emacsclient -c -n ~/notes/notes.org"
-  bindsym [Mod4Sym, EqualSym] (ActionsWithCriteria telegram [ToggleScratchpad])
+  Super Minus ==> toggleScratchpad
+  SuperShift Minus ==> do
+    stickyEnable
+    moveToScratchpad
 
-  Super LeftBracket ==> FocusLeft
-  Super RightBracket ==> FocusRight
-  Super F ==> FullscreenToggle
-  Super H ==> SplitToggle
+  SuperCtrl C ==> exec "clipmenu"
 
-  Super J ==> FocusWorkspace W1
-  Super K ==> FocusWorkspace W2
-  Super L ==> FocusWorkspace W3
-  Super Semicolon ==> FocusWorkspace W4
-  Super Quote ==> FocusWorkspace W9
+  Super T ==> ActionsWithCriteria terminal (lh ToggleScratchpad)
+  Super O ==> exec "emacsclient -c -n ~/notes/notes.org"
+  bindsym [Mod4Sym, EqualSym] (ActionsWithCriteria telegram (lh ToggleScratchpad))
 
-  Super N1 ==> FocusWorkspace W1
-  Super N2 ==> FocusWorkspace W2
-  Super N3 ==> FocusWorkspace W3
-  Super N4 ==> FocusWorkspace W4
-  Super N5 ==> FocusWorkspace W5
-  Super N6 ==> FocusWorkspace W6
-  Super N7 ==> FocusWorkspace W7
-  Super N8 ==> FocusWorkspace W8
-  Super N9 ==> FocusWorkspace W9
-  Super N0 ==> FocusWorkspace W0
+  Super LeftBracket ==> focusLeft
+  Super RightBracket ==> focusRight
+  Super F ==> fullscreenToggle
+  Super H ==> splitToggle
 
-  Super I ==> ActivateMode (ModeName "Keyboard Layout Mode")
+  Super J ==> focusWorkspace W1
+  Super K ==> focusWorkspace W2
+  Super L ==> focusWorkspace W3
+  Super Semicolon ==> focusWorkspace W4
+  Super Quote ==> focusWorkspace W9
+
+  Super N1 ==> focusWorkspace W1
+  Super N2 ==> focusWorkspace W2
+  Super N3 ==> focusWorkspace W3
+  Super N4 ==> focusWorkspace W4
+  Super N5 ==> focusWorkspace W5
+  Super N6 ==> focusWorkspace W6
+  Super N7 ==> focusWorkspace W7
+  Super N8 ==> focusWorkspace W8
+  Super N9 ==> focusWorkspace W9
+  Super N0 ==> focusWorkspace W0
+
+  Super I ==> activateMode "Keyboard Layout Mode"
   mode "Keyboard Layout Mode" $ do
-    E ==> [Exec (setXkb "us"), exit]
-    R ==> [Exec (setXkb "ru"), exit]
-    U ==> [Exec (setXkb "ua"), exit]
+    E ==> do
+      exec (setXkb "us")
+      exit
 
-  Super Tilde ==> ActivateMode (ModeName "i3 Management Mode")
+    R ==> do
+      exec (setXkb "ru")
+      exit
+
+    U ==> do
+      exec (setXkb "ua")
+      exit
+
+  Super Tilde ==> activateMode "i3 Management Mode"
   mode "i3 Management Mode" $ do
-    C ==> [ReloadWM, exit]
-    R ==> [RestartWM, exit]
-    W ==> [Exec "rofi -show window", exit]
+    C ==> do
+      lh ReloadWM
+      exit
 
-    L ==> ActivateMode (ModeName "Layout Mode")
+    R ==> do
+      lh RestartWM
+      exit
+
+    W ==> do
+      exec "rofi -show window"
+      exit
+
+    L ==> activateMode "Layout Mode"
 
   mode "Layout Mode" $ do
-    S ==> [LayoutStacking, exit]
-    T ==> [LayoutTabbed, exit]
-    V ==> [LayoutSplitHorizontally, exit]
-    H ==> [LayoutSplitVertically, exit]
+    S ==> do
+      lh LayoutStacking
+      exit
 
-  Super R ==> ActivateMode (ModeName "Resize Mode")
+    T ==> do
+      lh LayoutTabbed
+      exit
+
+    V ==> do
+      lh LayoutSplitHorizontally
+      exit
+
+    H ==> do
+      lh LayoutSplitVertically
+      exit
+
+  Super R ==> activateMode "Resize Mode"
+
   mode "Resize Mode" $ do
-    W ==> Resize Grow Width resizeStep
-    N ==> Resize Shrink Width resizeStep
-    H ==> Resize Grow Height resizeStep
-    L ==> Resize Shrink Height resizeStep
-    Equal ==> [Resize Grow Width resizeStep, Resize Grow Height resizeStep, MoveToCenter]
-    Minus ==> [Resize Shrink Width resizeStep, Resize Shrink Height resizeStep, MoveToCenter]
+    W ==> resize Grow Width resizeStep
+    N ==> resize Shrink Width resizeStep
+    H ==> resize Grow Height resizeStep
+    L ==> resize Shrink Height resizeStep
+    Equal ==> do
+      resize Grow Width resizeStep
+      resize Grow Height resizeStep
+      lh MoveToCenter
 
-  Super M ==> ActivateMode (ModeName "Move Mode")
+    Minus ==> do
+      resize Shrink Width resizeStep
+      resize Shrink Height resizeStep
+      lh MoveToCenter
+
+  Super M ==> activateMode "Move Mode"
   mode "Move Mode" $ do
-    H ==> MoveLeft moveStep
-    L ==> MoveRight moveStep
-    J ==> MoveDown moveStep
-    K ==> MoveUp moveStep
-    C ==> [MoveToCenter, exit]
+    H ==> moveLeft moveStep
+    L ==> moveRight moveStep
+    J ==> moveDown moveStep
+    K ==> moveUp moveStep
+    C ==> do
+      lh MoveToCenter
+      exit
 
-    N1 ==> [MoveToWorkspace W1, FocusWorkspace W1, exit]
-    N2 ==> [MoveToWorkspace W2, FocusWorkspace W2, exit]
-    N3 ==> [MoveToWorkspace W3, FocusWorkspace W3, exit]
-    N4 ==> [MoveToWorkspace W4, FocusWorkspace W4, exit]
-    N5 ==> [MoveToWorkspace W5, FocusWorkspace W5, exit]
-    N6 ==> [MoveToWorkspace W6, FocusWorkspace W6, exit]
-    N7 ==> [MoveToWorkspace W7, FocusWorkspace W7, exit]
-    N8 ==> [MoveToWorkspace W8, FocusWorkspace W8, exit]
-    N9 ==> [MoveToWorkspace W9, FocusWorkspace W9, exit]
-    N0 ==> [MoveToWorkspace W0, FocusWorkspace W0, exit]
+    N1 ==> do
+      moveToWorkspace W1
+      focusWorkspace W1
+      exit
 
-    D ==> [ ResizeTo dockedWindowWidth dockedWindowHeight
-          , MoveToPosition (quot (screenWidth - dockedWindowWidth) 2) (screenHeight - dockedWindowHeight)
-          , FocusTiling
-          , exit
-          ]
+    N2 ==> do
+      moveToWorkspace W2
+      focusWorkspace W2
+      exit
 
-    R ==> [ FocusFloating
-          , ResizeTo (quot screenWidth 3 * 2) (quot screenHeight 10 * 9)
-          , MoveToCenter
-          , exit
-          ]
+    N3 ==> do
+      moveToWorkspace W3
+      focusWorkspace W3
+      exit
+
+    N4 ==> do
+      moveToWorkspace W4
+      focusWorkspace W4
+      exit
+
+    N5 ==> do
+      moveToWorkspace W5
+      focusWorkspace W5
+      exit
+
+    N6 ==> do
+      moveToWorkspace W6
+      focusWorkspace W6
+      exit
+
+    N7 ==> do
+      moveToWorkspace W7
+      focusWorkspace W7
+      exit
+
+    N8 ==> do
+      moveToWorkspace W8
+      focusWorkspace W8
+      exit
+
+    N9 ==> do
+      moveToWorkspace W9
+      focusWorkspace W9
+      exit
+
+    N0 ==> do
+      moveToWorkspace W0
+      focusWorkspace W0
+      exit
+
+    D ==> do
+      resizeTo dockedWindowWidth dockedWindowHeight
+      moveToPosition (quot (screenWidth - dockedWindowWidth) 2) (screenHeight - dockedWindowHeight)
+      lh FocusTiling
+      exit
+
+    R ==> do
+      lh FocusFloating
+      resizeTo (quot screenWidth 3 * 2) (quot screenHeight 10 * 9)
+      lh MoveToCenter
+      exit
 
 main :: IO ()
 main = iterM Languages.I3.interpretTopLevelF config
