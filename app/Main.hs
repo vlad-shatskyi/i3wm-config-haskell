@@ -29,6 +29,11 @@ moveTo w = do
   focusWorkspace w
   exit
 
+resizeProportionally gs = do
+  resize gs Width resizeStep
+  resize gs Height resizeStep
+  lh MoveToCenter
+
 config :: Free TopLevelF ()
 config = do
   execAlways "xinput set-prop 12 281 1" -- Enable Tapping.
@@ -169,15 +174,9 @@ config = do
     N ==> resize Shrink Width resizeStep
     H ==> resize Grow Height resizeStep
     L ==> resize Shrink Height resizeStep
-    Equal ==> do
-      resize Grow Width resizeStep
-      resize Grow Height resizeStep
-      lh MoveToCenter
 
-    Minus ==> do
-      resize Shrink Width resizeStep
-      resize Shrink Height resizeStep
-      lh MoveToCenter
+    Equal ==> resizeProportionally Grow
+    Minus ==> resizeProportionally Shrink
 
   Super M ==> activateMode "Move Mode"
   mode "Move Mode" $ do
