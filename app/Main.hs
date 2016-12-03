@@ -17,7 +17,8 @@ telegram = [Title "Telegram"]
 terminal = [Instance "konsole", IsFloating]
 
 setXkb layout = "setxkbmap " ++ layout ++ " && pkill -RTMIN+11 i3blocks"
-stepSize = 10
+moveStep = 50
+resizeStep = 50
 screenWidth = 3840
 screenHeight = 2160
 
@@ -33,9 +34,11 @@ config = do
   execAlways "setxkbmap -option altwin:swap_alt_win"
   execAlways "setxkbmap -option ctrl:nocaps"
 
+  raw "exec --no-startup-id /usr/lib/gnome-settings-daemon/gnome-settings-daemon"
   raw "exec --no-startup-id dunst"
   raw "exec --no-startup-id clipmenud"
   raw "floating_modifier Mod4"
+  raw $ "floating_maximum_size " ++ show screenWidth ++ " x " ++ show screenHeight
   raw "focus_follows_mouse no"
 
   exec "google-chrome-unstable"
@@ -63,7 +66,7 @@ config = do
   forWindow idea [MoveToWorkspace W2]
   forWindow slack [MoveToWorkspace W4]
   forWindow telegram [MoveToScratchpad, StickyEnable]
-  forWindow fileManager [FloatingEnable, MoveToCenter]
+  forWindow fileManager [FloatingEnable, MoveToPosition 0 0]
   forWindow videoPlayer [FullscreenEnable]
 
   bindsym [Mod4Sym, SpaceSym] FocusModeToggle
@@ -122,17 +125,19 @@ config = do
 
   Super R ==> ActivateMode (ModeName "Resize Mode")
   mode "Resize Mode" $ do
-    W ==> Resize Grow Width stepSize
-    N ==> Resize Shrink Width stepSize
-    H ==> Resize Grow Height stepSize
-    L ==> Resize Shrink Height stepSize
+    W ==> Resize Grow Width resizeStep
+    N ==> Resize Shrink Width resizeStep
+    H ==> Resize Grow Height resizeStep
+    L ==> Resize Shrink Height resizeStep
+    Equal ==> [Resize Grow Width resizeStep, Resize Grow Height resizeStep, MoveToCenter]
+    Minus ==> [Resize Shrink Width resizeStep, Resize Shrink Height resizeStep, MoveToCenter]
 
   Super M ==> ActivateMode (ModeName "Move Mode")
   mode "Move Mode" $ do
-    H ==> MoveLeft stepSize
-    L ==> MoveRight stepSize
-    J ==> MoveDown stepSize
-    K ==> MoveUp stepSize
+    H ==> MoveLeft moveStep
+    L ==> MoveRight moveStep
+    J ==> MoveDown moveStep
+    K ==> MoveUp moveStep
     C ==> [MoveToCenter, exit]
 
     N1 ==> [MoveToWorkspace W1, FocusWorkspace W1, exit]
