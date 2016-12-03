@@ -24,6 +24,11 @@ screenHeight = 2160
 dockedWindowWidth = quot screenWidth 3 * 2
 dockedWindowHeight = 140
 
+moveTo w = do
+  moveToWorkspace w
+  focusWorkspace w
+  exit
+
 config :: Free TopLevelF ()
 config = do
   execAlways "xinput set-prop 12 281 1" -- Enable Tapping.
@@ -184,55 +189,16 @@ config = do
       lh MoveToCenter
       exit
 
-    N1 ==> do
-      moveToWorkspace W1
-      focusWorkspace W1
-      exit
-
-    N2 ==> do
-      moveToWorkspace W2
-      focusWorkspace W2
-      exit
-
-    N3 ==> do
-      moveToWorkspace W3
-      focusWorkspace W3
-      exit
-
-    N4 ==> do
-      moveToWorkspace W4
-      focusWorkspace W4
-      exit
-
-    N5 ==> do
-      moveToWorkspace W5
-      focusWorkspace W5
-      exit
-
-    N6 ==> do
-      moveToWorkspace W6
-      focusWorkspace W6
-      exit
-
-    N7 ==> do
-      moveToWorkspace W7
-      focusWorkspace W7
-      exit
-
-    N8 ==> do
-      moveToWorkspace W8
-      focusWorkspace W8
-      exit
-
-    N9 ==> do
-      moveToWorkspace W9
-      focusWorkspace W9
-      exit
-
-    N0 ==> do
-      moveToWorkspace W0
-      focusWorkspace W0
-      exit
+    N1 ==> moveTo W1
+    N2 ==> moveTo W2
+    N3 ==> moveTo W3
+    N4 ==> moveTo W4
+    N5 ==> moveTo W5
+    N6 ==> moveTo W6
+    N7 ==> moveTo W7
+    N8 ==> moveTo W8
+    N9 ==> moveTo W9
+    N0 ==> moveTo W0
 
     D ==> do
       resizeTo dockedWindowWidth dockedWindowHeight
