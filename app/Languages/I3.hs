@@ -4,24 +4,24 @@ module Languages.I3 where
 
 import DataTypes.Key
 import DataTypes.Other
-import Hoistable
 
 import Data.List (intercalate)
-import Data.Function
+import Control.Monad.Free
 import Data.String.Interpolate
 import Data.String.Interpolate.Util
 
 data Binding = BindSym [KeyName] ActionList | BindCode ShouldRelease Shortcut ActionList
 
-data I3 = ExecStatement ActionList
-        | ExecAlways String
-        | Font [String] Int
-        | BindingStatement Binding
-        | Bar String
-        | HideEdgeBorders
-        | ForWindow ActionsWithCriteria
-        | ModeDefinition ModeName [Binding]
-        | Raw String -- TODO: remove.
+data LanguageF next
+  = ExecStatement ActionList next
+  | ExecAlways String next
+  | Font [String] Int next
+  | Bar String next
+  | HideEdgeBorders next
+  | ForWindow ActionsWithCriteria next
+  | ModeDefinition ModeName (Free BindingF next) next
+  | Raw String next -- TODO: remove.
+  deriving Functor
 
 data Action = Exec String
             | FocusWorkspace WorkspaceNumber
@@ -97,32 +97,8 @@ data ActionList = ActionList [ActionsWithCriteria]
 data ActionsWithCriteria = ActionsWithCriteria [ActionCriteria] [Action]
 
 data BindingF next = BindingF Binding next deriving (Functor)
-data LanguageF next = LanguageF I3 next deriving (Functor)
 
-instance Hoistable BindingF LanguageF where
-  hoist (BindingF binding next) = LanguageF (BindingStatement binding) next
-
-instance Show I3 where
-  show = \case
-    ExecStatement exec -> show exec
-    ExecAlways x -> [i|exec_always #{x}|]
-    Font names size -> [i|font #{intercalate ":" names} #{size}|]
-    BindingStatement (BindSym keys exec) -> [i|bindsym #{intercalate "+" (map show keys)} #{exec}|]
-    BindingStatement (BindCode shouldRelease shortcut exec) -> [i|bindcode #{shouldRelease} #{shortcut} #{exec}|]
-    HideEdgeBorders -> "hide_edge_borders both"
-    ForWindow x -> [i|for_window #{x}|]
-    Raw string -> string
-    Bar command -> unindent [i|
-      bar {
-        status_command #{command}
-        position top
-      }
-    |]
-    ModeDefinition name bindings -> unindent [i|
-      mode "#{name}" {
-        #{bindings & map BindingStatement & map show & map (replicate 8 ' ' ++ ) & intercalate "\n"}
-      }
-    |]
+data TopLevelF next = LL (LanguageF next) | RR (BindingF next) deriving Functor
 
 instance Show Action where
   show = \case
@@ -193,4 +169,30 @@ instance Show ActionsWithCriteria where
     ActionsWithCriteria criteria action -> "[" ++ unwords (map show criteria) ++ "] " ++ intercalate ", " (map show action)
 
 interpretLanguageF :: LanguageF (IO a) -> IO a
-interpretLanguageF (LanguageF statement next) = print statement >> next
+interpretLanguageF = \case
+    ExecStatement exec next -> print exec >> next
+    ExecAlways x next -> putStrLn [i|exec_always #{x}|] >> next
+    Font names size next -> putStrLn [i|font #{intercalate ":" names} #{size}|] >> next
+    HideEdgeBorders next -> putStrLn "hide_edge_borders both" >> next
+    ForWindow x next -> putStrLn [i|for_window #{x}|] >> next
+    Raw string next -> putStrLn string >> next
+    Bar command next -> putStrLn (unindent [i|
+      bar {
+        status_command #{command}
+        position top
+      }
+    |]) >> next
+    ModeDefinition name bindings next -> do
+      putStrLn [i|mode "#{name}" {|]
+      _ <- iterM interpretBindingF bindings
+      putStrLn "}"
+      next
+
+interpretBindingF :: BindingF (IO a) -> IO a
+interpretBindingF (BindingF binding next) = printBinding binding >> next
+  where printBinding (BindSym keys exec) = putStrLn [i|bindsym #{intercalate "+" (map show keys)} #{exec}|]
+        printBinding (BindCode shouldRelease shortcut exec) = putStrLn [i|bindcode #{shouldRelease} #{shortcut} #{exec}|]
+
+interpretTopLevelF :: TopLevelF (IO a) -> IO a
+interpretTopLevelF (LL x) = interpretLanguageF x
+interpretTopLevelF (RR x) = interpretBindingF x

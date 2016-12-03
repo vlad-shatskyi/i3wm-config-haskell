@@ -1,7 +1,6 @@
 module Main where
 
 import Languages.I3
-import qualified Languages.I4 as I4
 import DataTypes.Key
 import DataTypes.Other
 import DSL
@@ -25,7 +24,7 @@ screenHeight = 2160
 dockedWindowWidth = quot screenWidth 3 * 2
 dockedWindowHeight = 140
 
-config :: Free I4.LanguageF ()
+config :: Free TopLevelF ()
 config = do
   execAlways "xinput set-prop 12 281 1" -- Enable Tapping.
   execAlways "xinput set-prop 12 283 0" -- Disable Tapping Drag.
@@ -164,4 +163,4 @@ config = do
           ]
 
 main :: IO ()
-main = iterM Languages.I3.interpretLanguageF (iterM I4.interpretLanguageF config)
+main = iterM Languages.I3.interpretTopLevelF config

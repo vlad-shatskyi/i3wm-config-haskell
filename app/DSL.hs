@@ -2,12 +2,23 @@ module DSL where
 
 import DataTypes.Key
 import Languages.I3
-import qualified Languages.I4 as I4
 import DataTypes.Other
-import Hoistable
 import Control.Monad.Free
 
-lh fx = hoistFree hoist $ liftF $ fx ()
+class LH f g where
+  lh :: (() -> f ()) -> Free g ()
+
+instance LH TopLevelF TopLevelF where
+  lh fx = liftF $ fx ()
+
+instance LH BindingF BindingF where
+  lh fx = liftF $ fx ()
+
+instance LH LanguageF TopLevelF where
+  lh fx = liftF $ LL (fx ())
+
+instance LH BindingF TopLevelF where
+  lh fx = liftF $ RR (fx ())
 
 actionList' :: [ActionCriteria] -> [Action] -> ActionList
 actionList' cs xs = ActionList [ActionsWithCriteria cs xs]
@@ -15,22 +26,22 @@ actionList' cs xs = ActionList [ActionsWithCriteria cs xs]
 action' :: [ActionCriteria] -> Action -> ActionList
 action' cs x = actionList' cs [x]
 
-exec x = lh $ LanguageF $ ExecStatement (toActionList (Exec x))
-execAlways a = lh $ LanguageF $ ExecAlways a
-raw a = lh $ LanguageF $ Raw a
-font a b = lh $ LanguageF $ Font a b
+exec x = lh $ ExecStatement (toActionList (Exec x))
+execAlways a = lh $ ExecAlways a
+raw a = lh $ Raw a
+font a b = lh $ Font a b
 
 bindsym k a = lh $ BindingF (BindSym k (toActionList a))
 bindcode s a = lh $ BindingF (BindCode DontRelease (shortcut s) (toActionList a))
 s ==> a = bindcode s a
 
-bar x = lh $ LanguageF $ Bar x
-hideEdgeBorders _ = lh $ LanguageF HideEdgeBorders
-forWindow criteria actions = lh $ LanguageF (ForWindow (ActionsWithCriteria criteria actions))
+bar x = lh $ Bar x
+hideEdgeBorders _ = lh HideEdgeBorders
+forWindow criteria actions = lh $ ForWindow (ActionsWithCriteria criteria actions)
 
-mode name config = lh $ LanguageF (ModeDefinition modeName bindings)
+mode name config = lh $ ModeDefinition modeName bindings
   where modeName = ModeName name
-        bindings = toBindingList $ bindsym [EscapeSym] exit >> bindcode Q exit >> config
+        bindings = bindsym [EscapeSym] exit >> bindcode Q exit >> config
 
 exit = ActivateMode (ModeName "default")
 

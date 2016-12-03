@@ -34,8 +34,6 @@ executable i3config-exe
                      , MultiParamTypeClasses
                      , LambdaCase
   other-modules:       Languages.I3
-                     , Languages.I4
-                     , Hoistable
                      , DataTypes.Other
                      , DataTypes.Key
                      , DSL
