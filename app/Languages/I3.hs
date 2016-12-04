@@ -114,11 +114,10 @@ interpretLanguageF = \case
     ExecAlways x next -> putStrLn [i|exec_always #{x}|] >> next
     Font names size next -> putStrLn [i|font #{intercalate ":" names} #{size}|] >> next
     HideEdgeBorders next -> putStrLn "hide_edge_borders both" >> next
-    ForWindow (ActionsWithCriteria criteria actionsF) next -> do
+    ForWindow as next -> do
       putStr "for_window "
-      putStr $ showCriteria criteria
-      iterM interpretActionF actionsF
-      putStrLn "nop"
+      putActionsWithCriteria as
+      putChar '\n'
       next
     Raw string next -> putStrLn string >> next
     Bar command next -> putStrLn (unindent [i|
@@ -135,20 +134,24 @@ interpretLanguageF = \case
 
 interpretBindingF :: BindingF (IO a) -> IO a
 interpretBindingF (BindingF binding next) = printBinding binding >> next
-  where printBinding (BindSym keys (ActionsWithCriteria criteria actionsF)) = do
-          putStr [i|bindsym #{intercalate "+" (map show keys)} #{showCriteria criteria} |]
-          iterM interpretActionF actionsF
-          putStrLn "nop"
+  where printBinding (BindSym keys as) = do
+          putStr [i|bindsym #{intercalate "+" (map show keys)} |]
+          putActionsWithCriteria as
+          putChar '\n'
 
-        printBinding (BindCode shouldRelease shortcut (ActionsWithCriteria criteria actionsF)) = do
-          putStr [i|bindcode #{shouldRelease} #{shortcut} #{showCriteria criteria} |]
-          iterM interpretActionF actionsF
-          putStrLn "nop"
+        printBinding (BindCode shouldRelease shortcut as) = do
+          putStr [i|bindcode #{shouldRelease} #{shortcut} |]
+          putActionsWithCriteria as
+          putChar '\n'
 
-showCriteria :: [ActionCriteria] -> String
-showCriteria = \case
-    [] -> "" -- intercalate ", " (map show action)
-    criteria -> "[" ++ unwords (map show criteria) ++ "] "
+
+putActionsWithCriteria (ActionsWithCriteria criteria actionsF) = do
+  putStr $ showCriteria criteria
+  iterM interpretActionF actionsF
+  putStr "nop"
+  where showCriteria = \case
+            [] -> ""
+            criteria -> "[" ++ unwords (map show criteria) ++ "] "
 
 interpretTopLevelF :: TopLevelF (IO a) -> IO a
 interpretTopLevelF (LL x) = interpretLanguageF x
