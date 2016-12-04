@@ -19,7 +19,7 @@ data LanguageF next
   | Bar String next
   | HideEdgeBorders next
   | ForWindow ActionsWithCriteria next
-  | ModeDefinition ModeName (Free BindingF next) next
+  | ModeDefinition ModeIdentifier (Free BindingF next) next
   | Raw String next -- TODO: remove.
   deriving Functor
 
@@ -85,7 +85,7 @@ data ActionF next
   | StickyDisable next
   | StickyToggle next
 
-  | ActivateMode ModeName next
+  | ActivateMode ModeIdentifier next
   deriving Functor
 
 data ActionCriteria = Instance String

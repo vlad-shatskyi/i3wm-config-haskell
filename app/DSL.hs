@@ -39,7 +39,7 @@ resizeTo :: Int -> Int -> Free ActionF ()
 resizeTo x y = lh $ ResizeTo x y
 
 activateMode :: String -> Free ActionF ()
-activateMode name = lh $ ActivateMode (ModeName name)
+activateMode name = lh $ ActivateMode (ModeIdentifier name)
 
 moveLeft :: Int -> Free ActionF ()
 moveLeft x = lh $ MoveLeft x
@@ -93,7 +93,7 @@ resize :: GrowOrShrink -> WidthOrHeight -> Int -> Free ActionF ()
 resize gs wh x = lh $ Resize gs wh x
 
 exit :: Free ActionF ()
-exit = lh $ ActivateMode (ModeName "default")
+exit = lh $ ActivateMode (ModeIdentifier "default")
 
 exec' x = lh $ ExecStatement x
 execAlways a = lh $ ExecAlways a
@@ -109,7 +109,7 @@ hideEdgeBorders _ = lh HideEdgeBorders
 forWindow criteria actions = lh $ ForWindow (ActionsWithCriteria criteria actions)
 
 mode name config = lh $ ModeDefinition modeName bindings
-  where modeName = ModeName name
+  where modeName = ModeIdentifier name
         bindings = bindsym [EscapeSym] exit >> bindcode Q exit >> config
 
 toBindingList :: Free BindingF a -> [Binding]
