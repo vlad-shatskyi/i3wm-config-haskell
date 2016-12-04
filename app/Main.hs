@@ -15,7 +15,7 @@ slack = [Instance "slack"]
 telegram = [Title "Telegram"]
 terminal = [Instance "konsole", IsFloating]
 
-setXkb layout = "setxkbmap " ++ layout ++ " && pkill -RTMIN+11 i3blocks"
+setLayout layout = "setxkbmap " ++ layout ++ " && pkill -RTMIN+11 i3blocks"
 moveStep = 50
 resizeStep = 50
 screenWidth = 3840
@@ -32,7 +32,7 @@ moveTo w = do
 resizeProportionally gs = do
   resize gs Width resizeStep
   resize gs Height resizeStep
-  lh MoveToCenter
+  moveToCenter
 
 config :: Free TopLevelF ()
 config = do
@@ -94,9 +94,9 @@ config = do
 
   SuperCtrl C ==> exec "clipmenu"
 
-  Super T ==> ActionsWithCriteria terminal (lh ToggleScratchpad)
+  Super T ==> ActionsWithCriteria terminal toggleScratchpad
   Super O ==> exec "emacsclient -c -n ~/notes/notes.org"
-  [Mod4Sym, EqualSym] ==> ActionsWithCriteria telegram (lh ToggleScratchpad)
+  [Mod4Sym, EqualSym] ==> ActionsWithCriteria telegram toggleScratchpad
 
   Super LeftBracket ==> focusLeft
   Super RightBracket ==> focusRight
@@ -121,9 +121,9 @@ config = do
   Super N0 ==> focusWorkspace W0
 
   keyboardLayoutMode <- mode "Keyboard Layout Mode" $ do
-    E ==>^ exec (setXkb "us")
-    R ==>^ exec (setXkb "ru")
-    U ==>^ exec (setXkb "ua")
+    E ==>^ exec (setLayout "us")
+    R ==>^ exec (setLayout "ru")
+    U ==>^ exec (setLayout "ua")
 
   Super I ==> activateMode keyboardLayoutMode
 
@@ -174,12 +174,12 @@ config = do
     D ==>^ do
       resizeTo dockedWindowWidth dockedWindowHeight
       moveToPosition (quot (screenWidth - dockedWindowWidth) 2) (screenHeight - dockedWindowHeight)
-      lh FocusTiling
+      focusTiling
 
     R ==>^ do
-      lh FocusFloating
+      focusFloating
       resizeTo (quot screenWidth 3 * 2) (quot screenHeight 10 * 9)
-      lh MoveToCenter
+      moveToCenter
   Super M ==> activateMode moveMode
 
 main :: IO ()

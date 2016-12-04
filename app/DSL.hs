@@ -113,6 +113,12 @@ toggleScratchpad = lh ToggleScratchpad
 closeWindow :: Free ActionF ()
 closeWindow = lh CloseWindow
 
+focusFloating :: Free ActionF ()
+focusFloating = lh FocusFloating
+
+focusTiling :: Free ActionF ()
+focusTiling = lh FocusTiling
+
 resize :: GrowOrShrink -> WidthOrHeight -> Int -> Free ActionF ()
 resize gs wh x = lh $ Resize gs wh x
 
