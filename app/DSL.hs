@@ -109,9 +109,9 @@ hideEdgeBorders _ = lh HideEdgeBorders
 forWindow criteria actions = lh $ ForWindow (ActionsWithCriteria criteria actions)
 
 mode name config = do
-  lh $ ModeDefinition modeName bindings
-  return modeName
-  where modeName = ModeIdentifier name
+  lh $ ModeDefinition identifier bindings
+  return identifier
+  where identifier = ModeIdentifier name
         bindings = bindsym [EscapeSym] exit >> bindcode Q exit >> config
 
 toBindingList :: Free BindingF a -> [Binding]
