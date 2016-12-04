@@ -140,7 +140,7 @@ instance Bind [KeyName] where
   bind k a = BindSym k (addCriteria a)
 
 instance Bind Key where
-  bind k a = BindCode DontRelease (shortcut k) (addCriteria a)
+  bind k a = BindCode DontRelease (NoModifier k) (addCriteria a)
 
 instance Bind Shortcut where
   bind k a = BindCode DontRelease k (addCriteria a)

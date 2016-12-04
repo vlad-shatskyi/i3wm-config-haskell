@@ -143,12 +143,3 @@ instance Show Shortcut where
     Shift key -> [i|Shift+#{key}|]
     SuperShift key -> [i|Mod4+Shift+#{key}|]
     SuperCtrl key -> [i|Mod4+Ctrl+#{key}|]
-
-class ToShortcut a where
-  shortcut :: a -> Shortcut
-
-instance ToShortcut Key where
-  shortcut = NoModifier
-
-instance ToShortcut Shortcut where
-  shortcut = id
