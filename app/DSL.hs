@@ -100,9 +100,7 @@ execAlways a = lh $ ExecAlways a
 raw a = lh $ Raw a
 font a b = lh $ Font a b
 
-bindsym k a = lh $ BindingF (BindSym k (addCriteria a))
-bindcode s a = lh $ BindingF (BindCode DontRelease (shortcut s) (addCriteria a))
-s ==> a = bindcode s a
+s ==> a = lh $ BindingF $ bind s a
 
 bar x = lh $ Bar x
 hideEdgeBorders _ = lh HideEdgeBorders
@@ -112,7 +110,10 @@ mode name config = do
   lh $ ModeDefinition identifier bindings
   return identifier
   where identifier = ModeIdentifier name
-        bindings = bindsym [EscapeSym] exit >> bindcode Q exit >> config
+        bindings = do
+          EscapeSym ==> exit
+          Q ==> exit
+          config
 
 toBindingList :: Free BindingF a -> [Binding]
 toBindingList = reverse . toList' []
@@ -128,3 +129,18 @@ instance AddCriteria ActionsWithCriteria where
 
 instance AddCriteria (Free ActionF ()) where
   addCriteria = ActionsWithCriteria []
+
+class Bind k where
+  bind :: (AddCriteria a) => k -> a -> Binding
+
+instance Bind KeyName where
+  bind k a = BindSym [k] (addCriteria a)
+
+instance Bind [KeyName] where
+  bind k a = BindSym k (addCriteria a)
+
+instance Bind Key where
+  bind k a = BindCode DontRelease (shortcut k) (addCriteria a)
+
+instance Bind Shortcut where
+  bind k a = BindCode DontRelease k (addCriteria a)

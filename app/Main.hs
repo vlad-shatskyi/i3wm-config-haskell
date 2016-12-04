@@ -59,12 +59,12 @@ config = do
   bar "i3blocks"
   hideEdgeBorders ()
 
-  bindsym [RaiseVolumeSym] (exec "amixer -q sset Master 5%+ unmute && pkill -RTMIN+10 i3blocks")
-  bindsym [LowerVolumeSym] (exec "amixer -q sset Master 5%- unmute && pkill -RTMIN+10 i3blocks")
-  bindsym [MuteSym] (exec "amixer -q sset Master,0 toggle && pkill -RTMIN+10 i3blocks")
+  RaiseVolumeSym ==> exec "amixer -q sset Master 5%+ unmute && pkill -RTMIN+10 i3blocks"
+  LowerVolumeSym ==> exec "amixer -q sset Master 5%- unmute && pkill -RTMIN+10 i3blocks"
+  MuteSym ==> exec "amixer -q sset Master,0 toggle && pkill -RTMIN+10 i3blocks"
 
-  bindsym [BrightnessUpSym] (exec "xbacklight -inc 10")
-  bindsym [BrightnessDownSym] (exec "xbacklight -dec 10")
+  BrightnessUpSym ==> exec "xbacklight -inc 10"
+  BrightnessDownSym ==> exec "xbacklight -dec 10"
 
   Super Return ==> exec "konsole"
   Super W ==> closeWindow
@@ -84,8 +84,8 @@ config = do
 
   forWindow videoPlayer fullscreenEnable
 
-  bindsym [Mod4Sym, SpaceSym] focusModeToggle
-  bindsym [Mod4Sym, ShiftSym, SpaceSym] floatingToggle
+  [Mod4Sym, SpaceSym] ==> focusModeToggle
+  [Mod4Sym, ShiftSym, SpaceSym] ==> floatingToggle
 
   Super Minus ==> toggleScratchpad
   SuperShift Minus ==> do
@@ -96,7 +96,7 @@ config = do
 
   Super T ==> ActionsWithCriteria terminal (lh ToggleScratchpad)
   Super O ==> exec "emacsclient -c -n ~/notes/notes.org"
-  bindsym [Mod4Sym, EqualSym] (ActionsWithCriteria telegram (lh ToggleScratchpad))
+  [Mod4Sym, EqualSym] ==> ActionsWithCriteria telegram (lh ToggleScratchpad)
 
   Super LeftBracket ==> focusLeft
   Super RightBracket ==> focusRight
