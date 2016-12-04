@@ -120,8 +120,7 @@ config = do
   Super N9 ==> focusWorkspace W9
   Super N0 ==> focusWorkspace W0
 
-  Super I ==> activateMode "Keyboard Layout Mode"
-  mode "Keyboard Layout Mode" $ do
+  keyboardLayoutMode <- mode "Keyboard Layout Mode" $ do
     E ==> do
       exec (setXkb "us")
       exit
@@ -133,24 +132,9 @@ config = do
     U ==> do
       exec (setXkb "ua")
       exit
+  Super I ==> activateMode keyboardLayoutMode
 
-  Super Tilde ==> activateMode "i3 Management Mode"
-  mode "i3 Management Mode" $ do
-    C ==> do
-      lh ReloadWM
-      exit
-
-    R ==> do
-      lh RestartWM
-      exit
-
-    W ==> do
-      exec "rofi -show window"
-      exit
-
-    L ==> activateMode "Layout Mode"
-
-  mode "Layout Mode" $ do
+  layoutMode <- mode "Layout Mode" $ do
     S ==> do
       lh LayoutStacking
       exit
@@ -167,9 +151,23 @@ config = do
       lh LayoutSplitVertically
       exit
 
-  Super R ==> activateMode "Resize Mode"
+  i3ManagementMode <- mode "i3 Management Mode" $ do
+    C ==> do
+      lh ReloadWM
+      exit
 
-  mode "Resize Mode" $ do
+    R ==> do
+      lh RestartWM
+      exit
+
+    W ==> do
+      exec "rofi -show window"
+      exit
+
+    L ==> activateMode layoutMode
+  Super Tilde ==> activateMode i3ManagementMode
+
+  resizeMode <- mode "Resize Mode" $ do
     W ==> resize Grow Width resizeStep
     N ==> resize Shrink Width resizeStep
     H ==> resize Grow Height resizeStep
@@ -177,9 +175,10 @@ config = do
 
     Equal ==> resizeProportionally Grow
     Minus ==> resizeProportionally Shrink
+  Super R ==> activateMode resizeMode
 
-  Super M ==> activateMode "Move Mode"
-  mode "Move Mode" $ do
+
+  moveMode <- mode "Move Mode" $ do
     H ==> moveLeft moveStep
     L ==> moveRight moveStep
     J ==> moveDown moveStep
@@ -210,6 +209,7 @@ config = do
       resizeTo (quot screenWidth 3 * 2) (quot screenHeight 10 * 9)
       lh MoveToCenter
       exit
+  Super M ==> activateMode moveMode
 
 main :: IO ()
 main = iterM Languages.I3.interpretTopLevelF config

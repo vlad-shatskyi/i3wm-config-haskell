@@ -38,8 +38,8 @@ moveToPosition x y = lh $ MoveToPosition x y
 resizeTo :: Int -> Int -> Free ActionF ()
 resizeTo x y = lh $ ResizeTo x y
 
-activateMode :: String -> Free ActionF ()
-activateMode name = lh $ ActivateMode (ModeIdentifier name)
+activateMode :: ModeIdentifier -> Free ActionF ()
+activateMode id = lh $ ActivateMode id
 
 moveLeft :: Int -> Free ActionF ()
 moveLeft x = lh $ MoveLeft x
@@ -108,7 +108,9 @@ bar x = lh $ Bar x
 hideEdgeBorders _ = lh HideEdgeBorders
 forWindow criteria actions = lh $ ForWindow (ActionsWithCriteria criteria actions)
 
-mode name config = lh $ ModeDefinition modeName bindings
+mode name config = do
+  lh $ ModeDefinition modeName bindings
+  return modeName
   where modeName = ModeIdentifier name
         bindings = bindsym [EscapeSym] exit >> bindcode Q exit >> config
 
