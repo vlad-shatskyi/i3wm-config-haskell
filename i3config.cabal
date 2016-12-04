@@ -33,6 +33,8 @@ executable i3config-exe
                      , FlexibleContexts
                      , MultiParamTypeClasses
                      , LambdaCase
+                     , RankNTypes
+                     , AllowAmbiguousTypes
   other-modules:       Languages.I3
                      , DataTypes.Other
                      , DataTypes.Key

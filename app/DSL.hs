@@ -53,6 +53,30 @@ moveDown x = lh $ MoveDown x
 moveUp :: Int -> Free ActionF ()
 moveUp x = lh $ MoveUp x
 
+moveToCenter :: Free ActionF ()
+moveToCenter = lh MoveToCenter
+
+layoutStacking :: Free ActionF ()
+layoutStacking = lh LayoutStacking
+
+layoutTabbed :: Free ActionF ()
+layoutTabbed = lh LayoutTabbed
+
+layoutSplitHorizontally :: Free ActionF ()
+layoutSplitHorizontally = lh LayoutSplitHorizontally
+
+layoutSplitVertically :: Free ActionF ()
+layoutSplitVertically = lh LayoutSplitVertically
+
+reloadWM :: Free ActionF ()
+reloadWM = lh ReloadWM
+
+restartWM :: Free ActionF ()
+restartWM = lh RestartWM
+
+exitWM :: Free ActionF ()
+exitWM = lh ExitWM
+
 focusLeft :: Free ActionF ()
 focusLeft = lh FocusLeft
 
@@ -101,6 +125,10 @@ raw a = lh $ Raw a
 font a b = lh $ Font a b
 
 s ==> a = lh $ BindingF $ bind s a
+
+-- Bind and exit mode.
+s ==>^ a = s ==> ActionsWithCriteria criteria (actions >> exit)
+  where (ActionsWithCriteria criteria actions) = addCriteria a
 
 bar x = lh $ Bar x
 hideEdgeBorders _ = lh HideEdgeBorders

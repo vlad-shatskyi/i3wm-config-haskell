@@ -121,48 +121,23 @@ config = do
   Super N0 ==> focusWorkspace W0
 
   keyboardLayoutMode <- mode "Keyboard Layout Mode" $ do
-    E ==> do
-      exec (setXkb "us")
-      exit
+    E ==>^ exec (setXkb "us")
+    R ==>^ exec (setXkb "ru")
+    U ==>^ exec (setXkb "ua")
 
-    R ==> do
-      exec (setXkb "ru")
-      exit
-
-    U ==> do
-      exec (setXkb "ua")
-      exit
   Super I ==> activateMode keyboardLayoutMode
 
   layoutMode <- mode "Layout Mode" $ do
-    S ==> do
-      lh LayoutStacking
-      exit
-
-    T ==> do
-      lh LayoutTabbed
-      exit
-
-    V ==> do
-      lh LayoutSplitHorizontally
-      exit
-
-    H ==> do
-      lh LayoutSplitVertically
-      exit
+    S ==>^ layoutStacking
+    T ==>^ layoutTabbed
+    V ==>^ layoutSplitHorizontally
+    H ==>^ layoutSplitVertically
 
   i3ManagementMode <- mode "i3 Management Mode" $ do
-    C ==> do
-      lh ReloadWM
-      exit
-
-    R ==> do
-      lh RestartWM
-      exit
-
-    W ==> do
-      exec "rofi -show window"
-      exit
+    C ==>^ reloadWM
+    R ==>^ restartWM
+    E ==>^ exitWM
+    W ==>^ exec "rofi -show window"
 
     L ==> activateMode layoutMode
   Super Tilde ==> activateMode i3ManagementMode
@@ -183,9 +158,7 @@ config = do
     L ==> moveRight moveStep
     J ==> moveDown moveStep
     K ==> moveUp moveStep
-    C ==> do
-      lh MoveToCenter
-      exit
+    C ==>^ moveToCenter
 
     N1 ==> moveTo W1
     N2 ==> moveTo W2
@@ -198,17 +171,15 @@ config = do
     N9 ==> moveTo W9
     N0 ==> moveTo W0
 
-    D ==> do
+    D ==>^ do
       resizeTo dockedWindowWidth dockedWindowHeight
       moveToPosition (quot (screenWidth - dockedWindowWidth) 2) (screenHeight - dockedWindowHeight)
       lh FocusTiling
-      exit
 
-    R ==> do
+    R ==>^ do
       lh FocusFloating
       resizeTo (quot screenWidth 3 * 2) (quot screenHeight 10 * 9)
       lh MoveToCenter
-      exit
   Super M ==> activateMode moveMode
 
 main :: IO ()
