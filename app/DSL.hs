@@ -17,7 +17,7 @@ instance LH BindingF BindingF where
 instance LH ActionF ActionF where
   lh fx = liftF $ fx ()
 
-instance LH LanguageF TopLevelF where
+instance LH StatementF TopLevelF where
   lh fx = liftF $ LL (fx ())
 
 instance LH BindingF TopLevelF where

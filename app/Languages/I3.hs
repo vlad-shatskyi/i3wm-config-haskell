@@ -12,7 +12,7 @@ import Data.String.Interpolate.Util
 
 data Binding = BindSym [KeyName] ActionsWithCriteria | BindCode ShouldRelease Shortcut ActionsWithCriteria
 
-data LanguageF next
+data StatementF next
   = ExecStatement String next
   | ExecAlways String next
   | Font [String] Int next
@@ -98,7 +98,7 @@ data ActionsWithCriteria = ActionsWithCriteria [ActionCriteria] (Free ActionF ()
 
 data BindingF next = BindingF Binding next deriving (Functor)
 
-data TopLevelF next = LL (LanguageF next) | RR (BindingF next) deriving Functor
+data TopLevelF next = LL (StatementF next) | RR (BindingF next) deriving Functor
 
 instance Show ActionCriteria where
   show = \case
@@ -108,8 +108,8 @@ instance Show ActionCriteria where
     IsFloating -> "floating"
     IsCurrent -> "con_id=__focused__"
 
-interpretLanguageF :: LanguageF (IO a) -> IO a
-interpretLanguageF = \case
+interpretStatementF :: StatementF (IO a) -> IO a
+interpretStatementF = \case
     ExecStatement exec next -> putStrLn [i|exec #{exec}|] >> next
     ExecAlways x next -> putStrLn [i|exec_always #{x}|] >> next
     Font names size next -> putStrLn [i|font #{intercalate ":" names} #{size}|] >> next
@@ -154,7 +154,7 @@ putActionsWithCriteria (ActionsWithCriteria criteria actionsF) = do
             criteria -> "[" ++ unwords (map show criteria) ++ "] "
 
 interpretTopLevelF :: TopLevelF (IO a) -> IO a
-interpretTopLevelF (LL x) = interpretLanguageF x
+interpretTopLevelF (LL x) = interpretStatementF x
 interpretTopLevelF (RR x) = interpretBindingF x
 
 interpretActionF :: ActionF (IO a) -> IO a
