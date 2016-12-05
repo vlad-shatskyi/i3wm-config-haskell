@@ -111,54 +111,54 @@ instance Show ActionCriteria where
 
 instance Show Action where
   show = \case
-    Exec x -> [i|exec "#{x}", |]
-    FocusWorkspace workspaceNumber -> [i|workspace #{workspaceNumber}, |]
-    ActivateMode modeName -> [i|mode "#{modeName}", |]
-    FloatingEnable -> "floating enable, "
-    FloatingDisable -> "floating disable, "
-    FloatingToggle -> "floating toggle, "
-    StickyEnable -> "sticky enable, "
-    StickyDisable -> "sticky disable, "
-    StickyToggle -> "sticky toggle, "
-    FullscreenEnable -> "fullscreen enable, "
-    FullscreenDisable -> "fullscreen disable, "
-    FullscreenToggle -> "fullscreen toggle, "
-    MoveToScratchpad -> "move scratchpad, "
-    ToggleScratchpad -> "scratchpad show, "
-    Nop -> "nop, "
-    SplitVertical -> "split vertical, "
-    SplitHorizontal -> "split horizontal, "
-    SplitToggle -> "split toggle, "
-    LayoutDefault -> "layout default, "
-    LayoutTabbed -> "layout tabbed, "
-    LayoutStacking -> "layout stacking, "
-    LayoutSplitVertically -> "layout splitv, "
-    LayoutSplitHorizontally -> "layout splith, "
-    LayoutToggleSplit -> "layout toggle split, "
-    LayoutToggleAll -> "layout toggle all, "
-    FocusLeft -> "focus left, "
-    FocusRight -> "focus right, "
-    FocusDown -> "foI3Actioncus down, "
-    FocusUp -> "focus up, "
-    FocusParent -> "focus parent, "
-    FocusChild -> "focus child, "
-    FocusFloating -> "focus floating, "
-    FocusTiling -> "focus tiling, "
-    FocusModeToggle -> "focus mode_toggle, "
-    MoveLeft x -> [i|move left #{x}, |]
-    MoveRight x -> [i|move right #{x}, |]
-    MoveUp x -> [i|move up #{x}, |]
-    MoveDown x -> [i|move down #{x}, |]
-    MoveToCenter -> "move position center, "
-    MoveToPosition x y -> [i|move position #{x} #{y}, |]
-    MoveToMousePosition -> "move position mouse, "
-    MoveToWorkspace workspaceNumber -> [i|move workspace #{workspaceNumber}, |]
-    Resize growOrShrink widthOrHeight amount -> [i|resize #{growOrShrink} #{widthOrHeight} #{amount} px or #{amount} ppt, |]
-    ResizeTo w h -> [i|resize set #{w} #{h}, |]
-    CloseWindow -> "kill, "
-    ReloadWM -> "reload, "
-    RestartWM -> "restart, "
-    ExitWM -> "exit, "
+    Exec x -> [i|exec "#{x}"|]
+    FocusWorkspace workspaceNumber -> [i|workspace #{workspaceNumber}|]
+    ActivateMode modeName -> [i|mode "#{modeName}"|]
+    FloatingEnable -> "floating enable"
+    FloatingDisable -> "floating disable"
+    FloatingToggle -> "floating toggle"
+    StickyEnable -> "sticky enable"
+    StickyDisable -> "sticky disable"
+    StickyToggle -> "sticky toggle"
+    FullscreenEnable -> "fullscreen enable"
+    FullscreenDisable -> "fullscreen disable"
+    FullscreenToggle -> "fullscreen toggle"
+    MoveToScratchpad -> "move scratchpad"
+    ToggleScratchpad -> "scratchpad show"
+    Nop -> "nop"
+    SplitVertical -> "split vertical"
+    SplitHorizontal -> "split horizontal"
+    SplitToggle -> "split toggle"
+    LayoutDefault -> "layout default"
+    LayoutTabbed -> "layout tabbed"
+    LayoutStacking -> "layout stacking"
+    LayoutSplitVertically -> "layout splitv"
+    LayoutSplitHorizontally -> "layout splith"
+    LayoutToggleSplit -> "layout toggle split"
+    LayoutToggleAll -> "layout toggle all"
+    FocusLeft -> "focus left"
+    FocusRight -> "focus right"
+    FocusDown -> "foI3Actioncus down"
+    FocusUp -> "focus up"
+    FocusParent -> "focus parent"
+    FocusChild -> "focus child"
+    FocusFloating -> "focus floating"
+    FocusTiling -> "focus tiling"
+    FocusModeToggle -> "focus mode_toggle"
+    MoveLeft x -> [i|move left #{x}|]
+    MoveRight x -> [i|move right #{x}|]
+    MoveUp x -> [i|move up #{x}|]
+    MoveDown x -> [i|move down #{x}|]
+    MoveToCenter -> "move position center"
+    MoveToPosition x y -> [i|move position #{x} #{y}|]
+    MoveToMousePosition -> "move position mouse"
+    MoveToWorkspace workspaceNumber -> [i|move workspace #{workspaceNumber}|]
+    Resize growOrShrink widthOrHeight amount -> [i|resize #{growOrShrink} #{widthOrHeight} #{amount} px or #{amount} ppt|]
+    ResizeTo w h -> [i|resize set #{w} #{h}|]
+    CloseWindow -> "kill"
+    ReloadWM -> "reload"
+    RestartWM -> "restart"
+    ExitWM -> "exit"
 
 interpretStatementF :: StatementF (IO a) -> IO a
 interpretStatementF = \case
@@ -210,4 +210,7 @@ interpretTopLevelF (LL x) = interpretStatementF x
 interpretTopLevelF (RR x) = interpretBindingF x
 
 interpretActionF :: ActionF (IO a) -> IO a
-interpretActionF (ActionF action next)= putStr (show action) >> next
+interpretActionF (ActionF action next) = do
+  putStr (show action)
+  putStr ", "
+  next
