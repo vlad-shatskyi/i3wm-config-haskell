@@ -24,106 +24,106 @@ instance LH BindingF TopLevelF where
   lh fx = liftF $ RR (fx ())
 
 exec :: String -> Free ActionF ()
-exec x = lh $ Exec x
+exec x = lh $ ActionF $ Exec x
 
 moveToWorkspace :: WorkspaceNumber -> Free ActionF ()
-moveToWorkspace x = lh $ MoveToWorkspace x
+moveToWorkspace x = lh $ ActionF $ MoveToWorkspace x
 
 focusWorkspace :: WorkspaceNumber -> Free ActionF ()
-focusWorkspace x = lh $ FocusWorkspace x
+focusWorkspace x = lh $ ActionF $ FocusWorkspace x
 
 moveToPosition :: Int -> Int -> Free ActionF ()
-moveToPosition x y = lh $ MoveToPosition x y
+moveToPosition x y = lh $ ActionF $ MoveToPosition x y
 
 resizeTo :: Int -> Int -> Free ActionF ()
-resizeTo x y = lh $ ResizeTo x y
+resizeTo x y = lh $ ActionF $ ResizeTo x y
 
 activateMode :: ModeIdentifier -> Free ActionF ()
-activateMode id = lh $ ActivateMode id
+activateMode id = lh $ ActionF $ ActivateMode id
 
 moveLeft :: Int -> Free ActionF ()
-moveLeft x = lh $ MoveLeft x
+moveLeft x = lh $ ActionF $ MoveLeft x
 
 moveRight :: Int -> Free ActionF ()
-moveRight x = lh $ MoveRight x
+moveRight x = lh $ ActionF $ MoveRight x
 
 moveDown :: Int -> Free ActionF ()
-moveDown x = lh $ MoveDown x
+moveDown x = lh $ ActionF $ MoveDown x
 
 moveUp :: Int -> Free ActionF ()
-moveUp x = lh $ MoveUp x
+moveUp x = lh $ ActionF $ MoveUp x
 
 moveToCenter :: Free ActionF ()
-moveToCenter = lh MoveToCenter
+moveToCenter = lh $ ActionF MoveToCenter
 
 layoutStacking :: Free ActionF ()
-layoutStacking = lh LayoutStacking
+layoutStacking = lh $ ActionF LayoutStacking
 
 layoutTabbed :: Free ActionF ()
-layoutTabbed = lh LayoutTabbed
+layoutTabbed = lh $ ActionF LayoutTabbed
 
 layoutSplitHorizontally :: Free ActionF ()
-layoutSplitHorizontally = lh LayoutSplitHorizontally
+layoutSplitHorizontally = lh $ ActionF LayoutSplitHorizontally
 
 layoutSplitVertically :: Free ActionF ()
-layoutSplitVertically = lh LayoutSplitVertically
+layoutSplitVertically = lh $ ActionF LayoutSplitVertically
 
 reloadWM :: Free ActionF ()
-reloadWM = lh ReloadWM
+reloadWM = lh $ ActionF ReloadWM
 
 restartWM :: Free ActionF ()
-restartWM = lh RestartWM
+restartWM = lh $ ActionF RestartWM
 
 exitWM :: Free ActionF ()
-exitWM = lh ExitWM
+exitWM = lh $ ActionF ExitWM
 
 focusLeft :: Free ActionF ()
-focusLeft = lh FocusLeft
+focusLeft = lh $ ActionF FocusLeft
 
 focusRight :: Free ActionF ()
-focusRight = lh FocusRight
+focusRight = lh $ ActionF FocusRight
 
 moveToScratchpad :: Free ActionF ()
-moveToScratchpad = lh MoveToScratchpad
+moveToScratchpad = lh $ ActionF MoveToScratchpad
 
 stickyEnable :: Free ActionF ()
-stickyEnable = lh StickyEnable
+stickyEnable = lh $ ActionF StickyEnable
 
 floatingEnable :: Free ActionF ()
-floatingEnable = lh FloatingEnable
+floatingEnable = lh $ ActionF FloatingEnable
 
 fullscreenEnable :: Free ActionF ()
-fullscreenEnable = lh FullscreenEnable
+fullscreenEnable = lh $ ActionF FullscreenEnable
 
 fullscreenToggle :: Free ActionF ()
-fullscreenToggle = lh FullscreenToggle
+fullscreenToggle = lh $ ActionF FullscreenToggle
 
 splitToggle :: Free ActionF ()
-splitToggle = lh SplitToggle
+splitToggle = lh $ ActionF SplitToggle
 
 focusModeToggle :: Free ActionF ()
-focusModeToggle = lh FocusModeToggle
+focusModeToggle = lh $ ActionF FocusModeToggle
 
 floatingToggle :: Free ActionF ()
-floatingToggle = lh FloatingToggle
+floatingToggle = lh $ ActionF FloatingToggle
 
 toggleScratchpad :: Free ActionF ()
-toggleScratchpad = lh ToggleScratchpad
+toggleScratchpad = lh $ ActionF ToggleScratchpad
 
 closeWindow :: Free ActionF ()
-closeWindow = lh CloseWindow
+closeWindow = lh $ ActionF CloseWindow
 
 focusFloating :: Free ActionF ()
-focusFloating = lh FocusFloating
+focusFloating = lh $ ActionF FocusFloating
 
 focusTiling :: Free ActionF ()
-focusTiling = lh FocusTiling
+focusTiling = lh $ ActionF FocusTiling
 
 resize :: GrowOrShrink -> WidthOrHeight -> Int -> Free ActionF ()
-resize gs wh x = lh $ Resize gs wh x
+resize gs wh x = lh $ ActionF $ Resize gs wh x
 
 exit :: Free ActionF ()
-exit = lh $ ActivateMode (ModeIdentifier "default")
+exit = lh $ ActionF $ ActivateMode (ModeIdentifier "default")
 
 exec' x = lh $ ExecStatement x
 execAlways a = lh $ ExecAlways a
