@@ -44,10 +44,11 @@ config = do
   execAlways "setxkbmap -option altwin:swap_alt_win"
   execAlways "setxkbmap -option ctrl:nocaps"
 
-  raw "exec --no-startup-id /usr/lib/gnome-settings-daemon/gnome-settings-daemon"
-  raw "exec --no-startup-id dunst"
-  raw "exec --no-startup-id clipmenud"
-  raw "exec --no-startup-id emacs --daemon"
+  execNoStartupId "/usr/lib/gnome-settings-daemon/gnome-settings-daemon"
+  execNoStartupId "dunst"
+  execNoStartupId "clipmenud"
+  execNoStartupId "emacs --daemon"
+
   raw "floating_modifier Mod4"
   raw $ "floating_maximum_size " ++ show screenWidth ++ " x " ++ show screenHeight
   raw "focus_follows_mouse no"

@@ -63,6 +63,7 @@ exit = freeActionF $ ActivateMode (ModeIdentifier "default")
 
 exec' x = hoist $ ExecStatement x
 execAlways a = hoist $ ExecAlways a
+execNoStartupId a = hoist $ ExecNoStartupId a
 raw a = hoist $ Raw a
 font a b = hoist $ Font a b
 

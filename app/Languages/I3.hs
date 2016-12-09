@@ -14,6 +14,7 @@ data Binding = BindSym [KeyName] ActionsWithCriteria | BindCode ShouldRelease Sh
 
 data StatementF next
   = ExecStatement String next
+  | ExecNoStartupId String next
   | ExecAlways String next
   | Font [String] Int next
   | Bar String next
@@ -163,6 +164,7 @@ instance Show Action where
 interpretStatementF :: StatementF (IO a) -> IO a
 interpretStatementF = \case
     ExecStatement exec next -> putStrLn [i|exec #{exec}|] >> next
+    ExecNoStartupId exec next -> putStrLn [i|exec --no-startup-id #{exec}|] >> next
     ExecAlways x next -> putStrLn [i|exec_always #{x}|] >> next
     Font names size next -> putStrLn [i|font #{intercalate ":" names} #{size}|] >> next
     HideEdgeBorders next -> putStrLn "hide_edge_borders both" >> next
