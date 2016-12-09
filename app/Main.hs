@@ -14,6 +14,7 @@ videoPlayer = [Class "mpv"]
 slack = [Instance "slack"]
 telegram = [Title "Telegram"]
 terminal = [Instance "konsole", IsFloating]
+emacs = [Instance "emacs"]
 
 setLayout layout = "setxkbmap " ++ layout ++ " && pkill -RTMIN+11 i3blocks"
 moveStep = 50
@@ -78,6 +79,7 @@ config = do
   forWindow telegram $ do
     moveToScratchpad
     stickyEnable
+  forWindow emacs floatingEnable
 
   forWindow fileManager $ do
     floatingEnable
@@ -96,7 +98,9 @@ config = do
   SuperCtrl C ==> exec "clipmenu"
 
   Super T ==> ActionsWithCriteria terminal toggleScratchpad
-  Super O ==> exec "emacsclient -c -n ~/notes/notes.org"
+  Super O ==> do
+	exec "emacsclient -c -n ~/notes/notes.org"
+	focusFloating
   [Mod4Sym, EqualSym] ==> ActionsWithCriteria telegram toggleScratchpad
 
   Super LeftBracket ==> focusLeft
