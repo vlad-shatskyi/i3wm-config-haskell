@@ -37,19 +37,29 @@ resizeProportionally gs = do
   lift (Resize gs Height resizeStep)
   lift MoveToCenter
 
+startupPrograms :: [String] -> Free TopLevelF ()
+startupPrograms = mapM_ execNoStartupId
+
+
+execAlwaysList :: [String] -> Free TopLevelF ()
+execAlwaysList = mapM_ execAlways
+
+
 config :: Free TopLevelF ()
 config = do
-  execAlways "xinput set-prop 12 281 1" -- Enable Tapping.
-  execAlways "xinput set-prop 12 283 0" -- Disable Tapping Drag.
-  execAlways "xinput set-prop 12 289 0.85" -- Increase Accel Speed.
-  execAlways "xinput set-prop 12 291 1" -- Enable natural scroll.
-  execAlways "setxkbmap -option altwin:swap_alt_win"
-  execAlways "setxkbmap -option ctrl:nocaps"
+  execAlwaysList [ "xinput set-prop 12 281 1" -- Enable Tapping.
+                 , "xinput set-prop 12 283 0" -- Disable Tapping Drag.
+                 , "xinput set-prop 12 289 0.85" -- Increase Accel Speed.
+                 , "xinput set-prop 12 291 1" -- Enable natural scroll.
+                 , "setxkbmap -option altwin:swap_alt_win"
+                 , "setxkbmap -option ctrl:nocaps"
+                 ]
 
-  execNoStartupId "/usr/lib/gnome-settings-daemon/gnome-settings-daemon"
-  execNoStartupId "dunst"
-  execNoStartupId "clipmenud"
-  execNoStartupId "emacs --daemon"
+  startupPrograms [ "/usr/lib/gnome-settings-daemon/gnome-settings-daemon"
+                  , "dunst"
+                  , "clipmenud"
+                  , "emacs --daemon"
+                  ]
 
   raw "floating_modifier Mod4"
   raw $ "floating_maximum_size " ++ show screenWidth ++ " x " ++ show screenHeight
