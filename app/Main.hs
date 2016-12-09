@@ -98,9 +98,9 @@ config = do
   SuperCtrl C ==> exec "clipmenu"
 
   Super T ==> ActionsWithCriteria terminal toggleScratchpad
-  Super O ==> do
-	exec "emacsclient -c -n ~/notes/notes.org"
-	focusFloating
+  Super N ==> do
+    exec "emacsclient -c -n ~/notes/notes.org"
+    focusFloating
   [Mod4Sym, EqualSym] ==> ActionsWithCriteria telegram toggleScratchpad
 
   Super LeftBracket ==> focusLeft
@@ -127,6 +127,7 @@ config = do
 
   keyboardLayoutMode <- mode "Keyboard Layout Mode" $ do
     E ==>^ exec (setLayout "us")
+    Super I ==>^ exec (setLayout "us")
     R ==>^ exec (setLayout "ru")
     U ==>^ exec (setLayout "ua")
 
