@@ -23,43 +23,10 @@ instance Hoist StatementF TopLevelF where
 instance Hoist BindingF TopLevelF where
   hoist fx = liftF $ RR (fx ())
 
-freeActionF :: Action -> Free ActionF ()
-freeActionF = hoist . ActionF
+lift :: Action -> Free ActionF ()
+lift = hoist . ActionF
 
-exec x = freeActionF $ Exec x
-moveToWorkspace x = freeActionF $ MoveToWorkspace x
-focusWorkspace x = freeActionF $ FocusWorkspace x
-moveToPosition x y = freeActionF $ MoveToPosition x y
-resizeTo x y = freeActionF $ ResizeTo x y
-activateMode id = freeActionF $ ActivateMode id
-moveLeft x = freeActionF $ MoveLeft x
-moveRight x = freeActionF $ MoveRight x
-moveDown x = freeActionF $ MoveDown x
-moveUp x = freeActionF $ MoveUp x
-moveToCenter = freeActionF MoveToCenter
-layoutStacking = freeActionF LayoutStacking
-layoutTabbed = freeActionF LayoutTabbed
-layoutSplitHorizontally = freeActionF LayoutSplitHorizontally
-layoutSplitVertically = freeActionF LayoutSplitVertically
-reloadWM = freeActionF ReloadWM
-restartWM = freeActionF RestartWM
-exitWM = freeActionF ExitWM
-focusLeft = freeActionF FocusLeft
-focusRight = freeActionF FocusRight
-moveToScratchpad = freeActionF MoveToScratchpad
-stickyEnable = freeActionF StickyEnable
-floatingEnable = freeActionF FloatingEnable
-fullscreenEnable = freeActionF FullscreenEnable
-fullscreenToggle = freeActionF FullscreenToggle
-splitToggle = freeActionF SplitToggle
-focusModeToggle = freeActionF FocusModeToggle
-floatingToggle = freeActionF FloatingToggle
-toggleScratchpad = freeActionF ToggleScratchpad
-closeWindow = freeActionF CloseWindow
-focusFloating = freeActionF FocusFloating
-focusTiling = freeActionF FocusTiling
-resize gs wh x = freeActionF $ Resize gs wh x
-exit = freeActionF $ ActivateMode (ModeIdentifier "default")
+exit = lift $ ActivateMode (ModeIdentifier "default")
 
 exec' x = hoist $ ExecStatement x
 execAlways a = hoist $ ExecAlways a

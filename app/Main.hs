@@ -28,14 +28,14 @@ dockedWindowWidth = quot screenWidth 3 * 2
 dockedWindowHeight = 140
 
 moveTo w = do
-  moveToWorkspace w
-  focusWorkspace w
+  lift (MoveToWorkspace w)
+  lift (FocusWorkspace w)
   exit
 
 resizeProportionally gs = do
-  resize gs Width resizeStep
-  resize gs Height resizeStep
-  moveToCenter
+  lift (Resize gs Width resizeStep)
+  lift (Resize gs Height resizeStep)
+  lift MoveToCenter
 
 config :: Free TopLevelF ()
 config = do
@@ -64,110 +64,110 @@ config = do
   bar "i3blocks"
   hideEdgeBorders ()
 
-  RaiseVolumeSym ==> exec "amixer -q sset Master 5%+ unmute && pkill -RTMIN+10 i3blocks"
-  LowerVolumeSym ==> exec "amixer -q sset Master 5%- unmute && pkill -RTMIN+10 i3blocks"
-  MuteSym ==> exec "amixer -q sset Master,0 toggle && pkill -RTMIN+10 i3blocks"
+  RaiseVolumeSym ==> lift (Exec "amixer -q sset Master 5%+ unmute && pkill -RTMIN+10 i3blocks")
+  LowerVolumeSym ==> lift (Exec "amixer -q sset Master 5%- unmute && pkill -RTMIN+10 i3blocks")
+  MuteSym ==> lift (Exec "amixer -q sset Master,0 toggle && pkill -RTMIN+10 i3blocks")
 
-  BrightnessUpSym ==> exec "xbacklight -inc 10"
-  BrightnessDownSym ==> exec "xbacklight -dec 10"
+  BrightnessUpSym ==> lift (Exec "xbacklight -inc 10")
+  BrightnessDownSym ==> lift (Exec "xbacklight -dec 10")
 
-  Super Return ==> exec "konsole"
-  Super W ==> closeWindow
-  Super Slash ==> exec "rofi -show drun"
+  Super Return ==> lift (Exec "konsole")
+  Super W ==> lift CloseWindow
+  Super Slash ==> lift (Exec "rofi -show drun")
 
-  forWindow chrome (moveToWorkspace W1)
-  forWindow rubymine (moveToWorkspace W2)
-  forWindow idea (moveToWorkspace W2)
-  forWindow slack (moveToWorkspace W4)
+  forWindow chrome (lift (MoveToWorkspace W1))
+  forWindow rubymine (lift (MoveToWorkspace W2))
+  forWindow idea (lift (MoveToWorkspace W2))
+  forWindow slack (lift (MoveToWorkspace W4))
   forWindow telegram $ do
-    moveToScratchpad
-    stickyEnable
-  forWindow emacs floatingEnable
+    lift MoveToScratchpad
+    lift StickyEnable
+  forWindow emacs (lift FloatingEnable)
 
   forWindow fileManager $ do
-    floatingEnable
-    moveToPosition 0 0
+    lift FloatingEnable
+    lift (MoveToPosition 0 0)
 
-  forWindow videoPlayer fullscreenEnable
+  forWindow videoPlayer (lift FullscreenEnable)
 
-  [Mod4Sym, SpaceSym] ==> focusModeToggle
-  [Mod4Sym, ShiftSym, SpaceSym] ==> floatingToggle
+  [Mod4Sym, SpaceSym] ==> lift FocusModeToggle
+  [Mod4Sym, ShiftSym, SpaceSym] ==> lift FloatingToggle
 
-  Super Minus ==> toggleScratchpad
+  Super Minus ==> lift ToggleScratchpad
   SuperShift Minus ==> do
-    stickyEnable
-    moveToScratchpad
+    lift StickyEnable
+    lift MoveToScratchpad
 
-  SuperCtrl C ==> exec "clipmenu"
+  SuperCtrl C ==> lift (Exec "clipmenu")
 
-  Super T ==> ActionsWithCriteria terminal toggleScratchpad
+  Super T ==> ActionsWithCriteria terminal (lift ToggleScratchpad)
   Super N ==> do
-    exec "emacsclient -c -n ~/notes/notes.org"
-    focusFloating
-  [Mod4Sym, EqualSym] ==> ActionsWithCriteria telegram toggleScratchpad
+    lift (Exec "emacsclient -c -n ~/notes/notes.org")
+    lift FocusFloating
+  [Mod4Sym, EqualSym] ==> ActionsWithCriteria telegram (lift ToggleScratchpad)
 
-  Super LeftBracket ==> focusLeft
-  Super RightBracket ==> focusRight
-  Super F ==> fullscreenToggle
-  Super H ==> splitToggle
+  Super LeftBracket ==> lift FocusLeft
+  Super RightBracket ==> lift FocusRight
+  Super F ==> lift FullscreenToggle
+  Super H ==> lift SplitToggle
 
-  Super J ==> focusWorkspace W1
-  Super K ==> focusWorkspace W2
-  Super L ==> focusWorkspace W3
-  Super Semicolon ==> focusWorkspace W4
-  Super Quote ==> focusWorkspace W9
+  Super J ==> lift (FocusWorkspace W1)
+  Super K ==> lift (FocusWorkspace W2)
+  Super L ==> lift (FocusWorkspace W3)
+  Super Semicolon ==> lift (FocusWorkspace W4)
+  Super Quote ==> lift (FocusWorkspace W9)
 
-  Super N1 ==> focusWorkspace W1
-  Super N2 ==> focusWorkspace W2
-  Super N3 ==> focusWorkspace W3
-  Super N4 ==> focusWorkspace W4
-  Super N5 ==> focusWorkspace W5
-  Super N6 ==> focusWorkspace W6
-  Super N7 ==> focusWorkspace W7
-  Super N8 ==> focusWorkspace W8
-  Super N9 ==> focusWorkspace W9
-  Super N0 ==> focusWorkspace W0
+  Super N1 ==> lift (FocusWorkspace W1)
+  Super N2 ==> lift (FocusWorkspace W2)
+  Super N3 ==> lift (FocusWorkspace W3)
+  Super N4 ==> lift (FocusWorkspace W4)
+  Super N5 ==> lift (FocusWorkspace W5)
+  Super N6 ==> lift (FocusWorkspace W6)
+  Super N7 ==> lift (FocusWorkspace W7)
+  Super N8 ==> lift (FocusWorkspace W8)
+  Super N9 ==> lift (FocusWorkspace W9)
+  Super N0 ==> lift (FocusWorkspace W0)
 
   keyboardLayoutMode <- mode "Keyboard Layout Mode" $ do
-    E ==>^ exec (setLayout "us")
-    Super I ==>^ exec (setLayout "us")
-    R ==>^ exec (setLayout "ru")
-    U ==>^ exec (setLayout "ua")
+    E ==>^ lift (Exec (setLayout "us"))
+    Super I ==>^ lift (Exec (setLayout "us"))
+    R ==>^ lift (Exec (setLayout "ru"))
+    U ==>^ lift (Exec (setLayout "ua"))
 
-  Super I ==> activateMode keyboardLayoutMode
+  Super I ==> lift (ActivateMode keyboardLayoutMode)
 
   layoutMode <- mode "Layout Mode" $ do
-    S ==>^ layoutStacking
-    T ==>^ layoutTabbed
-    V ==>^ layoutSplitHorizontally
-    H ==>^ layoutSplitVertically
+    S ==>^ lift LayoutStacking
+    T ==>^ lift LayoutTabbed
+    V ==>^ lift LayoutSplitHorizontally
+    H ==>^ lift LayoutSplitVertically
 
   i3ManagementMode <- mode "i3 Management Mode" $ do
-    C ==>^ reloadWM
-    R ==>^ restartWM
-    E ==>^ exitWM
-    W ==>^ exec "rofi -show window"
+    C ==>^ lift ReloadWM
+    R ==>^ lift RestartWM
+    E ==>^ lift ExitWM
+    W ==>^ lift (Exec "rofi -show window")
 
-    L ==> activateMode layoutMode
-  Super Tilde ==> activateMode i3ManagementMode
+    L ==> lift (ActivateMode layoutMode)
+  Super Tilde ==> lift (ActivateMode i3ManagementMode)
 
   resizeMode <- mode "Resize Mode" $ do
-    W ==> resize Grow Width resizeStep
-    N ==> resize Shrink Width resizeStep
-    H ==> resize Grow Height resizeStep
-    L ==> resize Shrink Height resizeStep
+    W ==> lift (Resize Grow Width resizeStep)
+    N ==> lift (Resize Shrink Width resizeStep)
+    H ==> lift (Resize Grow Height resizeStep)
+    L ==> lift (Resize Shrink Height resizeStep)
 
     Equal ==> resizeProportionally Grow
     Minus ==> resizeProportionally Shrink
-  Super R ==> activateMode resizeMode
+  Super R ==> lift (ActivateMode resizeMode)
 
 
   moveMode <- mode "Move Mode" $ do
-    H ==> moveLeft moveStep
-    L ==> moveRight moveStep
-    J ==> moveDown moveStep
-    K ==> moveUp moveStep
-    C ==>^ moveToCenter
+    H ==> lift (MoveLeft moveStep)
+    L ==> lift (MoveRight moveStep)
+    J ==> lift (MoveDown moveStep)
+    K ==> lift (MoveUp moveStep)
+    C ==>^ lift MoveToCenter
 
     N1 ==> moveTo W1
     N2 ==> moveTo W2
@@ -181,22 +181,22 @@ config = do
     N0 ==> moveTo W0
 
     D ==>^ do
-      resizeTo dockedWindowWidth dockedWindowHeight
-      moveToPosition (quot (screenWidth - dockedWindowWidth) 2) (screenHeight - dockedWindowHeight)
-      focusTiling
+      lift (ResizeTo dockedWindowWidth dockedWindowHeight)
+      lift (MoveToPosition (quot (screenWidth - dockedWindowWidth) 2) (screenHeight - dockedWindowHeight))
+      lift FocusTiling
 
     R ==>^ do
-      focusFloating
-      resizeTo (quot screenWidth 3 * 2) (quot screenHeight 10 * 9)
-      moveToCenter
-  Super M ==> activateMode moveMode
+      lift FocusFloating
+      lift (ResizeTo (quot screenWidth 3 * 2) (quot screenHeight 10 * 9))
+      lift MoveToCenter
+  Super M ==> lift (ActivateMode moveMode)
 
-  Super A ==> exec ("i3-msg mode $(" ++ focusedWindowClass ++ ")")
+  Super A ==> lift (Exec ("i3-msg mode $(" ++ focusedWindowClass ++ ")"))
 
   _ <- mode "jetbrains-idea-ce" $ do
-    N ==>^ exec "sleep 0.1 && xdotool key --clearmodifiers ctrl+shift+n"
-    F ==>^ exec "sleep 0.1 && xdotool key --clearmodifiers ctrl+shift+f"
-    R ==>^ exec "sleep 0.1 && xdotool key --clearmodifiers Escape && xdotool key --clearmodifiers alt+1 && xdotool key --clearmodifiers shift+F6"
+    N ==>^ lift (Exec "sleep 0.1 && xdotool key --clearmodifiers ctrl+shift+n")
+    F ==>^ lift (Exec "sleep 0.1 && xdotool key --clearmodifiers ctrl+shift+f")
+    R ==>^ lift (Exec "sleep 0.1 && xdotool key --clearmodifiers Escape && xdotool key --clearmodifiers alt+1 && xdotool key --clearmodifiers shift+F6")
 
   return ()
 
