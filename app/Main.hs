@@ -6,6 +6,8 @@ import DataTypes.Other
 import DSL
 import Control.Monad.Free
 
+focusedWindowClass = "i3-msg -t get_tree | jq 'recurse(.nodes[], .floating_nodes[]) | select(.focused == true) | .window_properties | .class'"
+
 chrome = [Instance "google-chrome-unstable"]
 rubymine = [Class "jetbrains-rubymine"]
 idea = [Class "jetbrains-idea-ce"]
@@ -188,6 +190,15 @@ config = do
       resizeTo (quot screenWidth 3 * 2) (quot screenHeight 10 * 9)
       moveToCenter
   Super M ==> activateMode moveMode
+
+  Super A ==> exec ("i3-msg mode $(" ++ focusedWindowClass ++ ")")
+
+  _ <- mode "jetbrains-idea-ce" $ do
+    N ==>^ exec "sleep 0.1 && xdotool key --clearmodifiers ctrl+shift+n"
+    F ==>^ exec "sleep 0.1 && xdotool key --clearmodifiers ctrl+shift+f"
+    R ==>^ exec "sleep 0.1 && xdotool key --clearmodifiers Escape && xdotool key --clearmodifiers alt+1 && xdotool key --clearmodifiers shift+F6"
+
+  return ()
 
 main :: IO ()
 main = iterM Languages.I3.interpretTopLevelF config
