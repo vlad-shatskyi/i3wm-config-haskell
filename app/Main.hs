@@ -77,7 +77,7 @@ config = do
   exec' "slack"
   exec' "telegram-desktop"
 
-  font ["pango", "monospace"] 20
+  font ["pango", "monospace"] 18
 
   bar "i3blocks"
   hideEdgeBorders ()
