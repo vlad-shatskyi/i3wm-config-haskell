@@ -80,5 +80,8 @@ instance Bind [KeyName] where
 instance Bind Key where
   bind k a = BindCode DontRelease (NoModifier k) (addCriteria a)
 
+instance Bind OnRelease where
+  bind (OnRelease k) a = BindCode Release (NoModifier k) (addCriteria a)
+
 instance Bind Shortcut where
   bind k a = BindCode DontRelease k (addCriteria a)

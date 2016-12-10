@@ -5,6 +5,7 @@ import DataTypes.Key
 import DataTypes.Other
 import DSL
 import Control.Monad.Free
+import Data.List (intercalate)
 
 focusedWindowClass = "i3-msg -t get_tree | jq 'recurse(.nodes[], .floating_nodes[]) | select(.focused == true) | .window_properties | .class'"
 
@@ -19,6 +20,10 @@ terminal = [Instance "konsole", IsFloating]
 emacs = [Instance "emacs"]
 
 setLayout layout = "setxkbmap " ++ layout ++ " && pkill -RTMIN+11 i3blocks"
+
+press shortcut = "xdotool key --clearmodifiers " ++ shortcut
+pressSequence = intercalate " && " . map press
+
 moveStep = 50
 resizeStep = 50
 screenWidth = 3840
@@ -204,9 +209,13 @@ config = do
   Super A ==> lift (Exec ("i3-msg mode $(" ++ focusedWindowClass ++ ")"))
 
   _ <- mode "jetbrains-idea-ce" $ do
-    N ==>^ lift (Exec "sleep 0.1 && xdotool key --clearmodifiers ctrl+shift+n")
-    F ==>^ lift (Exec "sleep 0.1 && xdotool key --clearmodifiers ctrl+shift+f")
-    R ==>^ lift (Exec "sleep 0.1 && xdotool key --clearmodifiers Escape && xdotool key --clearmodifiers alt+1 && xdotool key --clearmodifiers shift+F6")
+    OnRelease N ==>^ lift (Exec (press "ctrl+shift+n"))
+    OnRelease F ==>^ lift (Exec (press "ctrl+shift+f"))
+    OnRelease R ==>^ lift (Exec (pressSequence ["Escape", "alt+1", "shift+F6"]))
+    OnRelease P ==>^ lift (Exec (pressSequence ["alt+f", "alt+r", "Down"]))
+
+  _ <- mode "Google-chrome-unstable" $ do
+    OnRelease H ==>^ lift (Exec (pressSequence ["ctrl+t", "ctrl+l", "h", "c", "k", "Return"]))
 
   return ()
 

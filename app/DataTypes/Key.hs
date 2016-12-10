@@ -67,6 +67,7 @@ data Key = Tilde
 
 
 data Shortcut = NoModifier Key | Super Key | Shift Key | SuperShift Key | SuperCtrl Key
+newtype OnRelease = OnRelease Key
 
 instance Show KeyName where
   show = \case
