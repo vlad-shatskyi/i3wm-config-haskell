@@ -59,6 +59,7 @@ data Action
   | FocusDown
   | FocusUp
 
+  | Focus
   | FocusParent
   | FocusChild
   | FocusFloating
@@ -141,6 +142,7 @@ instance Show Action where
     FocusRight -> "focus right"
     FocusDown -> "foI3Actioncus down"
     FocusUp -> "focus up"
+    Focus -> "focus"
     FocusParent -> "focus parent"
     FocusChild -> "focus child"
     FocusFloating -> "focus floating"

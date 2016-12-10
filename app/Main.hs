@@ -50,6 +50,9 @@ execAlwaysList :: [String] -> Free TopLevelF ()
 execAlwaysList = mapM_ execAlways
 
 
+focusWindow = lift $ FocusChild
+
+
 config :: Free TopLevelF ()
 config = do
   execAlwaysList [ "xinput set-prop 12 281 1" -- Enable Tapping.
@@ -74,7 +77,7 @@ config = do
   exec' "slack"
   exec' "telegram-desktop"
 
-  font ["pango", "monospace"] 8
+  font ["pango", "monospace"] 20
 
   bar "i3blocks"
   hideEdgeBorders ()
@@ -217,7 +220,14 @@ config = do
   _ <- mode "Google-chrome-unstable" $ do
     OnRelease H ==>^ lift (Exec (pressSequence ["ctrl+t", "ctrl+l", "h", "c", "k", "Return"]))
 
-  return ()
+  selectionMode <- mode "Selection Mode" $ do
+    OnRelease G ==>^ do
+      ActionsWithCriteria chrome $ do
+        lift (Exec (press "ctrl+c"))
+        lift Focus
+        lift (Exec (pressSequence ["ctrl+t", "ctrl+v", "Return"]))
+
+  Super S ==> lift (ActivateMode selectionMode)
 
 main :: IO ()
 main = iterM Languages.I3.interpretTopLevelF config
