@@ -111,9 +111,13 @@ instance Show ActionCriteria where
     IsFloating -> "floating"
     IsCurrent -> "con_id=__focused__"
 
+escapeForExec = concatMap escape
+  where escape '"' = "\\\\\""
+        escape chr = [chr]
+
 instance Show Action where
   show = \case
-    Exec x -> let escaped = intercalate "" (map (\c -> if c == '"' then "\\\\\"" else [c]) x) in [i|exec "#{escaped}"|]
+    Exec x -> [i|exec "#{escapeForExec x}"|]
     FocusWorkspace workspaceNumber -> [i|workspace #{workspaceNumber}|]
     ActivateMode modeName -> [i|mode "#{modeName}"|]
     FloatingEnable -> "floating enable"
