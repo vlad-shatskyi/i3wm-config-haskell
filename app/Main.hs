@@ -34,7 +34,7 @@ dockedWindowHeight = 140
 
 moveTo w = do
   lift (MoveToWorkspace w)
-  lift (FocusWorkspace w)
+  focus w
   exit
 
 resizeProportionally gs = do
@@ -129,22 +129,22 @@ config = do
   Super F ==> lift FullscreenToggle
   Super H ==> lift SplitToggle
 
-  Super J ==> lift (FocusWorkspace W1)
-  Super K ==> lift (FocusWorkspace W2)
-  Super L ==> lift (FocusWorkspace W3)
-  Super Semicolon ==> lift (FocusWorkspace W4)
-  Super Quote ==> lift (FocusWorkspace W9)
+  Super J ==> focus W1
+  Super K ==> focus W2
+  Super L ==> focus W3
+  Super Semicolon ==> focus W4
+  Super Quote ==> focus W9
 
-  Super N1 ==> lift (FocusWorkspace W1)
-  Super N2 ==> lift (FocusWorkspace W2)
-  Super N3 ==> lift (FocusWorkspace W3)
-  Super N4 ==> lift (FocusWorkspace W4)
-  Super N5 ==> lift (FocusWorkspace W5)
-  Super N6 ==> lift (FocusWorkspace W6)
-  Super N7 ==> lift (FocusWorkspace W7)
-  Super N8 ==> lift (FocusWorkspace W8)
-  Super N9 ==> lift (FocusWorkspace W9)
-  Super N0 ==> lift (FocusWorkspace W0)
+  Super N1 ==> focus W1
+  Super N2 ==> focus W2
+  Super N3 ==> focus W3
+  Super N4 ==> focus W4
+  Super N5 ==> focus W5
+  Super N6 ==> focus W6
+  Super N7 ==> focus W7
+  Super N8 ==> focus W8
+  Super N9 ==> focus W9
+  Super N0 ==> focus W0
 
   keyboardLayoutMode <- mode "Keyboard Layout Mode" $ do
     E ==>^ lift (Exec (setLayout "us"))

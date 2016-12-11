@@ -113,7 +113,7 @@ instance Show ActionCriteria where
 
 instance Show Action where
   show = \case
-    Exec x -> [i|exec "#{x}"|]
+    Exec x -> let escaped = intercalate "" (map (\c -> if c == '"' then "\\\\\"" else [c]) x) in [i|exec "#{escaped}"|]
     FocusWorkspace workspaceNumber -> [i|workspace #{workspaceNumber}|]
     ActivateMode modeName -> [i|mode "#{modeName}"|]
     FloatingEnable -> "floating enable"

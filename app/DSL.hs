@@ -40,6 +40,12 @@ s ==> a = hoist $ BindingF $ bind s a
 s ==>^ a = s ==> ActionsWithCriteria criteria (actions >> exit)
   where (ActionsWithCriteria criteria actions) = addCriteria a
 
+hideAllScratchpadWindows = "i3-msg -t get_tree | jq '[recurse(.nodes[], .floating_nodes[]) | select(.scratchpad_state == \"changed\")] | map(.nodes) | flatten | map(select(.output != \"__i3\") | .window) | .[]' | xargs -I % i3-msg [id=%] scratchpad show"
+
+focus workspace = do
+  lift (Exec hideAllScratchpadWindows)
+  lift (FocusWorkspace workspace)
+
 bar x = hoist $ Bar x
 hideEdgeBorders _ = hoist HideEdgeBorders
 forWindow criteria actions = hoist $ ForWindow (ActionsWithCriteria criteria actions)
