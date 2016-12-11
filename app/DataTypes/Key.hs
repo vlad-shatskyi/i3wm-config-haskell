@@ -13,7 +13,6 @@ data KeyName = LowerVolumeSym
              | Mod4Sym
              | ShiftSym
              | SpaceSym
-             | EqualSym
              | MinusSym
              | LeftBracketSym
 
@@ -80,7 +79,6 @@ instance Show KeyName where
     Mod4Sym -> "Mod4"
     ShiftSym -> "Shift"
     SpaceSym -> "space"
-    EqualSym -> "equal"
     MinusSym -> "minus"
     LeftBracketSym -> "bracketLeft"
 

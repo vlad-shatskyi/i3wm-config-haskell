@@ -122,7 +122,7 @@ config = do
   Super N ==> do
     lift (Exec "emacsclient -c -n ~/notes/notes.org")
     lift FocusFloating
-  [Mod4Sym, EqualSym] ==> ActionsWithCriteria telegram (lift ToggleScratchpad)
+  Super Equal ==> ActionsWithCriteria telegram (lift ToggleScratchpad)
 
   Super LeftBracket ==> lift FocusLeft
   Super RightBracket ==> lift FocusRight
