@@ -13,8 +13,6 @@ data KeyName = LowerVolumeSym
              | Mod4Sym
              | ShiftSym
              | SpaceSym
-             | MinusSym
-             | LeftBracketSym
 
 data Key = Tilde
          | N1
@@ -79,8 +77,6 @@ instance Show KeyName where
     Mod4Sym -> "Mod4"
     ShiftSym -> "Shift"
     SpaceSym -> "space"
-    MinusSym -> "minus"
-    LeftBracketSym -> "bracketLeft"
 
 keyCode :: Key -> Integer
 keyCode = \case
