@@ -61,6 +61,7 @@ config = do
                  , "xinput set-prop 12 291 1" -- Enable natural scroll.
                  , "setxkbmap -option altwin:swap_alt_win"
                  , "setxkbmap -option ctrl:nocaps"
+                 , "libinput-gestures-setup start"
                  ]
 
   startupPrograms [ "/usr/lib/gnome-settings-daemon/gnome-settings-daemon"
@@ -101,10 +102,6 @@ config = do
     lift MoveToScratchpad
     lift StickyEnable
   forWindow emacs (lift FloatingEnable)
-
-  forWindow fileManager $ do
-    lift FloatingEnable
-    lift (MoveToPosition 0 0)
 
   forWindow videoPlayer (lift FullscreenEnable)
 
