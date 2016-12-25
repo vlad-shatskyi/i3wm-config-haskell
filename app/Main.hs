@@ -21,6 +21,9 @@ emacs = [Instance "emacs"]
 
 setLayout layout = "setxkbmap " ++ layout ++ " && pkill -RTMIN+11 i3blocks"
 
+setMicrophoneLevel :: Integer -> String
+setMicrophoneLevel percent = "amixer set Capture " ++ show percent ++ "% && pkill -RTMIN+12 i3blocks"
+
 press shortcut = "xdotool key --clearmodifiers " ++ shortcut
 pressSequence = intercalate " && " . map press
 
@@ -78,7 +81,7 @@ config = do
   exec' "slack"
   exec' "telegram-desktop"
 
-  font ["pango", "monospace"] 9
+  font ["pango", "Hack"] 9
 
   bar "i3blocks"
   hideEdgeBorders ()
@@ -206,7 +209,21 @@ config = do
       lift MoveToCenter
   Super M ==> lift (ActivateMode moveMode)
 
-  Super A ==> lift (Exec ("i3-msg mode $(" ++ focusedWindowClass ++ ")"))
+  audioMode <- mode "Audio Mode" $ do
+    M  ==>^ lift (Exec (setMicrophoneLevel 0))
+    N0  ==>^ lift (Exec (setMicrophoneLevel 0))
+    N1 ==>^ lift (Exec (setMicrophoneLevel 10))
+    N2 ==>^ lift (Exec (setMicrophoneLevel 20))
+    N3 ==>^ lift (Exec (setMicrophoneLevel 30))
+    N4 ==>^ lift (Exec (setMicrophoneLevel 40))
+    N5 ==>^ lift (Exec (setMicrophoneLevel 50))
+    N6 ==>^ lift (Exec (setMicrophoneLevel 60))
+    N7 ==>^ lift (Exec (setMicrophoneLevel 70))
+    N8 ==>^ lift (Exec (setMicrophoneLevel 80))
+    N9 ==>^ lift (Exec (setMicrophoneLevel 90))
+  Super A ==> lift (ActivateMode audioMode)
+
+  Super P ==> lift (Exec ("i3-msg mode $(" ++ focusedWindowClass ++ ")"))
 
   _ <- mode "jetbrains-idea-ce" $ do
     OnRelease N ==>^ lift (Exec (press "ctrl+shift+n"))
