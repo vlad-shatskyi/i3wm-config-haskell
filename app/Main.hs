@@ -18,6 +18,7 @@ slack = [Instance "slack"]
 telegram = [Title "Telegram"]
 terminal = [Instance "konsole", IsFloating]
 emacs = [Instance "emacs"]
+mail = [Instance "wmail"]
 
 setLayout layout = "setxkbmap " ++ layout ++ " && pkill -RTMIN+11 i3blocks"
 
@@ -71,6 +72,7 @@ config = do
                   , "dunst"
                   , "clipmenud"
                   , "emacs --daemon"
+                  , "wmail"
                   ]
 
   raw "floating_modifier Mod4"
@@ -96,6 +98,7 @@ config = do
   Super Return ==> lift (Exec "konsole")
   Super W ==> lift CloseWindow
   Super Slash ==> lift (Exec "rofi -show drun")
+  SuperShift Slash ==> lift (Exec "rofi -modi \"Files:~/.config/rofi/rofi-file-browser.sh\" -show Files")
 
   forWindow chrome (lift (MoveToWorkspace W1))
   forWindow rubymine (lift (MoveToWorkspace W2))
@@ -105,8 +108,8 @@ config = do
     lift MoveToScratchpad
     lift StickyEnable
   forWindow emacs (lift FloatingEnable)
-
   forWindow videoPlayer (lift FullscreenEnable)
+  forWindow mail (lift (MoveToWorkspace W5))
 
   [Mod4Sym, SpaceSym] ==> lift FocusModeToggle
   [Mod4Sym, ShiftSym, SpaceSym] ==> lift FloatingToggle
