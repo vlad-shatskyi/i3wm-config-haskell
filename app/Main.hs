@@ -168,6 +168,7 @@ config = do
     R ==>^ lift RestartWM
     E ==>^ lift ExitWM
     W ==>^ lift (Exec "rofi -show window")
+    P ==>^ lift FocusParent
 
     L ==> lift (ActivateMode layoutMode)
   Super Tilde ==> lift (ActivateMode i3ManagementMode)
@@ -189,6 +190,9 @@ config = do
     J ==> lift (MoveDown moveStep)
     K ==> lift (MoveUp moveStep)
     C ==>^ lift MoveToCenter
+
+    LeftBracket  ==> lift (MoveLeft moveStep)
+    RightBracket ==> lift (MoveRight moveStep)
 
     N1 ==> moveTo W1
     N2 ==> moveTo W2
