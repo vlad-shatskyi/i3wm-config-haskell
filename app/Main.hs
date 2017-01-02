@@ -79,13 +79,31 @@ config = do
   raw $ "floating_maximum_size " ++ show screenWidth ++ " x " ++ show screenHeight
   raw "focus_follows_mouse no"
 
+  raw "client.focused #31363B #31363B #FFFFFF #000000 #31363B"
+  raw "client.focused_inactive #31363B #31363B #555555 #000000 #31363B"
+  raw "client.unfocused #31363B #31363B #555555 #000000 #31363B"
+  raw "client.background #31363B"
+  raw $ unlines $ [ "bar {"
+      , "  colors {"
+      , "    background #31363B"
+      , "    separator #31363B"
+      , "    focused_workspace #31363B #31363B #FFFFFF"
+      , "    active_workspace #31363B #31363B #FFFFFF"
+      , "    inactive_workspace #31363B #31363B #555555"
+      , "    urgent_workspace #F04848 #F04848 #FFFFFF"
+      , "  }"
+      , "  status_command i3blocks"
+      , "  position top"
+      , "}"
+      ]
+
   exec' "google-chrome-unstable"
   exec' "slack"
   exec' "telegram-desktop"
 
   font ["pango", "Hack"] 9
 
-  bar "i3blocks"
+--   bar "i3blocks"
   hideEdgeBorders ()
 
   RaiseVolumeSym ==> lift (Exec "amixer -q sset Master 5%+ unmute && pkill -RTMIN+10 i3blocks")
