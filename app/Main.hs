@@ -90,7 +90,7 @@ config = do
       , "    focused_workspace #31363B #31363B #FFFFFF"
       , "    active_workspace #31363B #31363B #FFFFFF"
       , "    inactive_workspace #31363B #31363B #777777"
-      , "    urgent_workspace #F04848 #F04848 #FFF0F0"
+      , "    urgent_workspace #BD5151 #BD5151 #FFF0F0"
       , "  }"
       , "  status_command i3blocks"
       , "  position top"
