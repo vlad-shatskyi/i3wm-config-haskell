@@ -169,9 +169,11 @@ config = do
 
   keyboardLayoutMode <- mode "Keyboard Layout Mode" $ do
     E ==>^ lift (Exec (setLayout "us"))
-    Super I ==>^ lift (Exec (setLayout "us"))
     R ==>^ lift (Exec (setLayout "ru"))
     U ==>^ lift (Exec (setLayout "ua"))
+    Super I ==>^ lift (Exec (setLayout "us"))
+    Super O ==>^ lift (Exec (setLayout "ru"))
+    Super P ==>^ lift (Exec (setLayout "ua"))
 
   Super I ==> lift (ActivateMode keyboardLayoutMode)
 
