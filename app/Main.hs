@@ -61,6 +61,7 @@ textColor = "#777777"
 urgentTextColor = "#FFF0F0"
 whiteColor = "#FFFFFF"
 urgentColor = "#BD5151"
+darkerColor = "#292c2f"
 
 config :: Free TopLevelF ()
 config = do
@@ -83,17 +84,19 @@ config = do
   raw "floating_modifier Mod4"
   raw $ "floating_maximum_size " ++ show screenWidth ++ " x " ++ show screenHeight
   raw "focus_follows_mouse no"
+  raw "new_window normal 1"
 
   -- <border> <background> <text> <indicator> <child_border>
-  raw $ "client.focused "          ++ defaultColor ++ " " ++ defaultColor ++ " " ++ whiteColor ++ " " ++ whiteColor ++ " " ++ defaultColor
-  raw $ "client.focused_inactive " ++ defaultColor ++ " " ++ defaultColor ++ " " ++ textColor  ++ " " ++ whiteColor ++ " " ++ defaultColor
-  raw $ "client.unfocused "        ++ defaultColor ++ " " ++ defaultColor ++ " " ++ textColor  ++ " " ++ whiteColor ++ " " ++ defaultColor
+  raw $ "client.focused "          ++ defaultColor ++ " " ++ darkerColor  ++ " " ++ whiteColor ++ " " ++ whiteColor ++ " " ++ darkerColor
+  raw $ "client.focused_inactive " ++ defaultColor ++ " " ++ defaultColor ++ " " ++ textColor  ++ " " ++ whiteColor ++ " " ++ darkerColor
+  raw $ "client.unfocused "        ++ defaultColor ++ " " ++ defaultColor ++ " " ++ textColor  ++ " " ++ whiteColor ++ " " ++ darkerColor
   raw $ "client.background " ++ defaultColor
 
   raw $ unlines $ [ "bar {"
       , "  colors {"
       , "    background " ++ defaultColor
       , "    separator " ++ defaultColor
+      -- <border> <background> <text>
       , "    focused_workspace "  ++ defaultColor ++ " " ++ defaultColor ++ " " ++ whiteColor
       , "    active_workspace "   ++ defaultColor ++ " " ++ defaultColor ++ " " ++ whiteColor
       , "    inactive_workspace " ++ defaultColor ++ " " ++ defaultColor ++ " " ++ textColor
