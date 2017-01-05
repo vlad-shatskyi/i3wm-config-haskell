@@ -79,7 +79,7 @@ config = do
   raw $ "floating_maximum_size " ++ show screenWidth ++ " x " ++ show screenHeight
   raw "focus_follows_mouse no"
 
-  raw "client.focused #31363B #31363B #FFFFFF #000000 #31363B"
+  raw "client.focused #212426 #212426 #FFFFFF #000000 #31363B"
   raw "client.focused_inactive #31363B #31363B #777777 #000000 #31363B"
   raw "client.unfocused #31363B #31363B #777777 #000000 #31363B"
   raw "client.background #31363B"
