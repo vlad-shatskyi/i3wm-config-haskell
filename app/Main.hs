@@ -56,6 +56,11 @@ execAlwaysList = mapM_ execAlways
 
 focusWindow = lift $ FocusChild
 
+defaultColor = "#31363B"
+textColor = "#777777"
+urgentTextColor = "#FFF0F0"
+whiteColor = "#000000"
+urgentColor = "#BD5151"
 
 config :: Free TopLevelF ()
 config = do
@@ -79,18 +84,18 @@ config = do
   raw $ "floating_maximum_size " ++ show screenWidth ++ " x " ++ show screenHeight
   raw "focus_follows_mouse no"
 
-  raw "client.focused #212426 #212426 #FFFFFF #000000 #31363B"
-  raw "client.focused_inactive #31363B #31363B #777777 #000000 #31363B"
-  raw "client.unfocused #31363B #31363B #777777 #000000 #31363B"
-  raw "client.background #31363B"
+  raw $ "client.focused "          ++ defaultColor ++ " " ++ defaultColor ++ " " ++ textColor ++ " " ++ whiteColor ++ " " ++ defaultColor
+  raw $ "client.focused_inactive " ++ defaultColor ++ " " ++ defaultColor ++ " " ++ textColor ++ " " ++ whiteColor ++ " " ++ defaultColor
+  raw $ "client.unfocused "        ++ defaultColor ++ " " ++ defaultColor ++ " " ++ textColor ++ " " ++ whiteColor ++ " " ++ defaultColor
+  raw $ "client.background " ++ defaultColor
   raw $ unlines $ [ "bar {"
       , "  colors {"
-      , "    background #31363B"
-      , "    separator #31363B"
-      , "    focused_workspace #31363B #31363B #FFFFFF"
-      , "    active_workspace #31363B #31363B #FFFFFF"
-      , "    inactive_workspace #31363B #31363B #777777"
-      , "    urgent_workspace #BD5151 #BD5151 #FFF0F0"
+      , "    background " ++ defaultColor
+      , "    separator " ++ defaultColor
+      , "    focused_workspace "  ++ defaultColor ++ " " ++ defaultColor ++ " " ++ whiteColor
+      , "    active_workspace "   ++ defaultColor ++ " " ++ defaultColor ++ " " ++ whiteColor
+      , "    inactive_workspace " ++ defaultColor ++ " " ++ defaultColor ++ " " ++ textColor
+      , "    urgent_workspace "   ++ urgentColor ++ " " ++ urgentColor ++ " " ++ urgentTextColor
       , "  }"
       , "  status_command i3blocks"
       , "  position top"
