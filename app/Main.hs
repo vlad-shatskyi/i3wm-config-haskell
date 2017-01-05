@@ -59,7 +59,7 @@ focusWindow = lift $ FocusChild
 defaultColor = "#31363B"
 textColor = "#777777"
 urgentTextColor = "#FFF0F0"
-whiteColor = "#000000"
+whiteColor = "#FFFFFF"
 urgentColor = "#BD5151"
 
 config :: Free TopLevelF ()
@@ -84,10 +84,12 @@ config = do
   raw $ "floating_maximum_size " ++ show screenWidth ++ " x " ++ show screenHeight
   raw "focus_follows_mouse no"
 
-  raw $ "client.focused "          ++ defaultColor ++ " " ++ defaultColor ++ " " ++ textColor ++ " " ++ whiteColor ++ " " ++ defaultColor
-  raw $ "client.focused_inactive " ++ defaultColor ++ " " ++ defaultColor ++ " " ++ textColor ++ " " ++ whiteColor ++ " " ++ defaultColor
-  raw $ "client.unfocused "        ++ defaultColor ++ " " ++ defaultColor ++ " " ++ textColor ++ " " ++ whiteColor ++ " " ++ defaultColor
+  -- <border> <background> <text> <indicator> <child_border>
+  raw $ "client.focused "          ++ defaultColor ++ " " ++ defaultColor ++ " " ++ whiteColor ++ " " ++ whiteColor ++ " " ++ defaultColor
+  raw $ "client.focused_inactive " ++ defaultColor ++ " " ++ defaultColor ++ " " ++ textColor  ++ " " ++ whiteColor ++ " " ++ defaultColor
+  raw $ "client.unfocused "        ++ defaultColor ++ " " ++ defaultColor ++ " " ++ textColor  ++ " " ++ whiteColor ++ " " ++ defaultColor
   raw $ "client.background " ++ defaultColor
+
   raw $ unlines $ [ "bar {"
       , "  colors {"
       , "    background " ++ defaultColor
