@@ -65,10 +65,10 @@ darkerColor = "#292c2f"
 
 config :: Free TopLevelF ()
 config = do
-  execAlwaysList [ "xinput set-prop 12 281 1" -- Enable Tapping.
-                 , "xinput set-prop 12 283 0" -- Disable Tapping Drag.
-                 , "xinput set-prop 12 289 0.85" -- Increase Accel Speed.
-                 , "xinput set-prop 12 291 1" -- Enable natural scroll.
+  execAlwaysList [ "xinput set-prop 12 284 1" -- Enable Tapping.
+                 , "xinput set-prop 12 286 0" -- Disable Tapping Drag.
+                 , "xinput set-prop 12 292 0.85" -- Increase Accel Speed.
+                 , "xinput set-prop 12 294 1" -- Enable natural scroll.
                  , "setxkbmap -option altwin:swap_alt_win"
                  , "setxkbmap -option ctrl:nocaps"
                  , "libinput-gestures-setup start"
